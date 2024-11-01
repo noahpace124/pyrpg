@@ -3,6 +3,8 @@
 #Imports from File
 from .spells import Spell
 from .skills import Skill
+from .weapons import Weapon
+from .armors import Armor
 
 class Job:
     all_jobs = []  # Class-level attribute to hold all job instances
@@ -37,11 +39,11 @@ jobs = [
     Job(
         'Fighter',
         'Fighters excel in hand-to-hand combat with any weapon available to them.',
-        3, 0, 3, 1, 3, 0, 'Rusty Sword', 'Leather Armor', [], [Skill.get_skill('Heavy Blow')]
+        3, 0, 3, 1, 3, 0, Weapon.get_weapon('Rusty Sword'), Armor.get_armor('Leather Armor'), [], [Skill.get_skill('Heavy Blow'), Skill.get_skill('Quick Strike')]
     ),
     Job(
         'Wizard',
         'While not good at close combat, Wizards excel at all things magic and use it to overpower their enemies.',
-        1, 5, 0, 3, 1, 0, "Beginner's Staff", 'Robe', [Spell.get_spell('Fireball')], [Skill.get_skill('Instant Recharge')]
+        1, 5, 0, 3, 1, 0, Weapon.get_weapon("Beginner's Staff"), Armor.get_armor('Robe'), [Spell.get_spell('Fireball')], [Skill.get_skill('Instant Recharge')]
     )
 ]

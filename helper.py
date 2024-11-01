@@ -28,7 +28,7 @@ class Helper:
             print(f" - - - {banner} - - -")
         else:
             spaced = ' '.join(banner)
-            print(f" - - - {banner} - - -")
+            print(f" - - - {spaced} - - -")
 
     @staticmethod
     def load_location(player):

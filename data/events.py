@@ -1,5 +1,11 @@
 #Import
 
+#Import from File
+from combat import combat
+from .enemy import Enemy
+from .weapons import Weapon
+from .armors import Armor
+
 class Event:
     all_events = []
 
@@ -28,7 +34,23 @@ class Event:
 
 #define event functions
 def goblin_battle(player):
-    return
+    enemy = Enemy(
+        'Goblin',
+        1,
+        -1,
+        1,
+        -1,
+        1,
+        2,
+        0,
+        0,
+        Weapon.get_weapon('Club'),
+        Armor.get_armor('Cloth')
+    )
+
+    print("You encounter a Goblin!")
+    input("(Press enter to continue...) ")
+    combat(player, enemy)
 
 events = [
     Event(

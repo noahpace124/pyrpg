@@ -15,7 +15,7 @@ def title_screen():
         questions = [
             inquirer.List('choice',
                         message="Please select an option",
-                        choices=["New Game", "Load Game", "Exit"],
+                        choices=["New Game", "Load Game", "DEBUG", "Exit"],
                         ),
         ]
 

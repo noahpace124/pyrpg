@@ -4,17 +4,15 @@ import random
 class Spell:
     all_spells = []  # Class-level attribute to hold all spell instances
 
-    def __init__(self, name, desc, spell_type, cost, matkmin, matkmax, reqm, func=None, count=1, when='turn'):
+    def __init__(self, name, desc, type, cost, matkmin, matkmax, reqm, func=None):
         self.name = name
         self.desc = desc
-        self.type = spell_type  # 'type' renamed to 'spell_type' to avoid confusion with spell types
+        self.type = type
         self.cost = cost
         self.matkmin = matkmin
         self.matkmax = matkmax
         self.reqm = reqm
         self.func = func
-        self.count = count
-        self.when = when
         Spell.all_spells.append(self)  # Automatically add the instance to the class-level list
 
     def __repr__(self):

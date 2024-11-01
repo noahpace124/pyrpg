@@ -21,7 +21,7 @@ def camp(player):
         questions = [
             inquirer.List('choice',
                         message="Choose an option",
-                        choices=["Venture Onward", "Rest", "Inventory", "Save Game"],
+                        choices=["Venture Onward", "Rest", "Inventory", "Status", "Save Game"],
                         ),
         ]
 
@@ -36,6 +36,8 @@ def handle_camp_choice(choice, player):
         rest(player)
     elif choice == "Inventory":
         inventory(player)
+    elif choice == "Status":
+        player.view_stats()
     elif choice == "Save Game":
         print("Save functionality is coming soon!")
         input("(Press enter to continue...) ")
@@ -58,7 +60,7 @@ def inventory(player):
         questions = [
             inquirer.List('choice',
                           message="Please select an option",
-                          choices=["Weapons", "Armors", "Skills", "Spells", "Items", "Stats", "Effects", "Go Back"],
+                          choices=["Weapons", "Armors", "Skills", "Spells", "Items", "Effects", "Go Back"],
                           ),
         ]
 
@@ -79,8 +81,6 @@ def handle_inventory_choice(choice, player):
         view_spells(player)
     elif choice == "Items":
         view_items(player)
-    elif choice == "Stats":
-        view_stats(player)
     elif choice == "Effects":
         view_effects(player)
     elif choice == "Go Back":
@@ -90,9 +90,6 @@ def view_weapons(player):
     while True:  # Loop to return to the weapon menu
         Helper.clear_screen()
         Helper.make_banner(f"{player.name}'s Weapons")
-        
-        equipped_weapon = player.get_weapon()  # Get the currently equipped weapon
-        equipped_name = equipped_weapon.name if equipped_weapon else 'None'
 
         weapon_choices = []
         
@@ -101,7 +98,7 @@ def view_weapons(player):
             weapon = Weapon.get_weapon(item['name'])  # Get the weapon instance
             if weapon:
                 weapon_info = f"{weapon.name} - Quantity: {item['count']}"
-                if item['name'] == equipped_name:
+                if item['name'] == player.EQweapon.name:
                     weapon_info += " (Equipped)"
                 weapon_choices.append(weapon_info)
 
@@ -134,13 +131,13 @@ def view_weapons(player):
                 print(f"              {weapon.req2a} {weapon.req2m}")
 
         # Ask if the player wants to equip or unequip the weapon
-        if equipped_name == weapon.name:  # Currently equipped
+        if player.EQweapon.name == weapon.name:  # Currently equipped
             while True:
                 print("Do you want to unequip this weapon? (y/n)")
                 ans = Helper.yes_or_no(input(">> ").lower())
                 
                 if ans == 1:  # Yes
-                    player.unequip_weapon(weapon.name)
+                    player.unequip_weapon(weapon)
                     break
                 elif ans == 0:  # No
                     break
@@ -150,7 +147,7 @@ def view_weapons(player):
                 ans = Helper.yes_or_no(input(">> ").lower())
                 
                 if ans == 1:  # Yes
-                    player.equip_weapon(weapon.name)  # Pass the weapon name to the equip_weapon method
+                    player.equip_weapon(weapon)  # Pass the weapon name to the equip_weapon method
                     break
                 elif ans == 0:  # No
                     break
@@ -160,9 +157,6 @@ def view_armors(player):
         Helper.clear_screen()
         Helper.make_banner(f"{player.name}'s Armor")
 
-        equipped_armor = player.get_armor()  # Get the currently equipped armor
-        equipped_name = equipped_armor.name if equipped_armor else 'None'
-
         armor_choices = []
 
         # Create a list of armor choices for inquirer
@@ -170,7 +164,7 @@ def view_armors(player):
             armor = Armor.get_armor(item['name'])  # Get the armor instance
             if armor:
                 armor_info = f"{armor.name} - Quantity: {item['count']}"
-                if item['name'] == equipped_name:
+                if item['name'] == player.EQarmor.name:
                     armor_info += " (Equipped)"
                 armor_choices.append(armor_info)
 
@@ -200,13 +194,13 @@ def view_armors(player):
         print(f"Requires: {armor.reqa} {armor.reqm}")
 
         # Ask if the player wants to equip or unequip the armor
-        if equipped_name == armor.name:  # Currently equipped
+        if player.EQarmor.name == armor.name:  # Currently equipped
             while True:
                 print("Do you want to unequip this armor? (y/n)")
                 ans = Helper.yes_or_no(input(">> ").lower())
                 
                 if ans == 1:  # Yes
-                    player.unequip_armor(armor.name)
+                    player.unequip_armor(armor)
                     break
                 elif ans == 0:  # No
                     break
@@ -216,7 +210,7 @@ def view_armors(player):
                 ans = Helper.yes_or_no(input(">> ").lower())
                 
                 if ans == 1:  # Yes
-                    player.equip_armor(armor.name)  # Pass the armor name to the equip_armor method
+                    player.equip_armor(armor)  # Pass the armor name to the equip_armor method
                     break
                 elif ans == 0:  # No
                     break
@@ -230,8 +224,8 @@ def view_skills(player):
         skill_choices = []
 
         # List all skills with only name, description, and equipped status
-        for skill in Skill.all_skills:
-            skill_info = f"{skill.name} - {skill.desc}"
+        for skill in player.skills:
+            skill_info = f"{skill.name}: {skill.cost} TP - {skill.desc}"
             if skill in player.EQskills:
                 skill_choices.append(f"{skill_info} (Equipped)")
             else:
@@ -243,7 +237,7 @@ def view_skills(player):
         # Create the inquirer prompt for skill selection
         questions = [
             inquirer.List('skill_choice',
-                          message="Select a skill to view details, equip, unequip, or use",
+                          message="Select a skill to view details, prepair, or unprepair",
                           choices=skill_choices),
         ]
 
@@ -252,7 +246,7 @@ def view_skills(player):
         if answer['skill_choice'] == "Go Back":
             break  # Exit the loop to go back
 
-        skill_name = answer['skill_choice'].split(" - ")[0]  # Get the skill name
+        skill_name = answer['skill_choice'].split(": ")[0]  # Get the skill name
         skill = Skill.get_skill(skill_name)  # Get the skill instance
 
         # Display full skill details
@@ -260,25 +254,26 @@ def view_skills(player):
         print(f"Description: {skill.desc}")
         print(f"TP Cost: {skill.cost}")
         print(f"Requirements: {skill.reqa} {skill.reqm}")
-        print(f"Type: {skill.type}")
 
         # Equip, unequip, or use the skill based on player choice
         if skill not in player.EQskills:
-            print(f"Do you want to equip {skill.name}? (y/n)")
-            ans = Helper.yes_or_no(input(">> ").lower())
-            if ans == 1:
-                player.equip_skill(skill.name)  # Equip skill with all checks now within equip_skill method
-        else:
-            print(f"{skill.name} is currently equipped. Do you want to unequip it? (y/n)")
-            ans = Helper.yes_or_no(input(">> ").lower())
-            if ans == 1:
-                player.unequip_skill(skill.name)  # Unequip the skill
-
-            if skill.type == 'outside':
-                print(f"{skill.name} is usable outside of combat. Use it? (y/n)")
-                ans = Helper.yes_or_no(input(" >> ").lower())
+            while True:
+                print(f"Do you want to prepair {skill.name}? (y/n)")
+                ans = Helper.yes_or_no(input(">> ").lower())
                 if ans == 1:
-                    skill.skill_func(player)
+                    player.equip_skill(skill)  # Equip skill with all checks now within equip_skill method
+                    break
+                elif ans == -1:
+                    break
+        else:
+            while True:
+                print(f"{skill.name} is currently prepaired. Do you want to unprepair it? (y/n)")
+                ans = Helper.yes_or_no(input(">> ").lower())
+                if ans == 1:
+                    player.unequip_skill(skill)  # Unequip the skill
+                    break
+                elif ans == -1:
+                    break
 
         input("(Press enter to continue...) ")
 
@@ -405,42 +400,6 @@ def view_items(player):
                     break
 
         input("(Press enter to continue...) ")
-
-def view_stats(player):
-    Helper.clear_screen()
-    Helper.make_banner(f"{player.name}'s Stats")
-    print(f"Race: {player.race.name}")
-    print(f"Class: {player.job.name}")
-    
-    # Display player attributes
-    print(f"HP: {player.chp}/{player.hp}")
-    print(f"MP: {player.cmp}/{player.mp}")
-    print(f"TP: {player.ctp}/{player.tp}")
-    print(f"XP: {player.lvlup}/{player.lvlnxt} LVL: {player.lvl}")
-    print(f"Strength: {player.str}")
-    print(f"Constitution: {player.con}")
-    print(f"Magic: {player.mag}")
-    print(f"Intelligence: {player.int}")
-    print(f"Dexterity: {player.dex}")
-    print(f"Luck: {player.lck}")
-    print(f"Physical Defense: {player.df}")
-    print(f"Magical Defense: {player.mdf}")
-
-    # Display equipped weapon details
-    equipped_weapon = player.get_weapon()
-    print(f"Equipped Weapon: {equipped_weapon.name if equipped_weapon else 'None'}")
-
-    # Display equipped armor details
-    equipped_armor = player.get_armor()
-    print(f"Equipped Armor: {equipped_armor.name if equipped_armor else 'None'}")
-
-    # Dislay equipped spell and skill details
-    equipped_spells = [spell.name for spell in player.EQspells]
-    print(f"Equipped Spells: {', '.join(equipped_spells) if equipped_spells else 'None'}")
-    equipped_skills = [skill.name for skill in player.EQskills]
-    print(f"Equipped Skills: {', '.join(equipped_skills) if equipped_skills else 'None'}")
-
-    input("(Press enter to continue...) ")
 
 def view_effects(player):
     Helper.clear_screen()

@@ -16,4 +16,5 @@ def barrens(player):
     events = [Event.get_event("Goblin Encounter")]
     for event in events:
         event.func(player)
+    print("MADE IT TO THE END")
 

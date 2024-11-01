@@ -2,11 +2,11 @@
 import random
 
 #Import from File
-from weapons import Weapon
-from armors import Armor
+from .weapons import Weapon
+from .armors import Armor
 
 class Enemy:
-    def __init__(self, name, con, mag, str, int, dex, lck, df, mdf, weapon='None', armor='None', inv=[], spells=[], skills=[]):
+    def __init__(self, name, con, mag, str, int, dex, lck, df, mdf, weapon=Weapon.get_weapon('None'), armor=Armor.get_armor('None'), inv=[], spells=[], skills=[]):
         self.name = name
 
         self.lvl = con + mag + str + int + dex + lck
@@ -42,27 +42,16 @@ class Enemy:
                 f"con={self.con}, mag={self.mag}, str={self.str}, "
                 f"int={self.int}, dex={self.dex}, lck={self.lck}, "
                 f"df={self.df}, mdf={self.mdf})>")
-
-    def get_weapon(self):
-        if self.EQweapon:
-            weapon = Weapon.get_weapon(self.EQweapon)
-            return weapon if weapon else Weapon.get_weapon('None')
-        return Weapon.get_weapon('None')
-
-    def get_armor(self):
-        if self.EQarmor:
-            armor = Armor.get_armor(self.EQarmor)
-            return armor if armor else Armor.get_armor('None')
-        return Armor.get_armor('None')
     
     def get_atk(self):
-        weapon = self.get_weapon()
-        return (self.str * 2) + random.randint(weapon.atkmin, weapon.atkmax)
+        return (self.str * 2) + random.randint(self.EQweapon.atkmin, self.EQweapon.atkmax)
     
     def get_df(self, atk):
-        armor = self.get_armor()
         # Calculate defense as a percentage of the enemy attack
         defense_from_self = atk * (self.df / 100)
 
-        total_defense = defense_from_self + armor.df
+        total_defense = defense_from_self + self.EQarmor.df
         return max(0, round(total_defense))  # Ensure the defense value doesn't drop below 0
+
+    def get_spd(self):
+        return (self.dex * 2) + max(0, self.lck)
