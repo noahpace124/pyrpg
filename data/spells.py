@@ -29,7 +29,7 @@ spells = [
     Spell(
         name='Fireball',
         desc='Hurl a ball of flame at the enemy.',
-        spell_type='Evocation',
+        type='Evocation',
         cost=8,
         matkmin=8,
         matkmax=14,

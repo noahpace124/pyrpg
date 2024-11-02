@@ -18,7 +18,7 @@ def combat(player, enemy):
         questions = [
             inquirer.List('choice',
                         message="Choose an option",
-                        choices=['Attack', 'Skills', 'Spells', 'Inventory', 'Status', 'Run'],
+                        choices=['Attack', 'Guard', 'Skills', 'Spells', 'Inventory', 'Status', 'Run'],
                         ),
         ]
 
@@ -35,13 +35,18 @@ def combat(player, enemy):
             break
         elif res == -1: #no action taken
             print('no action taken')
-            break
         else: #3 - correct response, game continues
+            #regen tp and mp
+            player.regen()
+            enemy.regen()
+            #increase turn count
             turn_count += 1
 
 def handle_combat_choice(choice, player, enemy):
     if choice == "Attack":
-        return combat_round(player, 'atk', enemy)
+        return combat_round(player, enemy)
+    elif choice == "Guard":
+        return guard(player, enemy)
     elif choice == "Skills":
         return use_skill(player, enemy)
     elif choice == "Spells":
@@ -121,26 +126,46 @@ def crit(attacker, defender):
     return (get_crit_rate(attacker, defender) >= randint(1, 100))
 
 def get_crit_rate(attacker, defender): #always returns at least 1
-    return max(round(((attacker.lck * 2) / 100) * ((attacker.lvl/defender.lvl) * 100), 0), 1)
+    return max(int(round(((attacker.lck * 2) / 100) * ((attacker.lvl/defender.lvl) * 100), 0)), 1)
+
+def guard(player, enemy):
+    print(f"{player.name} guards and catches their breath.")
+    player.ctp += int(round(player.dex * 1.5, 0))
+    if player.ctp > player.tp:
+        player.ctp = player.tp
+    #enemy acts RIGHT NOW JUST ATKS
+    attack(enemy, player)
+    #check hp
+    if enemy.chp <= 0:
+        return 2 #player win
+    if player.chp <= 0:
+        return 0 #player loss
+    #end of round
+    return 3
 
 def use_skill(player, enemy):
     #make a list of all skills and 'go back'
-        skill_choices = []
-        for skill in player.EQskills:
-            skill_info = f"{skill.name}: {skill.cost} TP - {skill.desc}"
-            skill_choices.append(skill_info)
-        skill_choices.append("Go Back")
-        #prompt user for skill or to go back
-        questions = [
-            inquirer.List('skill_choice',
-                          message="Select a skill to use or go back",
-                          choices=skill_choices),
-        ]
-        answer = inquirer.prompt(questions)
-        #no action taken
-        if answer['skill_choice'] == "Go Back":
+    skill_choices = []
+    for skill in player.EQskills:
+        skill_info = f"{skill.name}: {skill.cost} TP - {skill.desc}"
+        skill_choices.append(skill_info)
+    skill_choices.append("Go Back")
+    #prompt user for skill or to go back
+    questions = [
+        inquirer.List('skill_choice',
+                        message="Select a skill to use or go back",
+                        choices=skill_choices),
+    ]
+    answer = inquirer.prompt(questions)
+    #no action taken
+    if answer['skill_choice'] == "Go Back":
+        return -1
+    else:
+        #action taken
+        skill_name = answer['skill_choice'].split(": ")[0]  # Get the skill name
+        skill = Skill.get_skill(skill_name)
+        if player.ctp < skill.cost:
+            input(f"You don't have enough TP!")
             return -1
         else:
-            #action taken
-            skill_name = answer['skill_choice'].split(": ")[0]  # Get the skill name
-            combat_round(player, enemy, Skill.get_skill(skill_name))
+            return combat_round(player, enemy, skill)

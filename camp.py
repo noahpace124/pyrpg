@@ -48,8 +48,7 @@ def rest(player):
     player.cmp = player.mp
     player.ctp = player.tp
     
-    print(f"{player.name} slept and felt well rested.")
-    input("(Press enter to continue...) ")
+    input(f"{player.name} slept and felt well rested.")
 
 def inventory(player):
     while True:
@@ -95,10 +94,10 @@ def view_weapons(player):
         
         # Create a list of weapon choices for inquirer
         for item in player.inv:
-            weapon = Weapon.get_weapon(item['name'])  # Get the weapon instance
-            if weapon:
+            if isinstance(Weapon.get_weapon(item['name']), Weapon):
+                weapon = Weapon.get_weapon(item['name'])
                 weapon_info = f"{weapon.name} - Quantity: {item['count']}"
-                if item['name'] == player.EQweapon.name:
+                if weapon.name == player.EQweapon.name:
                     weapon_info += " (Equipped)"
                 weapon_choices.append(weapon_info)
 
@@ -161,8 +160,8 @@ def view_armors(player):
 
         # Create a list of armor choices for inquirer
         for item in player.inv:
-            armor = Armor.get_armor(item['name'])  # Get the armor instance
-            if armor:
+             if isinstance(Armor.get_armor(item['name']), Armor):
+                armor = Armor.get_armor(item['name'])
                 armor_info = f"{armor.name} - Quantity: {item['count']}"
                 if item['name'] == player.EQarmor.name:
                     armor_info += " (Equipped)"
@@ -227,7 +226,7 @@ def view_skills(player):
         for skill in player.skills:
             skill_info = f"{skill.name}: {skill.cost} TP - {skill.desc}"
             if skill in player.EQskills:
-                skill_choices.append(f"{skill_info} (Equipped)")
+                skill_choices.append(f"{skill_info} (Prepared)")
             else:
                 skill_choices.append(skill_info)
 
@@ -237,7 +236,7 @@ def view_skills(player):
         # Create the inquirer prompt for skill selection
         questions = [
             inquirer.List('skill_choice',
-                          message="Select a skill to view details, prepair, or unprepair",
+                          message="Select a skill to view details, prepair, or unprepare",
                           choices=skill_choices),
         ]
 
@@ -258,7 +257,7 @@ def view_skills(player):
         # Equip, unequip, or use the skill based on player choice
         if skill not in player.EQskills:
             while True:
-                print(f"Do you want to prepair {skill.name}? (y/n)")
+                print(f"Do you want to prepare {skill.name}? (y/n)")
                 ans = Helper.yes_or_no(input(">> ").lower())
                 if ans == 1:
                     player.equip_skill(skill)  # Equip skill with all checks now within equip_skill method
@@ -267,15 +266,13 @@ def view_skills(player):
                     break
         else:
             while True:
-                print(f"{skill.name} is currently prepaired. Do you want to unprepair it? (y/n)")
+                print(f"{skill.name} is currently prepared. Do you want to unprepare it? (y/n)")
                 ans = Helper.yes_or_no(input(">> ").lower())
                 if ans == 1:
                     player.unequip_skill(skill)  # Unequip the skill
                     break
                 elif ans == -1:
                     break
-
-        input("(Press enter to continue...) ")
 
 def view_spells(player):
     while True:  # Loop to return to the spell menu
@@ -337,7 +334,6 @@ def view_spells(player):
             elif ans == 0:  # No
                 print("Spell not unequipped.")
 
-        input("(Press enter to continue...) ")
 
 def view_items(player):
     while True:  # Loop to return to the items menu

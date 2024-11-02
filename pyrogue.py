@@ -15,7 +15,7 @@ def title_screen():
         questions = [
             inquirer.List('choice',
                         message="Please select an option",
-                        choices=["New Game", "Load Game", "DEBUG", "Exit"],
+                        choices=["New Game", "Load Game", "Exit"],
                         ),
         ]
 
@@ -25,8 +25,7 @@ def title_screen():
             player = character_creation()
             break
         elif answer['choice'] == 'Load Game':
-            print("Loading game is not implemented yet.")
-            input("(Press enter to continue...) ")
+            input("Loading game is not implemented yet.")
         elif answer['choice'] == 'Exit':
             exit()
     

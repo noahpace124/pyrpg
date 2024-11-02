@@ -1,3 +1,6 @@
+#Imports
+from random import randint
+
 class Skill:
     all_skills = []  # Class-level attribute to hold all skill instances
 
@@ -22,33 +25,55 @@ class Skill:
                 return skill
         return None  # or raise an exception if the skill isn't found
 
+#Redefined these to prevent circular import
+def crit(attacker, defender):
+    return (get_crit_rate(attacker, defender) >= randint(1, 100))
+
+def get_crit_rate(attacker, defender): #always returns at least 1
+    return max(int(round(((attacker.lck * 2) / 100) * ((attacker.lvl/defender.lvl) * 100), 0)), 1)
+
 # Define skill functions
-def instant_recharge(player, enemy):
-    player.ctp -= 8  # Use the cost directly, or you could get it from the skill instance
-    player.cmp += player.int * 2
-    if player.cmp >= player.mp:
-        player.cmp = player.mp
-        print(f"{player.name}'s MP recharged fully!")
+def instant_recharge(attacker, defender):
+    amount = attacker.mp - attacker.cmp
+    if amount > attacker.ctp: #use remaining tp
+        attacker.cmp += attacker.ctp
+        attacker.ctp -= attacker.ctp
+    else: #use only required tp
+        attacker.cmp += amount
+        attacker.ctp -= amount
+    if attacker.cmp == attacker.mp:
+        input(f"{attacker.name} recharged their MP fully.")
     else:
-        print(f"{player.name}'s MP recharged some.")
-    input("(Press enter to continue...) ")
+        input(f"{attacker.name} recharged their MP somewhat.")
 
-def heavy_blow(player, enemy):
-    player.ctp -= 10  # Use the cost directly
-    atk = player.get_atk()  # Assuming you have a method to get attack value
-    add = player.str
-    res = int(add * 1.5)
-    return atk + (res * 2)
+def heavy_blow(attacker, defender):
+    attacker.ctp -= 10
+    atk = int(round((attacker.str * 2) * 1.5, 0)) + randint(attacker.EQweapon.atkmin, attacker.EQweapon.atkmax)
+    if crit(attacker, defender):
+        print("Critical Hit!")
+        atk = atk * 3
+    df = defender.get_df(atk)
+    dmg = max(atk - df, 1)
+    defender.chp -= dmg
+    input(f"{attacker.name} landed a heavy blow on {defender.name} for {dmg} damage.")
 
-def quick_strike(player, enemy):
-    return
+def quick_strike(attacker, defender):
+    attacker.ctp -= 10
+    atk = attacker.get_atk()
+    if crit(attacker, defender):
+        print("Critical Hit!")
+        atk = atk * 3
+    df = defender.get_df(atk)
+    dmg = max(atk - df, 1)
+    defender.chp -= dmg
+    input(f"{attacker.name} striked quickly at {defender.name} for {dmg} damage.")
 
 # Create skill instances
 skills = [
     Skill(
         name='Instant Recharge',
-        desc='Recharge some MP to use.',
-        cost=10,
+        desc='Use your TP to instantly recharge your MP. Converts TP to MP.',
+        cost=1,
         type='instant',
         reqa='int',
         reqm=3,
@@ -69,7 +94,7 @@ skills = [
         cost=10,
         type='priority',
         reqa='dex',
-        reqm='3',
+        reqm=3,
         func=quick_strike
     )
 ]

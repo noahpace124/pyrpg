@@ -27,13 +27,27 @@ class Race:
 # Example race instances
 races = [
     Race(
-        'Human',
-        'Humans are the most diverse race among them all. Humans find meaning in something and live for it and are not bound by traditions as much as others would be. Their only fault is that they tend to put themselves above all other races.',
-        1, 1, 1, 1, 1, 2, 0, 0
+        name='Human',
+        desc='Humans are the most diverse race among them all. Humans find meaning in something and live for it and are not bound by traditions as much as others would be. Their only fault is that they tend to put themselves above all other races.',
+        con=1, 
+        mag=1, 
+        str=1, 
+        int=1, 
+        dex=1, 
+        lck=2, 
+        df=0, 
+        mdf=0
     ),
     Race(
-        'Xeran',
-        'Xeran are extremely rare and powerful with magic. Xeran have the looks of a goat, but the figure of a human. Xeran females become mages while males become warriors that weave weapon and magic. They struggle to find a place among other races even though they fought for peace among all.',
-        1, 2, 0, 2, 1, 0, 0, 10
+        name='Xeran',
+        desc='Xeran are extremely rare and powerful with magic. Xeran have the looks of a goat, but the figure of a human. Xeran females become mages while males become warriors that weave weapon and magic. They struggle to find a place among other races even though they fought for peace among all.',
+        con=1, 
+        mag=2, 
+        str=0, 
+        int=2, 
+        dex=1, 
+        lck=0, 
+        df=0, 
+        mdf=10
     )
 ]

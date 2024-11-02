@@ -55,3 +55,11 @@ class Enemy:
 
     def get_spd(self):
         return (self.dex * 2) + max(0, self.lck)
+
+    def regen(self):
+        self.ctp += self.dex
+        if self.ctp > self.tp:
+            self.ctp = self.tp
+        self.cmp += self.int
+        if self.cmp > self.mp:
+            self.cmp = self.mp

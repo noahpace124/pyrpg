@@ -37,13 +37,31 @@ class Job:
 # Example job instances
 jobs = [
     Job(
-        'Fighter',
-        'Fighters excel in hand-to-hand combat with any weapon available to them.',
-        3, 0, 3, 1, 3, 0, Weapon.get_weapon('Rusty Sword'), Armor.get_armor('Leather Armor'), [], [Skill.get_skill('Heavy Blow'), Skill.get_skill('Quick Strike')]
+        name='Fighter',
+        desc='Fighters excel in hand-to-hand combat with any weapon available to them.',
+        con=3,
+        mag=0, 
+        str=3,
+        int=1,
+        dex=3, 
+        lck=0, 
+        weapon=Weapon.get_weapon('Rusty Sword'), 
+        armor=Armor.get_armor('Leather Armor'), 
+        spells=[], 
+        skills=[Skill.get_skill('Heavy Blow'), Skill.get_skill('Quick Strike')]
     ),
     Job(
-        'Wizard',
-        'While not good at close combat, Wizards excel at all things magic and use it to overpower their enemies.',
-        1, 5, 0, 3, 1, 0, Weapon.get_weapon("Beginner's Staff"), Armor.get_armor('Robe'), [Spell.get_spell('Fireball')], [Skill.get_skill('Instant Recharge')]
+        name='Wizard',
+        desc='While not good at close combat, Wizards excel at all things magic and use it to overpower their enemies.',
+        con=1, 
+        mag=5, 
+        str=0, 
+        int=3, 
+        dex=1, 
+        lck=0, 
+        weapon=Weapon.get_weapon("Beginner's Staff"), 
+        armor=Armor.get_armor('Robe'), 
+        spells=[Spell.get_spell('Fireball')], 
+        skills=[Skill.get_skill('Instant Recharge')]
     )
 ]

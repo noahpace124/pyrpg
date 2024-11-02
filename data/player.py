@@ -1,5 +1,5 @@
 #Imports
-import random
+from random import randint
 
 #File Imports
 from .weapons import Weapon
@@ -104,7 +104,7 @@ class Player:
         equipped_spells = [spell.name for spell in self.EQspells]
         print(f"Prepaired Spells: {', '.join(equipped_spells)}")
         equipped_skills = [skill.name for skill in self.EQskills]
-        print(f"Prepaired Skills: {', '.join(equipped_skills)}")
+        print(f"Prepaired Skills: {', '.join(equipped_skills)}\n")
 
         input("(Press enter to continue...) ")
 
@@ -118,25 +118,24 @@ class Player:
                         #weapon requirement 2 exists
                         if getattr(self, weapon.req2a) >= weapon.req2m:
                             #meet weapon requirement 2
-                            self.EQweapon = weapon.name
-                            print(f"{self.name} equipped {weapon.name}.")
+                            self.EQweapon = weapon
+                            input(f"{self.name} equipped {weapon.name}.")
                         else:
                             #don't meet weapon requirement 2
-                            print(f"{self.name} does not meet the requirements to equip {weapon.name} ({weapon.req2a} {weapon.req2m})")
+                            input(f"{self.name} does not meet the requirements to equip {weapon.name} ({weapon.req2a} {weapon.req2m})")
                     else:
                         #weapon requirement 2 doesn't exist and meet weapon requirement 1
-                        self.EQweapon = weapon.name
-                        print(f"{self.name} equipped {weapon.name}.")
+                        self.EQweapon = weapon
+                        input(f"{self.name} equipped {weapon.name}.")
                 else:
                     #don't meet weapon requirement 1
-                    print(f"{self.name} does not meet the requirements to equip {weapon.name} ({weapon.req1a} {weapon.req1m})")
+                    input(f"{self.name} does not meet the requirements to equip {weapon.name} ({weapon.req1a} {weapon.req1m})")
             else:
                 #no requirements for weapon
-                self.EQweapon = weapon.name
-                print(f"{self.name} equipped {weapon.name}.")
+                self.EQweapon = weapon
+                input(f"{self.name} equipped {weapon.name}.")
         else:  
-            print(f"{self.name} cannot equip {weapon.name} because it was not found.")
-        input("(Press enter to continue...) ")
+            input(f"{self.name} cannot equip {weapon.name} because it was not found.")
 
     def equip_armor(self, armor):
         if armor:
@@ -144,47 +143,44 @@ class Player:
                 #armor requirement exists
                 if getattr(self, armor.reqa) >= armor.reqm:
                     #meet armor requirement
-                    self.EQarmor = armor.name
-                    print(f"{self.name} equipped {armor.name}.")
+                    self.EQarmor = armor
+                    input(f"{self.name} equipped {armor.name}.")
                 else:
                     #don't meet armor requirement
-                    print(f"{self.name} does not meet the requirements to equip {armor.name} ({armor.reqa} {armor.reqm})")
+                    input(f"{self.name} does not meet the requirements to equip {armor.name} ({armor.reqa} {armor.reqm})")
             else:
                 #no requirements for armor
-                self.EQarmor = armor.name
-                print(f"{self.name} equipped {armor.name}.")
+                self.EQarmor = armor
+                input(f"{self.name} equipped {armor.name}.")
         else:
-            print(f"{self.name} cannot equip {armor.name} because it was not found.")
-        input("(Press enter to continue...) ")
+            input(f"{self.name} cannot equip {armor.name} because it was not found.")
     
     def unequip_weapon(self, weapon):
         self.EQweapon = Weapon.get_weapon('None')
-        print(f"{self.name} unequipped {weapon.name}.")
-        input("(Press enter to continue...) ")
+        input(f"{self.name} unequipped {weapon.name}.")
     
     def unequip_armor(self, armor):
         self.EQarmor = Armor.get_armor('None')
-        print(f"{self.name} unequipped {armor.name}.")
-        input("(Press enter to continue...) ")
+        input(f"{self.name} unequipped {armor.name}.")
 
     def equip_skill(self, skill):
         # Check if player meets skill requirements
         if getattr(self, skill.reqa) < skill.reqm:
-            print(f"You do not meet the requirements to prepair {skill.name}.")
+            input(f"You do not meet the requirements to prepare {skill.name}.")
             return
         
         # Check if there's space for more equipped skills
-        if max(round(self.dex / 3), 1) < len(self.EQskills):
-            print(f"You cannot prepair more skills unless you increase your dexterity (DEX: {self.dex}).")
+        if max(int(round(self.dex / 3)), 1) < len(self.EQskills):
+            input(f"You cannot prepare more skills unless you increase your dexterity (DEX: {self.dex}).")
             return
         
         # Equip the skill
         self.EQskills.append(skill)
-        print(f"{skill.name} has been prepaired.")
+        input(f"{skill.name} has been prepared.")
     
     def unequip_skill(self, skill):
         self.EQskills.remove(skill)
-        print(f"{skill.name} has been unprepaired.")
+        input(f"{skill.name} has been unprepared.")
 
     # def equip_spell(self, spell_name):
     #     spell = Spell.get_spell(spell_name)
@@ -209,14 +205,14 @@ class Player:
     #     print(f"{spell.name} has been unequipped.")
 
     def get_atk(self):
-        return (self.str * 2) + random.randint(self.EQweapon.atkmin, self.EQweapon.atkmax)
+        return (self.str * 2) + randint(self.EQweapon.atkmin, self.EQweapon.atkmax)
     
     def get_df(self, atk):
         # Calculate defense as a percentage of the enemy attack
-        defense_from_self = atk * (self.df / 100)
+        defense_from_self = int(round(atk * (self.df / 100)))
 
         total_defense = defense_from_self + self.EQarmor.df
-        return max(0, round(total_defense))  # Ensure the defense value doesn't drop below 0
+        return max(0, total_defense)  # Ensure the defense value doesn't drop below 0
     
     # def get_matk(self, spell_name):
     #     spell = Spell.get_spell(spell_name)  # Now calls the class method
@@ -239,7 +235,7 @@ class Player:
     #     armor = self.getArmor()
     #     # Calculate the magical defense based on a percentage of the enemy's magical attack
     #     percentage_defense = ematk * (self.mdf / 100)
-    #     return round(percentage_defense) + armor['mdf']
+    #     return int(round(percentage_defense)) + armor['mdf']
 
     def get_spd(self):
         return (self.dex * 2) + max(0, self.lck)
@@ -259,3 +255,11 @@ class Player:
                 else:
                     inv_item['count'] -= count  # Decrease count
                 return
+
+    def regen(self):
+        self.ctp += self.dex
+        if self.ctp > self.tp:
+            self.ctp = self.tp
+        self.cmp += self.int
+        if self.cmp > self.mp:
+            self.cmp = self.mp
