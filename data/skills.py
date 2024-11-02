@@ -51,7 +51,7 @@ def heavy_blow(attacker, defender):
     atk = round((attacker.str * 2) * 1.5) + randint(attacker.EQweapon.atkmin, attacker.EQweapon.atkmax)
     if crit(attacker, defender):
         print("Critical Hit!")
-        atk = atk * 3
+        atk = atk * 2
     df = defender.get_df(atk)
     dmg = max(atk - df, 1)
     defender.chp -= dmg
@@ -62,7 +62,7 @@ def quick_strike(attacker, defender):
     atk = attacker.get_atk()
     if crit(attacker, defender):
         print("Critical Hit!")
-        atk = atk * 3
+        atk = atk * 2
     df = defender.get_df(atk)
     dmg = max(atk - df, 1)
     defender.chp -= dmg

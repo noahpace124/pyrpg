@@ -232,7 +232,7 @@ def view_skills(player):
 
         questions = [
             inquirer.List('skill_choice',
-                          message="Select a skill to view details, prepair, or unprepare",
+                          message="Select a skill to view details, prepare, or unprepare",
                           choices=skill_choices),
         ]
 
@@ -256,7 +256,7 @@ def view_skills(player):
                 if ans == 1:
                     player.equip_skill(skill)
                     break
-                elif ans == -1:
+                elif ans == 0:
                     break
         else:
             while True:
@@ -265,7 +265,7 @@ def view_skills(player):
                 if ans == 1:
                     player.unequip_skill(skill)
                     break
-                elif ans == -1:
+                elif ans == 0:
                     break
 
 def view_spells(player):
@@ -278,9 +278,9 @@ def view_spells(player):
 
         # List all spells
         for spell in Spell.all_spells:
-            spell_info = f"{spell.name} - {spell.desc}"
+            spell_info = f"{spell.name}: {spell.cost} MP - {spell.desc}"
             if spell in player.EQspells:
-                spell_choices.append(f"{spell_info} (Equipped)")
+                spell_choices.append(f"{spell_info} (Prepaired)")
             else:
                 spell_choices.append(spell_info)
 
@@ -290,7 +290,7 @@ def view_spells(player):
         # Create the inquirer prompt for spell selection
         questions = [
             inquirer.List('spell_choice',
-                          message="Select a spell to equip or unequip",
+                          message="Select a spell to view details, prepare, or unprepare",
                           choices=spell_choices,
                           ),
         ]
@@ -300,7 +300,7 @@ def view_spells(player):
         if answer['spell_choice'] == "Go Back":
             break  # Exit the loop to go back
 
-        spell_name = answer['spell_choice'].split(" - ")[0]  # Get the spell name
+        spell_name = answer['spell_choice'].split(": ")[0]  # Get the spell name
         spell = Spell.get_spell(spell_name)  # Get the spell instance
 
         # Display all attributes of the selected spell
@@ -312,21 +312,25 @@ def view_spells(player):
 
         # If the spell is not already equipped, check if it can be equipped
         if spell not in player.EQspells:
-            # Ask if the player wants to equip the spell
-            print(f"Do you want to equip {spell.name}? (y/n)")
-            ans = Helper.yes_or_no(input(">> ").lower())
-            if ans == 1:  # Yes
-                player.equip_spell(spell.name)
-            elif ans == 0:  # No
-                print("Spell not equipped.")
+            while True:
+                # Ask if the player wants to equip the spell
+                print(f"Do you want to prepare {spell.name}? (y/n)")
+                ans = Helper.yes_or_no(input(">> ").lower())
+                if ans == 1:  # Yes
+                    player.equip_spell(spell)
+                    break
+                elif ans == 0:  # No
+                    break
         else:
-            # Option to unequip the spell
-            print(f"{spell.name} is currently equipped. Do you want to unequip it? (y/n)")
-            ans = Helper.yes_or_no(input(" >> ").lower())
-            if ans == 1:  # Yes
-                player.unequip_spell(spell.name)
-            elif ans == 0:  # No
-                print("Spell not unequipped.")
+            while True:
+                # Option to unequip the spell
+                print(f"{spell.name} is currently prepared. Do you want to unprepare it? (y/n)")
+                ans = Helper.yes_or_no(input(" >> ").lower())
+                if ans == 1:  # Yes
+                    player.unequip_spell(spell)
+                    break
+                elif ans == 0:  # No
+                    break
 
 def view_items(player):
     while True:  # Loop to return to the items menu

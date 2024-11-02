@@ -33,13 +33,22 @@ def get_crit_rate(attacker, defender): #always returns at least 1
     return max(round(((attacker.lck * 2) / 100) * ((attacker.lvl/defender.lvl) * 100)), 1)
 
 def fireball(attacker, defender):
+    attacker.cmp -= 10
     matk = attacker.get_matk(Spell.get_spell('Fireball'))
+    if crit(attacker, defender):
+        print("Critical Hit!")
+        matk = matk * 2
+    mdf = defender.get_mdf(matk)
+    dmg = max(matk - mdf, 1)
+    defender.chp -= dmg
+    input(f"{attacker.name} cast Fireball on {defender.name} for {dmg} damage.")
+
 
 spells = [
     Spell(
         name='Fireball',
         desc='Hurl a ball of flame at the enemy.',
-        type='Evocation',
+        type='instant',
         cost=10,
         matkmin=8,
         matkmax=14,

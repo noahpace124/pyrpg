@@ -187,17 +187,17 @@ class Player:
     def equip_spell(self, spell):
         # Check if player meets spell requirements
         if self.int < spell.reqm:
-            print(f"You do not meet the requirements to prepare {spell.name}.")
+            input(f"You do not meet the requirements to prepare {spell.name}.")
             return
         
         # Check if there's space for more equipped spells
         if max(round(self.int / 2), 1) <= len(self.EQspells):
-            print(f"You cannot prepare more spells until you increase your intelligence (INT: {self.int}).")
+            input(f"You cannot prepare more spells until you increase your intelligence (INT: {self.int}).")
             return
         
         # Equip the spell
         self.EQspells.append(spell)
-        print(f"{spell.name} has been prepared.")
+        input(f"{spell.name} has been prepared.")
 
     def unequip_spell(self, spell):
         self.EQspells.remove(spell)

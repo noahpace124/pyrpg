@@ -1,5 +1,5 @@
 #Import
-import random
+from random import randint
 
 #Import from File
 from .weapons import Weapon
@@ -44,7 +44,7 @@ class Enemy:
                 f"df={self.df}, mdf={self.mdf})>")
     
     def get_atk(self):
-        return (self.str * 2) + random.randint(self.EQweapon.atkmin, self.EQweapon.atkmax)
+        return (self.str * 2) + randint(self.EQweapon.atkmin, self.EQweapon.atkmax)
     
     def get_df(self, atk):
         # Calculate defense as a percentage of the enemy attack
@@ -52,6 +52,13 @@ class Enemy:
 
         total_defense = defense_from_self + self.EQarmor.df
         return max(0, round(total_defense))  # Ensure the defense value doesn't drop below 0
+
+    def get_matk(self, spell):
+        return (self.mag * 2) + randint(spell.matkmin, spell.matkmax) + randint(self.EQweapon.matkmin, self.EQweapon.matkmax)
+
+    def get_mdf(self, ematk):
+        percentage_mdf = round((ematk * (self.mdf / 100)))
+        return percentage_mdf + self.EQarmor.mdf
 
     def get_spd(self):
         return (self.dex * 2) + max(0, self.lck)

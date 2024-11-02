@@ -5,6 +5,7 @@ from random import randint
 #Imports from File
 from helper import Helper
 from data.skills import Skill
+from data.spells import Spell
 
 def combat(player, enemy):
     turn_count = 1
@@ -50,7 +51,7 @@ def handle_combat_choice(choice, player, enemy):
     elif choice == "Skills":
         return use_skill(player, enemy)
     elif choice == "Spells":
-        return
+        return use_spell(player, enemy)
     elif choice == "Inventory":
         return
     elif choice == "Status":
@@ -116,7 +117,7 @@ def attack(attacker, defender):
     atk = attacker.get_atk()
     if crit(attacker, defender):
         print("Critical Hit!")
-        atk = atk * 3
+        atk = atk * 2
     df = defender.get_df(atk)
     dmg = max(atk - df, 1)
     defender.chp -= dmg
@@ -169,3 +170,30 @@ def use_skill(player, enemy):
             return -1
         else:
             return combat_round(player, enemy, skill)
+
+def use_spell(player, enemy):
+    #make a list of all spells and 'go back'
+    spell_choices = []
+    for spell in player.EQspells:
+        spell_info = f"{spell.name}: {spell.cost} MP - {spell.desc}"
+        spell_choices.append(spell_info)
+    spell_choices.append("Go Back")
+    #prompt user for spell or to go back
+    questions = [
+        inquirer.List('spell_choice',
+                        message="Select a spell to cast or go back",
+                        choices=spell_choices),
+    ]
+    answer = inquirer.prompt(questions)
+    #no action taken
+    if answer['spell_choice'] == "Go Back":
+        return -1
+    else:
+        #action taken
+        spell_name = answer['spell_choice'].split(": ")[0]  # Get the spell name
+        spell = Spell.get_spell(spell_name)
+        if player.cmp < spell.cost:
+            input(f"You don't have enough MP!")
+            return -1
+        else:
+            return combat_round(player, enemy, spell)
