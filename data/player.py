@@ -207,7 +207,7 @@ class Player:
         return (self.str * 2) + randint(self.EQweapon.atkmin, self.EQweapon.atkmax)
     
     def get_df(self, atk):
-        percentage_df = round(atk * (self.df / 100)))
+        percentage_df = round(atk * (self.df / 100))
 
         total_defense = percentage_df + self.EQarmor.df
         return max(0, total_defense)  # Ensure the defense value doesn't drop below 0
