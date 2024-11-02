@@ -30,7 +30,7 @@ def crit(attacker, defender):
     return (get_crit_rate(attacker, defender) >= randint(1, 100))
 
 def get_crit_rate(attacker, defender): #always returns at least 1
-    return max(int(round(((attacker.lck * 2) / 100) * ((attacker.lvl/defender.lvl) * 100), 0)), 1)
+    return max(round(((attacker.lck * 2) / 100) * ((attacker.lvl/defender.lvl) * 100)), 1)
 
 # Define skill functions
 def instant_recharge(attacker, defender):
@@ -48,7 +48,7 @@ def instant_recharge(attacker, defender):
 
 def heavy_blow(attacker, defender):
     attacker.ctp -= 10
-    atk = int(round((attacker.str * 2) * 1.5, 0)) + randint(attacker.EQweapon.atkmin, attacker.EQweapon.atkmax)
+    atk = round((attacker.str * 2) * 1.5) + randint(attacker.EQweapon.atkmin, attacker.EQweapon.atkmax)
     if crit(attacker, defender):
         print("Critical Hit!")
         atk = atk * 3

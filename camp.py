@@ -215,14 +215,12 @@ def view_armors(player):
                     break
 
 def view_skills(player):
-    while True:  # Loop to return to the skill menu
+    while True:
         Helper.clear_screen()
         Helper.make_banner(f"{player.name}'s Skills")
 
-        # Create a list of skills to display
         skill_choices = []
 
-        # List all skills with only name, description, and equipped status
         for skill in player.skills:
             skill_info = f"{skill.name}: {skill.cost} TP - {skill.desc}"
             if skill in player.EQskills:
@@ -230,10 +228,8 @@ def view_skills(player):
             else:
                 skill_choices.append(skill_info)
 
-        # Add an option to go back
         skill_choices.append("Go Back")
 
-        # Create the inquirer prompt for skill selection
         questions = [
             inquirer.List('skill_choice',
                           message="Select a skill to view details, prepair, or unprepare",
@@ -243,24 +239,22 @@ def view_skills(player):
         answer = inquirer.prompt(questions)
 
         if answer['skill_choice'] == "Go Back":
-            break  # Exit the loop to go back
+            break
 
-        skill_name = answer['skill_choice'].split(": ")[0]  # Get the skill name
-        skill = Skill.get_skill(skill_name)  # Get the skill instance
+        skill_name = answer['skill_choice'].split(": ")[0]
+        skill = Skill.get_skill(skill_name) 
 
-        # Display full skill details
         Helper.make_banner(f"{skill.name}")
         print(f"Description: {skill.desc}")
         print(f"TP Cost: {skill.cost}")
         print(f"Requirements: {skill.reqa} {skill.reqm}")
 
-        # Equip, unequip, or use the skill based on player choice
         if skill not in player.EQskills:
             while True:
                 print(f"Do you want to prepare {skill.name}? (y/n)")
                 ans = Helper.yes_or_no(input(">> ").lower())
                 if ans == 1:
-                    player.equip_skill(skill)  # Equip skill with all checks now within equip_skill method
+                    player.equip_skill(skill)
                     break
                 elif ans == -1:
                     break
@@ -269,7 +263,7 @@ def view_skills(player):
                 print(f"{skill.name} is currently prepared. Do you want to unprepare it? (y/n)")
                 ans = Helper.yes_or_no(input(">> ").lower())
                 if ans == 1:
-                    player.unequip_skill(skill)  # Unequip the skill
+                    player.unequip_skill(skill)
                     break
                 elif ans == -1:
                     break
@@ -333,7 +327,6 @@ def view_spells(player):
                 player.unequip_spell(spell.name)
             elif ans == 0:  # No
                 print("Spell not unequipped.")
-
 
 def view_items(player):
     while True:  # Loop to return to the items menu

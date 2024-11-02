@@ -1,5 +1,5 @@
 #Imports
-import random
+from random import randint
 
 class Spell:
     all_spells = []  # Class-level attribute to hold all spell instances
@@ -23,16 +23,27 @@ class Spell:
         for spell in cls.all_spells:
             if spell.name == spell_name:
                 return spell
-        return None  # or raise an exception if the spell isn't found
+        return None
+
+#Redefined these to prevent circular import
+def crit(attacker, defender):
+    return (get_crit_rate(attacker, defender) >= randint(1, 100))
+
+def get_crit_rate(attacker, defender): #always returns at least 1
+    return max(round(((attacker.lck * 2) / 100) * ((attacker.lvl/defender.lvl) * 100)), 1)
+
+def fireball(attacker, defender):
+    matk = attacker.get_matk(Spell.get_spell('Fireball'))
 
 spells = [
     Spell(
         name='Fireball',
         desc='Hurl a ball of flame at the enemy.',
         type='Evocation',
-        cost=8,
+        cost=10,
         matkmin=8,
         matkmax=14,
-        reqm=3
+        reqm=3,
+        func=fireball
     )
 ]

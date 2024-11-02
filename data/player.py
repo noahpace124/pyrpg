@@ -60,10 +60,12 @@ class Player:
         ]
         self.EQweapon = self.job.weapon
         self.EQarmor = self.job.armor
+
+        # Spells and Skills
+        self.spells = self.job.spells
         self.EQspells = []
-        #self.spells = self.job.spells
-        # for spell in self.job.spells:
-        #     self.equip_spell(spell.name)
+        for spell in self.job.spells:
+            self.EQspells.append(spell)
         self.skills = self.job.skills
         self.EQskills = []
         for skill in self.job.skills:
@@ -170,8 +172,8 @@ class Player:
             return
         
         # Check if there's space for more equipped skills
-        if max(int(round(self.dex / 3)), 1) < len(self.EQskills):
-            input(f"You cannot prepare more skills unless you increase your dexterity (DEX: {self.dex}).")
+        if max(round(self.dex / 3), 1) <= len(self.EQskills):
+            input(f"You cannot prepare more skills until you increase your dexterity (DEX: {self.dex}).")
             return
         
         # Equip the skill
@@ -182,60 +184,40 @@ class Player:
         self.EQskills.remove(skill)
         input(f"{skill.name} has been unprepared.")
 
-    # def equip_spell(self, spell_name):
-    #     spell = Spell.get_spell(spell_name)
-
-    #     # Check if player meets spell requirements
-    #     if self.int < spell.reqm:
-    #         print(f"You do not meet the requirements to equip {spell.name}.")
-    #         return
+    def equip_spell(self, spell):
+        # Check if player meets spell requirements
+        if self.int < spell.reqm:
+            print(f"You do not meet the requirements to prepare {spell.name}.")
+            return
         
-    #     # Check if there's space for more equipped spells
-    #     if len(self.EQspells) >= self.int:
-    #         print(f"You cannot equip more skills unless you increase your intelligence (INT: {self.int}).")
-    #         return
+        # Check if there's space for more equipped spells
+        if max(round(self.int / 2), 1) <= len(self.EQspells):
+            print(f"You cannot prepare more spells until you increase your intelligence (INT: {self.int}).")
+            return
         
-    #     # Equip the spell
-    #     self.EQspells.append(spell)
-    #     print(f"{spell.name} has been equipped.")
+        # Equip the spell
+        self.EQspells.append(spell)
+        print(f"{spell.name} has been prepared.")
 
-    # def unequip_spell(self, spell_name):
-    #     spell = Spell.get_spell(spell_name)
-    #     self.EQspells.remove(spell)
-    #     print(f"{spell.name} has been unequipped.")
+    def unequip_spell(self, spell):
+        self.EQspells.remove(spell)
+        input(f"{spell.name} has been unprepared.")
 
     def get_atk(self):
         return (self.str * 2) + randint(self.EQweapon.atkmin, self.EQweapon.atkmax)
     
     def get_df(self, atk):
-        # Calculate defense as a percentage of the enemy attack
-        defense_from_self = int(round(atk * (self.df / 100)))
+        percentage_df = round(atk * (self.df / 100)))
 
-        total_defense = defense_from_self + self.EQarmor.df
+        total_defense = percentage_df + self.EQarmor.df
         return max(0, total_defense)  # Ensure the defense value doesn't drop below 0
     
-    # def get_matk(self, spell_name):
-    #     spell = Spell.get_spell(spell_name)  # Now calls the class method
-    #     if spell is None:
-    #         print(f"Spell {spell_name} not found.")
-    #         return 0
+    def get_matk(self, spell):
+        return (self.mag * 2) + randint(spell.matkmin, spell.matkmax) + randint(self.EQweapon.matkmin, self.EQweapon.matkmax)
 
-    #     if self.cmp < spell.cost:  # Check if the player has enough mana to cast the spell
-    #         print(f"Not enough mana to cast {spell.name}.")
-    #         return 0  # or you could raise an exception depending on your design
-
-    #     self.cmp -= spell.cost  # Deduct the mana cost
-    #     weapon = self.get_weapon()  # Get the player's equipped weapon
-
-    #     # Calculate magic attack
-    #     matk = (self.mag * 2) + random.randint(spell.matkmin, spell.matkmax) + random.randint(weapon.matkmin, weapon.matkmax)
-    #     return matk
-
-    # def get_mdf(self, ematk):
-    #     armor = self.getArmor()
-    #     # Calculate the magical defense based on a percentage of the enemy's magical attack
-    #     percentage_defense = ematk * (self.mdf / 100)
-    #     return int(round(percentage_defense)) + armor['mdf']
+    def get_mdf(self, ematk):
+        percentage_mdf = round((ematk * (self.mdf / 100)))
+        return percentage_mdf + self.EQarmor.mdf
 
     def get_spd(self):
         return (self.dex * 2) + max(0, self.lck)

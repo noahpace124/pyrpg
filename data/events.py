@@ -36,9 +36,9 @@ class Event:
 def goblin_battle(player):
     enemy = Enemy(
         'Goblin',
-        1,
+        2,
         -1,
-        1,
+        2,
         -1,
         1,
         2,

@@ -130,7 +130,7 @@ def get_crit_rate(attacker, defender): #always returns at least 1
 
 def guard(player, enemy):
     print(f"{player.name} guards and catches their breath.")
-    player.ctp += int(round(player.dex * 1.5, 0))
+    player.ctp += round(player.dex * 1.5)
     if player.ctp > player.tp:
         player.ctp = player.tp
     #enemy acts RIGHT NOW JUST ATKS
