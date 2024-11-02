@@ -17,7 +17,7 @@ def combat(player, enemy):
         print(f'{player.name}: {player.chp}/{player.hp} HP VS {enemy.name}: {enemy.chp}/{enemy.hp} HP')
         print(f'MP: {player.cmp}/{player.mp} - TP: {player.ctp}/{player.tp}')
         
-        choices = ['Attack', 'Guard', 'Skills', 'Spells', 'Inventory', 'Status']
+        choices = ['Attack', 'Guard', 'Skills', 'Spells', 'Inventory', 'Status', 'Enemy Status']
         if 'Boss' not in enemy.flags:
             choices.append('Run')
 
@@ -42,9 +42,8 @@ def combat(player, enemy):
         elif res == -1: #no action taken
             print('no action taken')
         else: #3 - correct response, game continues
-            #regen tp and mp
-            player.regen()
-            enemy.regen()
+            player.upkeep()
+            enemy.upkeep()
             #increase turn count
             turn_count += 1
 
@@ -61,6 +60,9 @@ def handle_combat_choice(choice, player, enemy):
         return combat_inventory(player, enemy)
     elif choice == "Status":
         player.view_stats()
+        return -1
+    elif choice == "Enemy Status":
+        enemy.view_stats()
         return -1
     elif choice == "Run":
         return combat_round(player, enemy, 'run')
@@ -146,7 +148,7 @@ def get_crit_rate(attacker, defender): #always returns at least 1
     return max(int(round(((attacker.lck * 2) / 100) * ((attacker.lvl/defender.lvl) * 100), 0)), 1)
 
 def guard(player, enemy):
-    print(f"{player.name} guards and catches their breath.")
+    input(f"{player.name} guards and catches their breath.")
     player.ctp += round(player.dex * 1.5)
     if player.ctp > player.tp:
         player.ctp = player.tp

@@ -59,7 +59,7 @@ def inventory(player):
         questions = [
             inquirer.List('choice',
                           message="Please select an option",
-                          choices=["Weapons", "Armors", "Skills", "Spells", "Items", "Effects", "Go Back"],
+                          choices=["Weapons", "Armors", "Skills", "Spells", "Items", "Conditions", "Go Back"],
                           ),
         ]
 
@@ -80,8 +80,8 @@ def handle_inventory_choice(choice, player):
         view_spells(player)
     elif choice == "Items":
         view_items(player)
-    elif choice == "Effects":
-        view_effects(player)
+    elif choice == "Conditions":
+        view_conditions(player)
     elif choice == "Go Back":
         return -1
 
@@ -190,7 +190,8 @@ def view_armors(player):
         print(f"Description: {armor.desc}")
         print(f"Defense: {armor.df}")
         print(f"Magic Defense: {armor.mdf}")
-        print(f"Requires: {armor.reqa} {armor.reqm}")
+        if armor.reqa:
+            print(f"Requires: {armor.reqa} {armor.reqm}")
 
         # Ask if the player wants to equip or unequip the armor
         if player.EQarmor.name == armor.name:  # Currently equipped
@@ -382,7 +383,7 @@ def view_items(player):
             elif ans == 0:  # No
                 break
 
-def view_effects(player):
+def view_conditions(player):
     Helper.clear_screen()
-    print("Viewing effects...")
+    print("Viewing conditions...")
     input("(Press enter to continue...) ")

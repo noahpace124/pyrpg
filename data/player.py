@@ -71,8 +71,8 @@ class Player:
         for skill in self.job.skills:
             self.EQskills.append(skill)
 
-        # Effects and Other Properties
-        self.effects = []
+        # Conditions, Location and Flags
+        self.conditions = []
         self.location = location
         self.flags = []
 
@@ -102,11 +102,18 @@ class Player:
         # Display equipped armor details
         print(f"Equipped Armor: {self.EQarmor.name}")
 
-        # Dislay equipped spell and skill details
+        # Display equipped spell and skill details
         equipped_spells = [spell.name for spell in self.EQspells]
         print(f"Prepaired Spells: {', '.join(equipped_spells)}")
         equipped_skills = [skill.name for skill in self.EQskills]
-        print(f"Prepaired Skills: {', '.join(equipped_skills)}\n")
+        print(f"Prepaired Skills: {', '.join(equipped_skills)}")
+
+        # Display status conditions
+        status_conditions = []
+        for condition in self.conditions:
+            condition_info = f"{condition.name}: {condition.duration} {condition.duration_type}"
+            status_conditions.append(condition_info)
+        print(f"Conditions: {', '.join(status_conditions)}\n")
 
         input("(Press enter to continue...) ")
 
@@ -208,8 +215,7 @@ class Player:
     
     def get_df(self, atk):
         percentage_df = round(atk * (self.df / 100))
-
-        total_defense = percentage_df + self.EQarmor.df
+        total_defense = round((percentage_df + self.EQarmor.df ) * self.get_condition_multiplier('df'))
         return max(0, total_defense)  # Ensure the defense value doesn't drop below 0
     
     def get_matk(self, spell):
@@ -221,6 +227,13 @@ class Player:
 
     def get_spd(self):
         return (self.dex * 2) + max(0, self.lck)
+
+    def get_condition_multiplier(self, stat):
+        multiplier = 1
+        for condition in self.conditions:
+            if condition.stat == stat:
+                multiplier *= condition.multiplier
+        return multiplier
 
     def add_to_inventory(self, item):
         for inv_item in self.inv:
@@ -238,10 +251,15 @@ class Player:
                     inv_item['count'] -= count  # Decrease count
                 return
 
-    def regen(self):
+    def upkeep(self):
         self.ctp += self.dex
         if self.ctp > self.tp:
             self.ctp = self.tp
         self.cmp += self.int
         if self.cmp > self.mp:
             self.cmp = self.mp
+        for condition in self.conditions:
+            if condition.duration_type == 'turn':
+                condition.duration -= 1
+                if condition.duration == 0:
+                    self.conditions.remove(condition)

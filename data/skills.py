@@ -1,6 +1,9 @@
 #Imports
 from random import randint
 
+#Imports from File
+from .conditions import Condition
+
 class Skill:
     all_skills = []  # Class-level attribute to hold all skill instances
 
@@ -68,6 +71,21 @@ def quick_strike(attacker, defender):
     defender.chp -= dmg
     input(f"{attacker.name} striked quickly at {defender.name} for {dmg} damage.")
 
+def damage_armor(attacker, defender):
+    attacker.ctp -= 10
+    atk = round((attacker.str * 2) * 0.5) + randint(attacker.EQweapon.atkmin, attacker.EQweapon.atkmax)
+    if crit(attacker, defender):
+        print("Critical Hit!")
+        atk = atk * 2
+    df = defender.get_df(atk)
+    dmg = max(atk - df, 1)
+    defender.chp -= dmg
+    input(f"{attacker.name} tried to destroy some of {defender.name}'s armor and did {dmg} damage.")
+    defender.conditions.append(Condition.get_condition('Defense Down'))
+    input(f"{attacker.name} lowered {defender.name} defense.")
+
+
+
 # Create skill instances
 skills = [
     Skill(
@@ -96,5 +114,14 @@ skills = [
         reqa='dex',
         reqm=3,
         func=quick_strike
+    ),
+    Skill(
+        name='Damage Armor',
+        desc='Strike powerfully into your enemy\'s armor to lower their Defense for 3 turns.',
+        cost=10,
+        type='instant',
+        reqa='str',
+        reqm='3',
+        func=damage_armor
     )
 ]

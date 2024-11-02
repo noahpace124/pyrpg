@@ -48,7 +48,7 @@ jobs = [
         weapon=Weapon.get_weapon('Rusty Sword'), 
         armor=Armor.get_armor('Leather Armor'), 
         spells=[], 
-        skills=[Skill.get_skill('Heavy Blow'), Skill.get_skill('Quick Strike')]
+        skills=[Skill.get_skill('Damage Armor'), Skill.get_skill('Quick Strike')]
     ),
     Job(
         name='Wizard',

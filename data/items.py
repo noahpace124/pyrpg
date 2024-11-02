@@ -15,7 +15,7 @@ class Item:
         for item in cls.all_items:
             if item.name == item_name:
                 return item
-        return None  # or raise an exception if the skill isn't found
+        return None
 
 def lesser_hp_potion_can_use(player):
     if player.chp == player.hp:
