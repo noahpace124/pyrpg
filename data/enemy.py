@@ -6,7 +6,7 @@ from .weapons import Weapon
 from .armors import Armor
 
 class Enemy:
-    def __init__(self, name, con, mag, str, int, dex, lck, df, mdf, weapon=Weapon.get_weapon('None'), armor=Armor.get_armor('None'), inv=[], spells=[], skills=[]):
+    def __init__(self, name, con, mag, str, int, dex, lck, df, mdf, weapon=Weapon.get_weapon('None'), armor=Armor.get_armor('None'), spells=[], skills=[], effects=[], flags=[]):
         self.name = name
 
         self.lvl = con + mag + str + int + dex + lck
@@ -27,14 +27,14 @@ class Enemy:
         self.df = df
         self.mdf = mdf
 
-        self.inv = inv
         self.EQweapon = weapon
         self.EQarmor = armor
 
         self.spells = spells
         self.skills = skills
 
-        self.effects = []
+        self.effects = effects
+        self.flags = flags
     
     def __repr__(self):
         return (f"<Enemy(name={self.name}, "

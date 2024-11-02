@@ -2,7 +2,7 @@
 
 #Import from File
 from helper import Helper
-from camp import camp
+from inventory import camp
 from data.events import Event
 
 #Functions

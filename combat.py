@@ -6,6 +6,7 @@ from random import randint
 from helper import Helper
 from data.skills import Skill
 from data.spells import Spell
+from data.items import Item
 
 def combat(player, enemy):
     turn_count = 1
@@ -15,11 +16,15 @@ def combat(player, enemy):
         Helper.make_banner(f'Turn {turn_count}')
         print(f'{player.name}: {player.chp}/{player.hp} HP VS {enemy.name}: {enemy.chp}/{enemy.hp} HP')
         print(f'MP: {player.cmp}/{player.mp} - TP: {player.ctp}/{player.tp}')
+        
+        choices = ['Attack', 'Guard', 'Skills', 'Spells', 'Inventory', 'Status']
+        if 'Boss' not in enemy.flags:
+            choices.append('Run')
 
         questions = [
             inquirer.List('choice',
                         message="Choose an option",
-                        choices=['Attack', 'Guard', 'Skills', 'Spells', 'Inventory', 'Status', 'Run'],
+                        choices=choices,
                         ),
         ]
 
@@ -53,25 +58,31 @@ def handle_combat_choice(choice, player, enemy):
     elif choice == "Spells":
         return use_spell(player, enemy)
     elif choice == "Inventory":
-        return
+        return combat_inventory(player, enemy)
     elif choice == "Status":
         player.view_stats()
+        return -1
     elif choice == "Run":
-        return 1
+        return combat_round(player, enemy, 'run')
     return
 
-def combat_round(player, enemy, atk_obj=None):
+def combat_round(player, enemy, obj=None):
     # GENERATE ENEMY INTENTIONS HERE FOR SKILL PRIORITY
     priority = False
-    if atk_obj:
-        if atk_obj.type == 'priority':
+    if obj and (isinstance(obj, Skill) or isinstance(obj, Spell)):
+        if obj.type == 'priority':
             priority == True
     if speed_test(player, enemy) or priority: #player is faster
         #player acts
-        if atk_obj == None: #atk
+        if obj == None: #atk
             attack(player, enemy)
+        elif obj == 'run':
+            if speed_test(player, enemy): #player is faster
+                return 1 #runs away
+        elif isinstance(obj, Item): #item
+            obj.func(player)
         else: #skill or spell
-            atk_obj.func(player, enemy)
+            obj.func(player, enemy)
         #check hp
         if enemy.chp <= 0:
             return 2 #player win
@@ -95,10 +106,15 @@ def combat_round(player, enemy, atk_obj=None):
         if player.chp <= 0:
             return 0 #player loss
          #player acts
-        if atk_obj == None: #atk
+        if obj == None: #atk
             attack(player, enemy)
+        elif obj == 'run':
+            if speed_test(player, enemy): #player is faster
+                return 1 #runs away
+        elif isinstance(obj, Item): #item
+            obj.func(player)
         else: #skill or spell
-            atk_obj.func(player, enemy)
+            obj.func(player, enemy)
         #check hp
         if enemy.chp <= 0:
             return 2 #player win
@@ -197,3 +213,52 @@ def use_spell(player, enemy):
             return -1
         else:
             return combat_round(player, enemy, spell)
+
+def combat_inventory(player, enemy):
+    while True:  # Loop to return to the items menu
+        item_choices = []
+        
+        # Create a list of item choices for inquirer, only including Item objects
+        for inv_item in player.inv:
+            item = Item.get_item(inv_item["name"])
+            if isinstance(item, Item):
+                item_info = f"{item.name}: {inv_item['count']} - {item.desc}"
+                item_choices.append(item_info)
+
+        # Add an option to go back
+        item_choices.append("Go Back")
+
+        # Create the inquirer prompt for item selection
+        questions = [
+            inquirer.List('item_choice',
+                          message="Select an item to use",
+                          choices=item_choices,
+                          ),
+        ]
+
+        answer = inquirer.prompt(questions)
+
+        if answer['item_choice'] == "Go Back":
+            break  # Exit the loop to go back
+
+        item_name = answer['item_choice'].split(": ")[0]  # Get the item name
+        item = Item.get_item(item_name)
+        item_in_inventory = next((i for i in player.inv if i['name'] == item.name), None)
+
+        # Display item details
+        Helper.make_banner(f"{item.name}")
+        print(f"Description: {item.desc}")
+        print(f"Amount: {item_in_inventory['count']}")
+
+        # Ask if the player wants to use the item
+        while True:
+            print("Do you want to use this item? (y/n)")
+            ans = Helper.yes_or_no(input(">> ").lower())
+            
+            if ans == 1:  # Yes
+                if item.can_use(player):
+                    return combat_round(player, enemy, item)
+                else:
+                    return -1
+            elif ans == 0:  # No
+                return -1

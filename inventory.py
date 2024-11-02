@@ -7,7 +7,7 @@ from data.weapons import Weapon
 from data.armors import Armor
 from data.skills import Skill
 from data.spells import Spell
-from data.items import items
+from data.items import Item
 
 def camp(player):
     while True:
@@ -341,9 +341,9 @@ def view_items(player):
         
         # Create a list of item choices for inquirer, only including Item objects
         for inv_item in player.inv:
-            item = next((i for i in items if i.name == inv_item['name']), None)  # Get the Item instance
-            if item:
-                item_info = f"{item.name} - Quantity: {inv_item['count']}"
+            item = Item.get_item(inv_item["name"])
+            if isinstance(item, Item):
+                item_info = f"{item.name}: {inv_item['count']} - {item.desc}"
                 item_choices.append(item_info)
 
         # Add an option to go back
@@ -362,37 +362,25 @@ def view_items(player):
         if answer['item_choice'] == "Go Back":
             break  # Exit the loop to go back
 
-        item_name = answer['item_choice'].split(" - ")[0]  # Get the item name
-        item = next((i for i in items if i.name == item_name), None)  # Find the item instance
+        item_name = answer['item_choice'].split(": ")[0]  # Get the item name
+        item = Item.get_item(item_name)
+        item_in_inventory = next((i for i in player.inv if i['name'] == item.name), None)
 
-        if item:
-            # Display item details
-            Helper.make_banner(f"{item.name}")
-            print(f"Description: {item.desc}")
+        # Display item details
+        Helper.make_banner(f"{item.name}")
+        print(f"Description: {item.desc}")
+        print(f"Amount: {item_in_inventory['count']}")
 
-            # Ask if the player wants to use the item
-            while True:
-                print("Do you want to use this item? (y/n)")
-                ans = Helper.yes_or_no(input(">> ").lower())
-                
-                if ans == 1:  # Yes
-                    # Check quantity in inventory
-                    item_in_inventory = next((i for i in player.inv if i['name'] == item_name), None)
-                    if item_in_inventory and item_in_inventory['count'] > 0:
-                        # Call the item's use function
-                        if item.func(player):  # Pass the player object
-                            item_in_inventory['count'] -= 1  # Decrease quantity
-                            # Remove the item from inventory if count goes to 0
-                            if item_in_inventory['count'] <= 0:
-                                player.inv.remove(item_in_inventory)
-                        else:
-                            print("Item could not be used.")
-                    break
-                elif ans == 0:  # No
-                    print("Item not used.")
-                    break
-
-        input("(Press enter to continue...) ")
+        # Ask if the player wants to use the item
+        while True:
+            print("Do you want to use this item? (y/n)")
+            ans = Helper.yes_or_no(input(">> ").lower())
+            
+            if ans == 1:  # Yes
+                item.func(player)
+                break
+            elif ans == 0:  # No
+                break
 
 def view_effects(player):
     Helper.clear_screen()
