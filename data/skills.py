@@ -17,23 +17,12 @@ class Skill:
         self.func = func  # Add a reference to the skill function
         Skill.all_skills.append(self)  # Automatically add the instance to the class-level list
 
-    def __repr__(self):
-        return (f"<Skill(name={self.name}, desc={self.desc}, cost={self.cost}, "
-                f"reqa={self.reqa}, reqm={self.reqm}, reta={self.reta}, skill_func={self.skill_func})>")
-
     @classmethod
     def get_skill(cls, skill_name):
         for skill in cls.all_skills:
             if skill.name == skill_name:
                 return skill
         return None  # or raise an exception if the skill isn't found
-
-#Redefined these to prevent circular import
-def crit(attacker, defender):
-    return (get_crit_rate(attacker, defender) >= randint(1, 100))
-
-def get_crit_rate(attacker, defender): #always returns at least 1
-    return max(round(((attacker.lck * 2) / 100) * ((attacker.lvl/defender.lvl) * 100)), 1)
 
 # Define skill functions
 def instant_recharge(attacker, defender):
@@ -51,10 +40,8 @@ def instant_recharge(attacker, defender):
 
 def heavy_blow(attacker, defender):
     attacker.ctp -= 10
-    atk = round((attacker.str * 2) * 1.5) + randint(attacker.EQweapon.atkmin, attacker.EQweapon.atkmax)
-    if crit(attacker, defender):
-        print("Critical Hit!")
-        atk = atk * 2
+    attacker.conditions.append(Condition.get_condition("Attack Up", 1))
+    atk = attacker.get_atk(defender)
     df = defender.get_df(atk)
     dmg = max(atk - df, 1)
     defender.chp -= dmg
@@ -62,10 +49,7 @@ def heavy_blow(attacker, defender):
 
 def quick_strike(attacker, defender):
     attacker.ctp -= 10
-    atk = attacker.get_atk()
-    if crit(attacker, defender):
-        print("Critical Hit!")
-        atk = atk * 2
+    atk = attacker.get_atk(defender)
     df = defender.get_df(atk)
     dmg = max(atk - df, 1)
     defender.chp -= dmg
@@ -73,17 +57,14 @@ def quick_strike(attacker, defender):
 
 def damage_armor(attacker, defender):
     attacker.ctp -= 10
-    atk = round((attacker.str * 2) * 0.5) + randint(attacker.EQweapon.atkmin, attacker.EQweapon.atkmax)
-    if crit(attacker, defender):
-        print("Critical Hit!")
-        atk = atk * 2
+    attacker.conditions.append(Condition.get_condition("Attack Down", 1))
+    atk = attacker.get_atk(defender)
     df = defender.get_df(atk)
     dmg = max(atk - df, 1)
     defender.chp -= dmg
     input(f"{attacker.name} tried to destroy some of {defender.name}'s armor and did {dmg} damage.")
-    defender.conditions.append(Condition.get_condition('Defense Down'))
+    defender.conditions.append(Condition.get_condition('Defense Down', 4))
     input(f"{attacker.name} lowered {defender.name} defense.")
-
 
 
 # Create skill instances
@@ -99,7 +80,7 @@ skills = [
     ),
     Skill(
         name='Heavy Blow',
-        desc='Strike with concentrated effort. Use 1.5 times your str on this attack.',
+        desc='Strike with concentrated effort. Use 1.33 times your str on this attack.',
         cost=10,
         type='instant',
         reqa='str',

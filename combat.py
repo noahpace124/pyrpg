@@ -7,6 +7,7 @@ from helper import Helper
 from data.skills import Skill
 from data.spells import Spell
 from data.items import Item
+from data.conditions import Condition
 
 def combat(player, enemy):
     turn_count = 1
@@ -132,26 +133,18 @@ def speed_test(player, enemy):
         return False
 
 def attack(attacker, defender):
-    atk = attacker.get_atk()
-    if crit(attacker, defender):
-        print("Critical Hit!")
-        atk = atk * 2
+    atk = attacker.get_atk(defender)
     df = defender.get_df(atk)
     dmg = max(atk - df, 1)
     defender.chp -= dmg
     input(f"{attacker.name} {attacker.EQweapon.msg} at {defender.name} for {dmg} damage.")
 
-def crit(attacker, defender):
-    return (get_crit_rate(attacker, defender) >= randint(1, 100))
-
-def get_crit_rate(attacker, defender): #always returns at least 1
-    return max(int(round(((attacker.lck * 2) / 100) * ((attacker.lvl/defender.lvl) * 100), 0)), 1)
-
 def guard(player, enemy):
     input(f"{player.name} guards and catches their breath.")
-    player.ctp += round(player.dex * 1.5)
+    player.ctp += round(player.get_dex() * 1.33)
     if player.ctp > player.tp:
         player.ctp = player.tp
+    player.conditions.append(Condition.get_condition("Defense Up", 1))
     #enemy acts RIGHT NOW JUST ATKS
     attack(enemy, player)
     #check hp

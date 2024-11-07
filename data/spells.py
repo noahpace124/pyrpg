@@ -25,19 +25,9 @@ class Spell:
                 return spell
         return None
 
-#Redefined these to prevent circular import
-def crit(attacker, defender):
-    return (get_crit_rate(attacker, defender) >= randint(1, 100))
-
-def get_crit_rate(attacker, defender): #always returns at least 1
-    return max(round(((attacker.lck * 2) / 100) * ((attacker.lvl/defender.lvl) * 100)), 1)
-
 def fireball(attacker, defender):
     attacker.cmp -= 10
-    matk = attacker.get_matk(Spell.get_spell('Fireball'))
-    if crit(attacker, defender):
-        print("Critical Hit!")
-        matk = matk * 2
+    matk = attacker.get_matk(Spell.get_spell('Fireball'), defender)
     mdf = defender.get_mdf(matk)
     dmg = max(matk - mdf, 1)
     defender.chp -= dmg

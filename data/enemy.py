@@ -5,17 +5,18 @@ from random import randint
 from helper import Helper
 from .weapons import Weapon
 from .armors import Armor
+from .crit import crit
 
 class Enemy:
     def __init__(self, name, con, mag, str, int, dex, lck, df, mdf, weapon=Weapon.get_weapon('None'), armor=Armor.get_armor('None'), spells=[], skills=[], conditions=[], flags=[]):
         self.name = name
 
         self.lvl = con + mag + str + int + dex + lck
-        self.hp = 20 + ((con - 1) * 5)
+        self.hp = max(20 + ((con - 1) * 5), 1)
         self.chp = self.hp
-        self.mp = 10 + ((int - 1) * 5)
+        self.mp = max(10 + ((int - 1) * 5), 0)
         self.cmp = self.mp
-        self.tp = 10 + ((dex - 1) * 5)
+        self.tp = max(10 + ((dex - 1) * 5), 0)
         self.ctp = self.tp
 
         self.con = con
@@ -41,7 +42,7 @@ class Enemy:
         Helper.clear_screen()
         Helper.make_banner(f"{self.name}'s Stats")
         
-        # Display player attributes
+        # Display enemy attributes
         print(f"HP: {self.chp}/{self.hp}")
         print(f"MP: {self.cmp}/{self.mp}")
         print(f"TP: {self.ctp}/{self.tp}")
@@ -75,23 +76,44 @@ class Enemy:
 
         input("(Press enter to continue...) ")
     
-    def get_atk(self):
-        return (self.str * 2) + randint(self.EQweapon.atkmin, self.EQweapon.atkmax)
+    def get_atk(self, enemy):
+        atk = max(round(((self.str * 2) + randint(self.EQweapon.atkmin, self.EQweapon.atkmax)) * self.get_condition_multiplier('atk')), 1)
+        if crit(self, enemy):
+            print("Critical Hit!")
+            atk = atk * 2
+        return atk
     
     def get_df(self, atk):
         percentage_df = round(atk * (self.df / 100))
         total_defense = round((percentage_df + self.EQarmor.df ) * self.get_condition_multiplier('df'))
         return max(0, total_defense)  # Ensure the defense value doesn't drop below 0
+    
+    def get_matk(self, spell, enemy):
+        matk = max(round(((self.mag * 2) + randint(spell.matkmin, spell.matkmax) + randint(self.EQweapon.matkmin, self.EQweapon.matkmax)) * self.get_condition_multiplier('matk')), 1)
+        if crit(self, enemy):
+            print("Critical Hit!")
+            matk = matk * 2
+        return matk
 
-    def get_matk(self, spell):
-        return (self.mag * 2) + randint(spell.matkmin, spell.matkmax) + randint(self.EQweapon.matkmin, self.EQweapon.matkmax)
-
-    def get_mdf(self, ematk):
-        percentage_mdf = round((ematk * (self.mdf / 100)))
-        return percentage_mdf + self.EQarmor.mdf
+    def get_mdf(self, matk):
+        percentage_mdf = round(matk * (self.mdf / 100))
+        total_magic_defense = round((percentage_mdf + self.EQarmor.mdf ) * self.get_condition_multiplier('mdf'))
+        return max(0, total_magic_defense) #Ensure the magic defense value doesn't drop below 0
 
     def get_spd(self):
-        return (self.dex * 2) + max(0, self.lck)
+        return max((self.dex * 2) + max(0, self.lck) * self.get_condition_multiplier('lck'), 0)
+
+    def get_dex(self):
+        return round(self.dex * self.get_condition_multiplier('dex'))
+
+    def get_int(self):
+        return round(self.int * self.get_condition_multiplier('int'))
+
+    def get_lck(self):
+        return round(self.lck * self.get_condition_multiplier('lck'))
+
+    def get_spd(self):
+        return max((self.get_dex() * 2) + max(0, self.get_lck()), 0)
 
     def get_condition_multiplier(self, stat):
         multiplier = 1
@@ -101,10 +123,10 @@ class Enemy:
         return multiplier
 
     def upkeep(self):
-        self.ctp += self.dex
+        self.ctp += max(self.get_dex(), 0)
         if self.ctp > self.tp:
             self.ctp = self.tp
-        self.cmp += self.int
+        self.cmp += max(self.get_int(), 0)
         if self.cmp > self.mp:
             self.cmp = self.mp
         for condition in self.conditions:

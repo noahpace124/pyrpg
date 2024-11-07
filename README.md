@@ -1,2 +1,4 @@
 Things to work on/Fix
-effects (implement)
+Enemy combat
+dodge chance
+crit redo
