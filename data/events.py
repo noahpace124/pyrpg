@@ -12,9 +12,9 @@ from .spells import Spell
 class Event:
     all_events = []
 
-    def __init__(self, name, location, desc, max, func, flag=None):
+    def __init__(self, name, locations, desc, max, func, flag=None):
         self.name = name
-        self.location = location
+        self.locations = locations
         self.desc = desc
         self.max = max
         self.func = func
@@ -25,7 +25,7 @@ class Event:
     def get_events_by_location(cls, location):
         events = []
         for event in cls.all_events:
-            if event.location == location:
+            if location in event.locations:
                 events.append(event)
         return events
     
@@ -55,12 +55,32 @@ def goblin_battle(player):
     input("You are suddenly approached by a Goblin!")
     combat(player, enemy)
 
+def kobold_battle(player):
+    enemy = Enemy(
+        name='Kobold',
+        con=1,
+        mag=-1,
+        str=0,
+        int=-1,
+        dex=3,
+        lck=0,
+        df=10,
+        mdf=0,
+        weapon=Weapon.get_weapon('Sling'),
+        armor=Armor.get_armor('None')
+    )
+
 events = [
     Event(
         "Goblin Encounter",
-        "barrens",
-        "A basic fight with a goblin.",
+        ["barrens"],
+        "A basic fight with a goblin.", 
         4,
         goblin_battle
+    ),
+    Event(
+        "Kobold Encounter",
+        ["barrens"],
+        "A basic fight with a kobold.",
     )
 ]

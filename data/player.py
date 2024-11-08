@@ -214,7 +214,11 @@ class Player:
         input(f"{spell.name} has been unprepared.")
 
     def get_atk(self):
-        atk = max(round(((self.str * 2) + randint(self.EQweapon.atkmin, self.EQweapon.atkmax)) * self.get_condition_multiplier('atk')), 1)
+        if self.EQweapon.stat == 'str':
+            stat = self.str
+        else:   #stat == dex
+            stat = self.dex
+        atk = max(round(((stat * 2) + randint(self.EQweapon.atkmin, self.EQweapon.atkmax)) * self.get_condition_multiplier('atk')), 1)
         if crit(self):
             print("Critical Hit!")
             atk = atk * 2
