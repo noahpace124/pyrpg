@@ -26,6 +26,7 @@ class Skill:
 
 # Define skill functions
 def instant_recharge(attacker, defender):
+    print(f"{attacker.name} uses Instant Recharge.")
     amount = attacker.mp - attacker.cmp
     if amount > attacker.ctp: #use remaining tp
         attacker.cmp += attacker.ctp
@@ -39,11 +40,11 @@ def instant_recharge(attacker, defender):
         input(f"{attacker.name} recharged their MP somewhat.")
 
 def heavy_blow(attacker, defender):
+    print(f"{attacker.name} uses Heavy Blow.")
     attacker.ctp -= 10
-    attacker.conditions.append(Condition.get_condition("Attack Up", 1))
     dodge_chance = max(defender.get_dodge() - attacker.get_dex(), 0)
     if randint(1, 100) > dodge_chance:
-        atk = attacker.get_atk()
+        atk = round(attacker.get_atk() * 1.33)
         df = defender.get_df(atk)
         dmg = max(atk - df, 1)
         defender.chp -= dmg
@@ -64,11 +65,11 @@ def quick_strike(attacker, defender):
         input(f"{defender.name} avoided {attacker.name}\'s attack!")
 
 def damage_armor(attacker, defender):
+    print(f"{attacker.name} uses Damage Armor.")
     attacker.ctp -= 10
-    attacker.conditions.append(Condition.get_condition("Attack Down", 1))
     dodge_chance = max(defender.get_dodge() - attacker.get_dex(), 0)
     if randint(1, 100) > dodge_chance:
-        atk = attacker.get_atk()
+        atk = round(attacker.get_atk() * 0.77)
         df = defender.get_df(atk)
         dmg = max(atk - df, 1)
         defender.chp -= dmg
@@ -76,7 +77,7 @@ def damage_armor(attacker, defender):
         apply = True
         for condition in defender.conditions: #check if we already have the condition
             if condition and condition.name == "Defense Down":
-                condition.duration = 4
+                condition.duration = 3
                 apply = False
         if apply: #we don't have the condition
             defender.conditions.append(Condition.get_condition("Defense Down", 4))
@@ -84,6 +85,48 @@ def damage_armor(attacker, defender):
     else:
         input(f"{defender.name} avoided {attacker.name}\'s attack!")
 
+def fast_attacks(attacker, defender):
+    print(f"{attacker.name} uses Fast Attacks.")
+    attacker.ctp -= 10
+    dodge_chance = max(defender.get_dodge() - attacker.get_dex(), 0)
+    if randint(1, 100) > dodge_chance:
+        atk = round(attacker.get_atk() * 0.77)
+        df = defender.get_df(atk)
+        dmg = max(atk - df, 1)
+        defender.chp -= dmg
+        input(f"{attacker.name} attacks a first time at {defender.name} for {dmg} damage.")
+    else:
+        input(f"{defender.name} avoided {attacker.name}\'s first attack!")
+    dodge_chance = max(defender.get_dodge() - attacker.get_dex(), 0)
+    if randint(1, 100) > dodge_chance:
+        atk = round(attacker.get_atk() * 0.77)
+        df = defender.get_df(atk)
+        dmg = max(atk - df, 1)
+        defender.chp -= dmg
+        input(f"{attacker.name} attacks a second time at {defender.name} for {dmg} damage.")
+    else:
+        input(f"{defender.name} avoided {attacker.name}\'s second attack!")
+
+def empowering_strike(attacker, defender):
+    print(f"{attacker.name} uses Empowering Strike.")
+    attacker.ctp -= 10
+    dodge_chance = max(defender.get_dodge() - attacker.get_dex(), 0)
+    if randint(1, 100) > dodge_chance:
+        atk = round(attacker.get_atk() * 0.77)
+        df = defender.get_df(atk)
+        dmg = max(atk - df, 1)
+        defender.chp -= dmg
+        input(f"{attacker.name} lands a strike against {defender.name} for {dmg} damage.")
+        apply = True
+        for condition in defender.conditions: #check if we already have the condition
+            if condition and condition.name == "Strength Up":
+                condition.duration = 4
+                apply = False
+        if apply: #we don't have the condition
+            attacker.conditions.append(Condition.get_condition("Strength Up", 4))
+        input(f"{attacker.name} increased their Strength.")
+    else:
+        input(f"{defender.name} avoided {attacker.name}\'s attack!")
 
 # Create skill instances
 skills = [
@@ -120,7 +163,25 @@ skills = [
         cost=10,
         type='instant',
         reqa='str',
-        reqm='3',
+        reqm=3,
         func=damage_armor
+    ),
+    Skill(
+        name='Fast Attacks',
+        desc='Make two quick attacks at less strength than normal.',
+        cost=10,
+        type='instant',
+        reqa='dex',
+        reqm=3,
+        func=fast_attacks
+    ),
+    Skill(
+        name='Empowering Strike',
+        desc='Land this light strike to empower yourself to attack with greater Strength.',
+        cost=10,
+        type='instant',
+        reqa='str',
+        reqm=3,
+        func=empowering_strike
     )
 ]

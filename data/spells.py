@@ -26,6 +26,7 @@ class Spell:
         return None
 
 def fireball(attacker, defender):
+    print(f"{attacker.name} uses Fireball.")
     attacker.cmp -= 10
     dodge_chance = max(defender.get_dodge() - attacker.get_dex(), 0)
     if randint(1, 100) > dodge_chance:

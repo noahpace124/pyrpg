@@ -55,7 +55,7 @@ class Player:
         # Inventory and Equipment
         self.inv = [
             {'name': 'Lesser HP Potion', 'count': 3}, 
-            {'name': 'Lesser MP Regen Potion', 'count': 3},
+            {'name': 'Lesser MP Potion', 'count': 3},
             {'name': self.job.weapon.name, 'count': 1},  # Add weapon to inventory
             {'name': self.job.armor.name, 'count': 1}    # Add armor to inventory
         ]
@@ -90,7 +90,7 @@ class Player:
         print(f"HP: {self.chp}/{self.hp}")
         print(f"MP: {self.cmp}/{self.mp}")
         print(f"TP: {self.ctp}/{self.tp}")
-        print(f"XP: {self.lvlup}/{self.lvlnxt} LVL: {self.lvl}")
+        print(f"XP: {self.xp}/{self.lvlnxt} LVL: {self.lvl}")
         print(f"Strength: {self.str}")
         print(f"Constitution: {self.con}")
         print(f"Magic: {self.mag}")
@@ -115,7 +115,7 @@ class Player:
         # Display status conditions
         status_conditions = []
         for condition in self.conditions:
-            condition_info = f"{condition.name}: {condition.duration} {condition.duration_type}"
+            condition_info = f"{condition.name} - {condition.duration} {condition.duration_type}"
             status_conditions.append(condition_info)
         print(f"Conditions: {', '.join(status_conditions)}\n")
 

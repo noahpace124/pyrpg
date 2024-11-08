@@ -3,14 +3,14 @@
 class Condition:
     all_conditions = []
 
-    def __init__(self, name, type, desc, duration_type, stat='none', multiplier=1, duration=0, func=None):
+    def __init__(self, name, type, desc, stat='none', multiplier=1, duration=1, duration_type='turn', func=None):
         self.name = name
         self.type = type
         self.desc = desc
-        self.duration_type = duration_type
-        self.duration = duration
         self.stat = stat
         self.multiplier = multiplier
+        self.duration = duration
+        self.duration_type = duration_type
         self.func = func
         Condition.all_conditions.append(self)
     
@@ -28,7 +28,6 @@ conditions = [
         name="Strength Down",
         type="debuff",
         desc="Cuts strength.",
-        duration_type='turn',
         stat='str',
         multiplier=0.77
     ),
@@ -36,7 +35,6 @@ conditions = [
         name="Strength Up",
         type="buff",
         desc="Raises strength.",
-        duration_type='turn',
         stat='str',
         multiplier=1.33
     ),
@@ -44,7 +42,6 @@ conditions = [
         name="Defense Down",
         type="debuff",
         desc="Cuts defense.",
-        duration_type='turn',
         stat='df',
         multiplier=0.77
     ),
@@ -52,7 +49,6 @@ conditions = [
         name="Defense Up",
         type="buff",
         desc="Raises defense.",
-        duration_type='turn',
         stat='df',
         multiplier=1.33
     ),
@@ -60,7 +56,6 @@ conditions = [
         name="Magic Down",
         type="debuff",
         desc="Cuts magic.",
-        duration_type='turn',
         stat='mag',
         multiplier=0.77
     ),
@@ -68,7 +63,6 @@ conditions = [
         name="Magic Up",
         type="buff",
         desc="Raises magic.",
-        duration_type='type',
         stat='mag',
         multiplier=1.33
     ),
@@ -76,7 +70,6 @@ conditions = [
         name="Magical Defense Down",
         type="debuff",
         desc="Cuts magic defense.",
-        duration_type='turn',
         stat='mdf',
         multiplier=0.77
     ),
@@ -84,7 +77,6 @@ conditions = [
         name="Magical Defense Up",
         type="buff",
         desc="Raises magic defense.",
-        duration_type='turn',
         stat='mdf',
         multiplier=1.33
     ),
@@ -92,7 +84,6 @@ conditions = [
         name="Dexterity Down",
         type="debuff",
         desc="Cuts dexterity.",
-        duration_type='turn',
         stat='dex',
         multiplier=0.77
     ),
@@ -100,7 +91,6 @@ conditions = [
         name="Dexterity Up",
         type="buff",
         desc="Raises dexterity.",
-        duration_type='turn',
         stat='dex',
         multiplier=1.33
     ),
@@ -108,7 +98,6 @@ conditions = [
         name="Intelligence Down",
         type="debuff",
         desc="Cuts intelligence.",
-        duration_type='turn',
         stat='int',
         multiplier=0.77
     ),
@@ -116,7 +105,6 @@ conditions = [
         name="Intelligence Up",
         type="buff",
         desc="Raises intelligence.",
-        duration_type='turn',
         stat='int',
         multiplier=1.33
     ),
@@ -124,7 +112,6 @@ conditions = [
         name="Luck Down",
         type="debuff",
         desc="Cuts luck.",
-        duration_type='turn',
         stat='lck',
         multiplier=0.77
     ),
@@ -132,7 +119,6 @@ conditions = [
         name="Luck Up",
         type="buff",
         desc="Raises luck.",
-        duration_type='turn',
         stat='lck',
         multiplier=1.33
     )

@@ -8,7 +8,7 @@ from .armors import Armor
 from .crit import crit
 
 class Enemy:
-    def __init__(self, name, con, mag, str, int, dex, lck, df, mdf, weapon=Weapon.get_weapon('None'), armor=Armor.get_armor('None'), skills=[], spells=[], conditions=[], flags=[]):
+    def __init__(self, name, con, mag, str, int, dex, lck, df, mdf, weapon=Weapon.get_weapon('None'), armor=Armor.get_armor('None'), skills=[], spells=[], inv=[], conditions=[], flags=[]):
         self.name = name
 
         self.lvl = con + mag + str + int + dex + lck
@@ -35,6 +35,7 @@ class Enemy:
         self.skills = skills
         self.spells = spells
 
+        self.inv = inv
         self.conditions = conditions
         self.flags = flags
     

@@ -1,6 +1,6 @@
 #Imports
 import inquirer
-from random import randint
+from random import randint, shuffle
 
 #Imports from File
 from helper import Helper
@@ -35,11 +35,15 @@ def combat(player, enemy):
             combat_win(player, enemy)
             break
         elif res == 1: #run
-            print('run')
+            input(f"{player.name} managed to run away...")
             break
         elif res == 0: #player loss
             input(f"{player.name} died.")
-            game_over()
+            Helper.clear_screen()
+            Helper.make_banner("GAME OVER", True)
+            print(f"{player.name} was killed by the {enemy.name}.")
+            input(">> ")
+            exit()
         elif res == 3: #3 - correct response, game continues
             player.upkeep()
             enemy.upkeep()
@@ -297,7 +301,9 @@ def combat_win(player, enemy):
         player.lvlnxt = player.lvl * 100
         points += 1
         print(f"{player.name} leveled up to level {player.lvl}!")
+    input("(Press enter to continue...) ")
     while points > 0:
+        Helper.clear_screen()
         questions = [
             inquirer.List('choice',
                         message="What stat do you want to increase? (Stat Points Remaining: {points})",
@@ -325,9 +331,16 @@ def combat_win(player, enemy):
         player.cmp = player.mp
         player.ctp = player.tp
         points -= 1
-        
-def game_over():
     Helper.clear_screen()
-    Helper.make_banner("GAME OVER", True)
-    input(">> ")
-    exit()
+    gold = enemy.lvl * (1 + randint(0, player.get_lck()))
+    input(f"{player.name} gained {gold} gold.")
+    if len(enemy.inv) > 0:
+        if randint(1, 100) <= player.get_lck():
+            shuffle(enemy.inv)
+            item = enemy.inv[0]
+            print(f"{player.name} found a {item.name}.")
+            player.inv.append({'name': item.name, 'count': 1})
+    for condition in player.conditions: #drop all turn based conditions at battle end
+        if condition and condition.duration_type == 'turn':
+            player.conditions.remove(condition)
+    input("(Press enter to continue...) ")

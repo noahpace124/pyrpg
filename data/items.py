@@ -26,7 +26,7 @@ def lesser_hp_potion_can_use(player):
 
 def lesser_hp_potion_use(player):
     item_in_inventory = next((i for i in player.inv if i['name'] == 'Lesser HP Potion'), None)
-    player.chp += 25
+    player.chp += 30
     if player.chp >= player.hp:
         player.chp = player.hp
         item_in_inventory['count'] -= 1
@@ -34,9 +34,30 @@ def lesser_hp_potion_use(player):
             player.inv.remove(item_in_inventory)
         input(f"{player.name} had their HP fully restored!")
     else:
-        input(f"{player.name} had their HP recovered by 25.")
+        input(f"{player.name} had their HP recovered by 30.")
+    return True
+
+def lesser_mp_potion_can_use(player):
+    if player.cmp == player.mp:
+        input(f"{player.name} is already at full MP.")
+        return False
+    else:
+        return True
+
+def lesser_mp_potion_use(player):
+    item_in_inventory = next((i for i in player.inv if i['name'] == 'Lesser MP Potion'), None)
+    player.cmp += 30
+    if player.cmp >= player.mp:
+        player.cmp = player.mp
+        item_in_inventory['count'] -= 1
+        if item_in_inventory['count'] <= 0:
+            player.inv.remove(item_in_inventory)
+        input(f"{player.name} had their MP fully restored!")
+    else:
+        input(f"{player.name} had their MP recovered by 30.")
     return True
 
 items = [
-    Item('Lesser HP Potion', 'Swirls of pink and light red inside. Heals 25 HP.', lesser_hp_potion_can_use, lesser_hp_potion_use)
+    Item('Lesser HP Potion', 'Swirls of pink and light red inside. Heals 30 HP.', lesser_hp_potion_can_use, lesser_hp_potion_use),
+    Item('Lesser MP Potion', 'Swirls of blue and light blue inside. Restores 30 MP.', lesser_mp_potion_can_use, lesser_mp_potion_use)
 ]

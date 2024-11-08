@@ -353,9 +353,9 @@ def view_items(player):
         # Create the inquirer prompt for item selection
         questions = [
             inquirer.List('item_choice',
-                          message="Select an item to use or view details",
-                          choices=item_choices,
-                          ),
+                message="Select an item to use or view details",
+                choices=item_choices,
+                ),
         ]
 
         answer = inquirer.prompt(questions)
@@ -385,6 +385,34 @@ def view_items(player):
                 break
 
 def view_conditions(player):
-    Helper.clear_screen()
-    print("Viewing conditions...")
-    input("(Press enter to continue...) ")
+    while True:
+        Helper.clear_screen()
+        Helper.make_banner("CONDITIONS")
+        condition_choices = []
+        for condition in player.conditions:
+            if condition:
+                condition_info = f"{condition.name} - {condition.duration} {condition.duration_type}"
+                condition_choices.append(condition_info)
+        condition_choices.append("Go Back")
+        questions = [
+            inquirer.List('condition_choice',
+                            message="Select a condition to view",
+                            choices=condition_choices),
+        ]
+        answer = inquirer.prompt(questions)
+
+        if answer["condition_choice"] == "Go Back":
+            break
+
+        condition_name = answer['condition_choice'].split(" - ")[0]  # Get the condition name
+        for condition in player.conditions:
+            if condition and condition.name == condition_name:
+                selected = condition
+        
+        #Display Condition Details
+        Helper.make_banner(f"{selected.name}")
+        print(f"Type: {selected.type}")
+        print(f"Description: {selected.desc}")
+        print(f"Duration: {selected.duration_type} {selected.duration}")
+        print()
+        input("(Press enter to continue...) ")
