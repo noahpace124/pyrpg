@@ -70,13 +70,22 @@ def handle_combat_choice(choice, player, enemy):
     return
 
 def combat_round(player, enemy, obj=None):
-    # GENERATE ENEMY INTENTIONS HERE FOR SKILL PRIORITY
+    #player option check
     priority = False
     if obj and (isinstance(obj, Skill) or isinstance(obj, Spell)):
         if obj.type == 'priority':
             priority == True
+    #enemy option check
+    enemy_obj = enemy.get_action()
     enemy_priority = False
-    #implement enemy priority check
+    if enemy_obj and (isinstance(enemy_obj, Skill) or isinstance(enemy_obj, Spell)):
+        if enemy_obj.type == 'priority':
+            enemy_priority = True
+    #both use priority
+    if priority and enemy_priority:
+        priority = False
+        enemy_priority = False
+    #Start our round
     if (speed_test(player, enemy) or priority) and not enemy_priority: #player is faster
         #player acts
         if obj == None: #atk
@@ -95,8 +104,11 @@ def combat_round(player, enemy, obj=None):
             return 2 #player win
         if player.chp <= 0:
             return 0 #player loss
-        #enemy acts RIGHT NOW JUST ATKS
-        attack(enemy, player)
+        #enemy acts
+        if enemy_obj == None: #atk
+            attack(enemy, player)
+        else: #skill or spell
+            enemy_obj.func(enemy, player)
         #check hp
         if enemy.chp <= 0:
             return 2 #player win
@@ -105,8 +117,11 @@ def combat_round(player, enemy, obj=None):
         #end of round
         return 3
     else: #enemy is faster
-        #enemy acts RIGHT NOW JUST ATKS
-        attack(enemy, player)
+        #enemy acts
+        if enemy_obj == None: #atk
+            attack(enemy, player)
+        else: #skill or spell
+            enemy_obj.func(enemy, player)
         #check hp
         if enemy.chp <= 0:
             return 2 #player win
@@ -155,8 +170,12 @@ def guard(player, enemy):
     if player.ctp > player.tp:
         player.ctp = player.tp
     player.conditions.append(Condition.get_condition("Defense Up", 1))
-    #enemy acts RIGHT NOW JUST ATKS
-    attack(enemy, player)
+    #enemy acts
+    enemy_obj = enemy.get_action()
+    if enemy_obj == None: #atk
+        attack(enemy, player)
+    else: #skill or spell
+        enemy_obj.func(enemy, player)
     #check hp
     if enemy.chp <= 0:
         return 2 #player win

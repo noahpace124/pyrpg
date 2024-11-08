@@ -1,5 +1,5 @@
 #Import
-from random import randint
+from random import randint, choice
 
 #Import from File
 from helper import Helper
@@ -8,7 +8,7 @@ from .armors import Armor
 from .crit import crit
 
 class Enemy:
-    def __init__(self, name, con, mag, str, int, dex, lck, df, mdf, weapon=Weapon.get_weapon('None'), armor=Armor.get_armor('None'), spells=[], skills=[], conditions=[], flags=[]):
+    def __init__(self, name, con, mag, str, int, dex, lck, df, mdf, weapon=Weapon.get_weapon('None'), armor=Armor.get_armor('None'), skills=[], spells=[], conditions=[], flags=[]):
         self.name = name
 
         self.lvl = con + mag + str + int + dex + lck
@@ -32,8 +32,8 @@ class Enemy:
         self.EQweapon = weapon
         self.EQarmor = armor
 
-        self.spells = spells
         self.skills = skills
+        self.spells = spells
 
         self.conditions = conditions
         self.flags = flags
@@ -124,6 +124,38 @@ class Enemy:
 
     def get_dodge(self):
         return self.get_dex() + randint(0, self.get_lck())
+
+    def get_action(self): #returns the enemy object
+        skill_options = []
+        spell_options = []
+        if len(self.skills) > 0:
+            for skill in self.skills:
+                if self.ctp >= skill.cost:
+                    skill_options.append(skill)
+        if len(self.spells) > 0:
+            for spell in self.spells:
+                if self.cmp >= spell.cost:
+                    spell_options.append(spell)
+        if self.str == self.mag:
+            if self.dex == self.mag:
+                if (self.dex + self.str) >= (self.mag + self.int) and len(skill_options) > 0:
+                    return choice(skill_options)
+                elif (self.mag + self.int) >= (self.str + self.dex) and len(spell_options) > 0:
+                    return choice(spell_options)
+                else:
+                    return None
+            elif self.dex > self.mag and len(skill_options) > 0:
+                return choice(skill_options)
+            elif self.mag > self.dex and len(spell_options) > 0:
+                return choice(spell_options)
+            else:
+                return None
+        if self.str > self.mag and len(skill_options) > 0:
+            return choice(skill_options)
+        elif self.mag > self.str and len(spell_options) > 0:
+            return choice(spell_options)
+        else:
+            return None
 
     def upkeep(self):
         self.ctp += max(self.get_dex(), 0)

@@ -2,9 +2,12 @@
 
 #Import from File
 from combat import combat
+from helper import Helper
 from .enemy import Enemy
 from .weapons import Weapon
 from .armors import Armor
+from .skills import Skill
+from .spells import Spell
 
 class Event:
     all_events = []
@@ -35,21 +38,21 @@ class Event:
 #define event functions
 def goblin_battle(player):
     enemy = Enemy(
-        'Goblin',
-        2,
-        -1,
-        2,
-        -1,
-        1,
-        2,
-        0,
-        0,
-        Weapon.get_weapon('Club'),
-        Armor.get_armor('Cloth')
+        name='Goblin',
+        con=1,
+        mag=-1,
+        str=1,
+        int=-1,
+        dex=3,
+        lck=3,
+        df=0,
+        mdf=0,
+        weapon=Weapon.get_weapon('Club'),
+        armor=Armor.get_armor('Cloth'),
+        skills=[Skill.get_skill('Quick Strike')]
     )
-
-    print("You encounter a Goblin!")
-    input("(Press enter to continue...) ")
+    Helper.clear_screen()
+    input("You are suddenly approached by a Goblin!")
     combat(player, enemy)
 
 events = [
