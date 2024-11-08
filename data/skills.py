@@ -43,7 +43,7 @@ def heavy_blow(attacker, defender):
     attacker.conditions.append(Condition.get_condition("Attack Up", 1))
     dodge_chance = max(defender.get_dodge() - attacker.get_dex(), 0)
     if randint(1, 100) > dodge_chance:
-        atk = attacker.get_atk(defender)
+        atk = attacker.get_atk()
         df = defender.get_df(atk)
         dmg = max(atk - df, 1)
         defender.chp -= dmg
@@ -55,7 +55,7 @@ def quick_strike(attacker, defender):
     attacker.ctp -= 10
     dodge_chance = max(defender.get_dodge() - attacker.get_dex(), 0)
     if randint(1, 100) > dodge_chance:
-        atk = attacker.get_atk(defender)
+        atk = attacker.get_atk()
         df = defender.get_df(atk)
         dmg = max(atk - df, 1)
         defender.chp -= dmg
@@ -68,7 +68,7 @@ def damage_armor(attacker, defender):
     attacker.conditions.append(Condition.get_condition("Attack Down", 1))
     dodge_chance = max(defender.get_dodge() - attacker.get_dex(), 0)
     if randint(1, 100) > dodge_chance:
-        atk = attacker.get_atk(defender)
+        atk = attacker.get_atk()
         df = defender.get_df(atk)
         dmg = max(atk - df, 1)
         defender.chp -= dmg

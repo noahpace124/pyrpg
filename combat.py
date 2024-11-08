@@ -141,7 +141,7 @@ def speed_test(player, enemy):
 def attack(attacker, defender):
     dodge_chance = max(defender.get_dodge() - attacker.get_dex(), 0)
     if randint(1, 100) > dodge_chance:
-        atk = attacker.get_atk(defender)
+        atk = attacker.get_atk()
         df = defender.get_df(atk)
         dmg = max(atk - df, 1)
         defender.chp -= dmg

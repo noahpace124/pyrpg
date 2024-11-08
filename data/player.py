@@ -213,9 +213,9 @@ class Player:
         self.EQspells.remove(spell)
         input(f"{spell.name} has been unprepared.")
 
-    def get_atk(self, enemy):
+    def get_atk(self):
         atk = max(round(((self.str * 2) + randint(self.EQweapon.atkmin, self.EQweapon.atkmax)) * self.get_condition_multiplier('atk')), 1)
-        if crit(self, enemy):
+        if crit(self):
             print("Critical Hit!")
             atk = atk * 2
         return atk
@@ -225,9 +225,9 @@ class Player:
         total_defense = round((percentage_df + self.EQarmor.df ) * self.get_condition_multiplier('df'))
         return max(0, total_defense)  # Ensure the defense value doesn't drop below 0
 
-    def get_matk(self, spell, enemy):
+    def get_matk(self, spell):
         matk = max(round(((self.mag * 2) + randint(spell.matkmin, spell.matkmax) + randint(self.EQweapon.matkmin, self.EQweapon.matkmax)) * self.get_condition_multiplier('matk')), 1)
-        if crit(self, enemy):
+        if crit(self):
             print("Critical Hit!")
             matk = matk * 2
         return matk
