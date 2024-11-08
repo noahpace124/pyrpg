@@ -62,6 +62,6 @@ jobs = [
         weapon=Weapon.get_weapon("Beginner's Staff"), 
         armor=Armor.get_armor('Robe'), 
         spells=[Spell.get_spell('Fireball')], 
-        skills=[Skill.get_skill('Instant Recharge')]
+        skills=[]
     )
 ]

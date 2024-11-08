@@ -25,5 +25,5 @@ armors = [
     Armor('None', '', 0, 0),
     Armor('Cloth', 'Simple cloth that covers the user.', 1, 0),
     Armor('Leather Armor', 'Sturdy leather armor with metal pieces built in.', 3, 0, 'str', 3),
-    Armor('Robe', 'A cloth robe covered over the user that provides little defense.', 0, 1)
+    Armor('Robe', 'A cloth robe covered over the user that provides little defense.', 1, 1)
 ]
