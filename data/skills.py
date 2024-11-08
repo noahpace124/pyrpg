@@ -41,30 +41,42 @@ def instant_recharge(attacker, defender):
 def heavy_blow(attacker, defender):
     attacker.ctp -= 10
     attacker.conditions.append(Condition.get_condition("Attack Up", 1))
-    atk = attacker.get_atk(defender)
-    df = defender.get_df(atk)
-    dmg = max(atk - df, 1)
-    defender.chp -= dmg
-    input(f"{attacker.name} landed a heavy blow on {defender.name} for {dmg} damage.")
+    dodge_chance = max(defender.get_dodge() - attacker.get_dex(), 0)
+    if randint(1, 100) > dodge_chance:
+        atk = attacker.get_atk(defender)
+        df = defender.get_df(atk)
+        dmg = max(atk - df, 1)
+        defender.chp -= dmg
+        input(f"{attacker.name} landed a heavy blow on {defender.name} for {dmg} damage.")
+    else:
+        input(f"{defender.name} avoided {attacker.name}\'s attack!")
 
 def quick_strike(attacker, defender):
     attacker.ctp -= 10
-    atk = attacker.get_atk(defender)
-    df = defender.get_df(atk)
-    dmg = max(atk - df, 1)
-    defender.chp -= dmg
-    input(f"{attacker.name} striked quickly at {defender.name} for {dmg} damage.")
+    dodge_chance = max(defender.get_dodge() - attacker.get_dex(), 0)
+    if randint(1, 100) > dodge_chance:
+        atk = attacker.get_atk(defender)
+        df = defender.get_df(atk)
+        dmg = max(atk - df, 1)
+        defender.chp -= dmg
+        input(f"{attacker.name} striked quickly at {defender.name} for {dmg} damage.")
+    else:
+        input(f"{defender.name} avoided {attacker.name}\'s attack!")
 
 def damage_armor(attacker, defender):
     attacker.ctp -= 10
     attacker.conditions.append(Condition.get_condition("Attack Down", 1))
-    atk = attacker.get_atk(defender)
-    df = defender.get_df(atk)
-    dmg = max(atk - df, 1)
-    defender.chp -= dmg
-    input(f"{attacker.name} tried to destroy some of {defender.name}'s armor and did {dmg} damage.")
-    defender.conditions.append(Condition.get_condition('Defense Down', 4))
-    input(f"{attacker.name} lowered {defender.name} defense.")
+    dodge_chance = max(defender.get_dodge() - attacker.get_dex(), 0)
+    if randint(1, 100) > dodge_chance:
+        atk = attacker.get_atk(defender)
+        df = defender.get_df(atk)
+        dmg = max(atk - df, 1)
+        defender.chp -= dmg
+        input(f"{attacker.name} tried to destroy some of {defender.name}'s armor and did {dmg} damage.")
+        defender.conditions.append(Condition.get_condition('Defense Down', 4))
+        input(f"{attacker.name} lowered {defender.name} defense.")
+    else:
+        input(f"{defender.name} avoided {attacker.name}\'s attack!")
 
 
 # Create skill instances

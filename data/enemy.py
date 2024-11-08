@@ -122,6 +122,9 @@ class Enemy:
                 multiplier *= condition.multiplier
         return multiplier
 
+    def get_dodge(self):
+        return self.get_dex() + randint(0, self.get_lck())
+
     def upkeep(self):
         self.ctp += max(self.get_dex(), 0)
         if self.ctp > self.tp:

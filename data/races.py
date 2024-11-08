@@ -30,7 +30,7 @@ races = [
         name='Human',
         desc='Humans are the most diverse race among them all. Humans find meaning in something and live for it and are not bound by traditions as much as others would be. Their only fault is that they tend to put themselves above all other races.',
         con=1, 
-        mag=1, 
+        mag=0, 
         str=1, 
         int=1, 
         dex=1, 
@@ -41,7 +41,7 @@ races = [
     Race(
         name='Xeran',
         desc='Xeran are extremely rare and powerful with magic. Xeran have the looks of a goat, but the figure of a human. Xeran females become mages while males become warriors that weave weapon and magic. They struggle to find a place among other races even though they fought for peace among all.',
-        con=1, 
+        con=0, 
         mag=2, 
         str=0, 
         int=2, 

@@ -65,12 +65,14 @@ class Player:
         # Spells and Skills
         self.spells = self.job.spells
         self.EQspells = []
-        for spell in self.job.spells:
-            self.EQspells.append(spell)
+        if self.job.spells != []:
+            for spell in self.job.spells:
+                self.EQspells.append(spell)
         self.skills = self.job.skills
         self.EQskills = []
-        for skill in self.job.skills:
-            self.EQskills.append(skill)
+        if self.job.skills != []:
+            for skill in self.job.skills:
+                self.EQskills.append(skill)
 
         # Conditions, Location and Flags
         self.conditions = []
@@ -253,6 +255,9 @@ class Player:
             if condition.stat == stat:
                 multiplier *= condition.multiplier
         return multiplier
+
+    def get_dodge(self):
+        return self.get_dex() + randint(0, self.get_lck())
 
     def add_to_inventory(self, item):
         for inv_item in self.inv:

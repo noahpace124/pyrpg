@@ -27,11 +27,15 @@ class Spell:
 
 def fireball(attacker, defender):
     attacker.cmp -= 10
-    matk = attacker.get_matk(Spell.get_spell('Fireball'), defender)
-    mdf = defender.get_mdf(matk)
-    dmg = max(matk - mdf, 1)
-    defender.chp -= dmg
-    input(f"{attacker.name} cast Fireball on {defender.name} for {dmg} damage.")
+    dodge_chance = max(defender.get_dodge() - attacker.get_dex(), 0)
+    if randint(1, 100) > dodge_chance:
+        matk = attacker.get_matk(Spell.get_spell('Fireball'), defender)
+        mdf = defender.get_mdf(matk)
+        dmg = max(matk - mdf, 1)
+        defender.chp -= dmg
+        input(f"{attacker.name} cast Fireball on {defender.name} for {dmg} damage.")
+    else:
+        input(f"{defender.name} avoided {attacker.name}\'s Fireball!")
 
 
 spells = [

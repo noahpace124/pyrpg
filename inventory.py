@@ -278,7 +278,7 @@ def view_spells(player):
         spell_choices = []
 
         # List all spells
-        for spell in Spell.all_spells:
+        for spell in player.spells:
             spell_info = f"{spell.name}: {spell.cost} MP - {spell.desc}"
             if spell in player.EQspells:
                 spell_choices.append(f"{spell_info} (Prepaired)")
@@ -378,7 +378,8 @@ def view_items(player):
             ans = Helper.yes_or_no(input(">> ").lower())
             
             if ans == 1:  # Yes
-                item.func(player)
+                if item.can_use(player):
+                    item.func(player)
                 break
             elif ans == 0:  # No
                 break

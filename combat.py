@@ -75,13 +75,17 @@ def combat_round(player, enemy, obj=None):
     if obj and (isinstance(obj, Skill) or isinstance(obj, Spell)):
         if obj.type == 'priority':
             priority == True
-    if speed_test(player, enemy) or priority: #player is faster
+    enemy_priority = False
+    #implement enemy priority check
+    if (speed_test(player, enemy) or priority) and not enemy_priority: #player is faster
         #player acts
         if obj == None: #atk
             attack(player, enemy)
         elif obj == 'run':
             if speed_test(player, enemy): #player is faster
                 return 1 #runs away
+            else:
+                print(f"{player.name} could not run away!")
         elif isinstance(obj, Item): #item
             obj.func(player)
         else: #skill or spell
@@ -114,6 +118,8 @@ def combat_round(player, enemy, obj=None):
         elif obj == 'run':
             if speed_test(player, enemy): #player is faster
                 return 1 #runs away
+            else:
+                print(f"{player.name} could not run away!")
         elif isinstance(obj, Item): #item
             obj.func(player)
         else: #skill or spell
@@ -133,11 +139,15 @@ def speed_test(player, enemy):
         return False
 
 def attack(attacker, defender):
-    atk = attacker.get_atk(defender)
-    df = defender.get_df(atk)
-    dmg = max(atk - df, 1)
-    defender.chp -= dmg
-    input(f"{attacker.name} {attacker.EQweapon.msg} at {defender.name} for {dmg} damage.")
+    dodge_chance = max(defender.get_dodge() - attacker.get_dex(), 0)
+    if randint(1, 100) > dodge_chance:
+        atk = attacker.get_atk(defender)
+        df = defender.get_df(atk)
+        dmg = max(atk - df, 1)
+        defender.chp -= dmg
+        input(f"{attacker.name} {attacker.EQweapon.msg} at {defender.name} for {dmg} damage.")
+    else:
+        input(f"{defender.name} avoided {attacker.name}\'s attack!")
 
 def guard(player, enemy):
     input(f"{player.name} guards and catches their breath.")
