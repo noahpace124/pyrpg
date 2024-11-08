@@ -215,10 +215,10 @@ class Player:
 
     def get_atk(self):
         if self.EQweapon.stat == 'str':
-            stat = self.str
+            stat = self.get_str() * 2
         else:   #stat == dex
-            stat = self.dex
-        atk = max(round(((stat * 2) + randint(self.EQweapon.atkmin, self.EQweapon.atkmax)) * self.get_condition_multiplier('atk')), 1)
+            stat = self.get_dex()
+        atk = max(stat + randint(self.EQweapon.atkmin, self.EQweapon.atkmax), 1)
         if crit(self):
             print("Critical Hit!")
             atk = atk * 2
@@ -230,7 +230,7 @@ class Player:
         return max(0, total_defense)  # Ensure the defense value doesn't drop below 0
 
     def get_matk(self, spell):
-        matk = max(round(((self.mag * 2) + randint(spell.matkmin, spell.matkmax) + randint(self.EQweapon.matkmin, self.EQweapon.matkmax)) * self.get_condition_multiplier('matk')), 1)
+        matk = max(((self.get_mag() * 2) + randint(spell.matkmin, spell.matkmax) + randint(self.EQweapon.matkmin, self.EQweapon.matkmax)), 1)
         if crit(self):
             print("Critical Hit!")
             matk = matk * 2
@@ -241,8 +241,14 @@ class Player:
         total_magic_defense = round((percentage_mdf + self.EQarmor.mdf ) * self.get_condition_multiplier('mdf'))
         return max(0, total_magic_defense) #Ensure the magic defense value doesn't drop below 0
 
+    def get_str(self):
+        return round(self.str * self.get_condition_multiplier('str'))
+
     def get_dex(self):
         return round(self.dex * self.get_condition_multiplier('dex'))
+
+    def get_mag(self):
+        return round(self.mag * self.get_condition_multiplier('mag'))
 
     def get_int(self):
         return round(self.int * self.get_condition_multiplier('int'))
@@ -256,7 +262,7 @@ class Player:
     def get_condition_multiplier(self, stat):
         multiplier = 1
         for condition in self.conditions:
-            if condition.stat == stat:
+            if condition and condition.stat == stat:
                 multiplier *= condition.multiplier
         return multiplier
 
@@ -287,7 +293,7 @@ class Player:
         if self.cmp > self.mp:
             self.cmp = self.mp
         for condition in self.conditions:
-            if condition.duration_type == 'turn':
+            if condition and condition.duration_type == 'turn':
                 condition.duration -= 1
                 if condition.duration == 0:
                     self.conditions.remove(condition)

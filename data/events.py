@@ -82,5 +82,7 @@ events = [
         "Kobold Encounter",
         ["barrens"],
         "A basic fight with a kobold.",
+        4,
+        kobold_battle
     )
 ]

@@ -25,19 +25,19 @@ class Condition:
 #Note all duration in turns need to start at +1 because it removes a use the same turn it is applied
 conditions = [
     Condition(
-        name="Attack Down",
+        name="Strength Down",
         type="debuff",
-        desc="Cuts attack.",
+        desc="Cuts strength.",
         duration_type='turn',
-        stat='atk',
+        stat='str',
         multiplier=0.77
     ),
     Condition(
-        name="Attack Up",
+        name="Strength Up",
         type="buff",
-        desc="Raises attack.",
+        desc="Raises strength.",
         duration_type='turn',
-        stat='atk',
+        stat='str',
         multiplier=1.33
     ),
     Condition(
@@ -57,19 +57,19 @@ conditions = [
         multiplier=1.33
     ),
     Condition(
-        name="Magic Attack Down",
+        name="Magic Down",
         type="debuff",
-        desc="Cuts magic attack.",
+        desc="Cuts magic.",
         duration_type='turn',
-        stat='matk',
+        stat='mag',
         multiplier=0.77
     ),
     Condition(
-        name="Magic Attack Up",
+        name="Magic Up",
         type="buff",
-        desc="Raises magic attack.",
+        desc="Raises magic.",
         duration_type='type',
-        stat='matk',
+        stat='mag',
         multiplier=1.33
     ),
     Condition(

@@ -72,9 +72,15 @@ def damage_armor(attacker, defender):
         df = defender.get_df(atk)
         dmg = max(atk - df, 1)
         defender.chp -= dmg
-        input(f"{attacker.name} tried to destroy some of {defender.name}'s armor and did {dmg} damage.")
-        defender.conditions.append(Condition.get_condition('Defense Down', 4))
-        input(f"{attacker.name} lowered {defender.name} defense.")
+        input(f"{attacker.name} tried to destroy some of {defender.name}\'s armor and did {dmg} damage.")
+        apply = True
+        for condition in defender.conditions: #check if we already have the condition
+            if condition and condition.name == "Defense Down":
+                condition.duration = 4
+                apply = False
+        if apply: #we don't have the condition
+            defender.conditions.append(Condition.get_condition("Defense Down", 4))
+        input(f"{attacker.name} lowered {defender.name}\'s defense.")
     else:
         input(f"{defender.name} avoided {attacker.name}\'s attack!")
 
