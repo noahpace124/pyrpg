@@ -23,14 +23,14 @@ class Player:
         lck = max(race.lck, job.lck)
         lvl = con + mag + str + int + dex + lck
         hp = max(20 + ((con - 1) * 5), 1)
-        mp = max(10 + ((int - 1) * 5) , 0)
+        mp = max(10 + ((int - 1) * 5), 0)
         tp = max(10 + ((dex - 1) * 5), 0)
 
         # Basic Information
         self.name = name
         self.lvl = lvl
-        self.lvlnxt = self.lvl * 5
-        self.lvlup = 0
+        self.lvlnxt = self.lvl * 100
+        self.xp = 0
 
         # Stats
         self.con = con
@@ -76,6 +76,7 @@ class Player:
 
         # Conditions, Location and Flags
         self.conditions = []
+        self.gold = 0
         self.location = location
         self.flags = []
 

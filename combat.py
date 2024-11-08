@@ -32,17 +32,15 @@ def combat(player, enemy):
         answer = inquirer.prompt(questions)
         res = handle_combat_choice(answer['choice'], player, enemy)
         if res == 2: #player win
-            print('player win')
+            combat_win(player, enemy)
             break
         elif res == 1: #run
             print('run')
             break
         elif res == 0: #player loss
-            print('player loss')
-            break
-        elif res == -1: #no action taken
-            print('no action taken')
-        else: #3 - correct response, game continues
+            input(f"{player.name} died.")
+            game_over()
+        elif res == 3: #3 - correct response, game continues
             player.upkeep()
             enemy.upkeep()
             #increase turn count
@@ -286,3 +284,50 @@ def combat_inventory(player, enemy):
                     return -1
             elif ans == 0:  # No
                 return -1
+
+def combat_win(player, enemy):
+    print(f"{enemy.name} was defeated.")
+    xp = round(enemy.lvl * (50 / player.lvl))
+    print(f"{player.name} gained {xp} experience.")
+    player.xp += xp
+    points = 0
+    while player.xp > player.lvlnxt:
+        player.xp -= player.lvlnxt
+        player.lvl += 1
+        player.lvlnxt = player.lvl * 100
+        points += 1
+        print(f"{player.name} leveled up to level {player.lvl}!")
+    while points > 0:
+        questions = [
+            inquirer.List('choice',
+                        message="What stat do you want to increase? (Stat Points Remaining: {points})",
+                        choices=['Constitution', 'Magic', 'Strength', 'Intelligence', 'Dexterity', 'Luck'],
+                        ),
+        ]
+        answer = inquirer.prompt(questions)
+        stat = answer['choice']
+        if stat == 'Constitution':
+            player.con += 1
+            player.hp = 20 + ((player.con - 1) * 5)
+        if stat == 'Magic':
+            player.mag += 1
+        if stat == 'Strength':
+            player.str += 1
+        if stat == 'Intelligence':
+            player.int += 1
+            player.mp = 10 + ((player.int - 1) * 5)
+        if stat == 'Dexterity':
+            player.dex += 1
+            player.tp = 10 + ((player.dex - 1) * 5)
+        if stat == 'Luck':
+            player.lck += 1
+        player.chp = player.hp
+        player.cmp = player.mp
+        player.ctp = player.tp
+        points -= 1
+        
+def game_over():
+    Helper.clear_screen()
+    Helper.make_banner("GAME OVER", True)
+    input(">> ")
+    exit()
