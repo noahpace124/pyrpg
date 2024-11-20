@@ -40,7 +40,6 @@ def barrens(player):
             input(f"You beat the game for now, but you can continue if you wish.")
             return barrens(player) #REPLACE WITH NEW LOCATION
         else: #ran away from boss
-            input("You return back to your camp before you are spotted by the goblin.")
             return barrens(player)
     else: #barrens complete
         event_choices = Event.get_events_by_location('barrens', player.flags)
@@ -61,6 +60,18 @@ def barrens(player):
                 events.append(event)
             else:
                 input(f"You already have the most of this event possible. (Count: {events.count(event)}/{event.max})")
+        while True:
+            Helper.clear_screen()
+            print("Your events:")
+            for event in events: print(f"   {event.name}: {event.desc}")
+            print("Do you want venture out with these events?")
+            ans = Helper.yes_or_no(input(">> ").lower())
+            if ans == 1: #yes
+                break
+            elif ans == 0: #no
+                return barrens(player)
+            else:
+                input("Invalid answer. Try typing 'yes' or 'no'.")
         shuffle(events)
         for event in events:
             Helper.clear_screen()
@@ -82,10 +93,8 @@ def barrens(player):
             event.func(player)
             Helper.clear_screen()
             if 'barrens boss' in player.flags:
-                input(f"You beat the game for now, but you can continue if you wish.")
                 return barrens(player) #REPLACE WITH NEW LOCATION
-            else: #ran away from boss
-                input("You return back to your camp before you are spotted by the goblin.")
+            else: #did not beat boss
                 return barrens(player)
 
                 

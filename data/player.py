@@ -29,7 +29,7 @@ class Player:
         # Basic Information
         self.name = name
         self.lvl = lvl
-        self.lvlnxt = self.lvl * 100
+        self.lvlnxt = 100 + (self.lvl * 100)
         self.xp = 0
 
         # Stats
@@ -78,7 +78,7 @@ class Player:
         self.conditions = []
         self.gold = 0
         self.location = location
-        self.flags = ['barrens complete', 'barrens boss']
+        self.flags = []
 
     def view_stats(self):
         Helper.clear_screen()

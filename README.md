@@ -1,7 +1,7 @@
 Things to work on:
-adding racial interactions with enemies
-adding a continue onward option to shuffled boss event
-adding a venter onward after selecting events for confirmation
+adding racial interactions with enemies of the same race
+>>add xp to noncombat events
 fix level up system/implement level rewards
+implement saving and loading with the player class
 adding more locations
 adding more content

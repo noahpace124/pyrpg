@@ -104,6 +104,7 @@ def boulder(player):
             input(f"{player.name} gets hit by the boulder and takes 10 damage.")
         else:
             input(f"In a rush of adrenaline you successfully manage to redirect the boulder.")
+            Helper.award_xp(player, 600)
     elif action == "Dodge (Dexterity)":
         check = player.get_dex() + randint(0, player.get_lck())
         print(f"Dexterity Check: {check}")
@@ -113,6 +114,7 @@ def boulder(player):
             input(f"{player.name} gets hit by the boulder and takes 10 damage.")
         else:
             input(f"You deftly sidestep the boulder, avoiding it completely.")
+            Helper.award_xp(player, 300)
     elif action == "Pray (Luck)":
         check = randint(0, player.get_lck())
         print(f"Luck Check: {check}")
@@ -122,7 +124,7 @@ def boulder(player):
             input(f"{player.name} gets hit by the boulder and takes 10 damage.")
         else:
             print("When the boulder is about to strike you, it suddenly splits into two.")
-            gold = randint(10, 50)
+            gold = 100 * randint(1, 3)
             input(f"Inside the boulder, you find {gold}. Isn't that something.")
     else:   #take the hit
         player.chp -= 10
@@ -152,10 +154,10 @@ def goblin_shaman(player):
         spells=[Spell.get_spell('Zap')],
         inv=[Weapon.get_weapon('Wooden Staff'), Armor.get_armor('Cloth')]
     )
-    while True:
-        Helper.clear_screen()
-        print(f"Coming close to the end of the barrens you see some lightning crackling in the distance.")
-        print(f"Upon coming closer you see what apears to be another standard goblin, however this one wields a staff.")
+    Helper.clear_screen()
+    if 'barrens boss' not in player.flags:
+        print("Coming close to the end of the barrens you see some lightning crackling in the distance.")
+        print("Upon coming closer you see what apears to be another standard goblin, however this one wields a staff.")
         questions = [
             inquirer.List('choice',
                 message="Do you want to approach or retreat for now?",
@@ -167,11 +169,27 @@ def goblin_shaman(player):
         if action == 'Approach (Fight Boss)':
             combat(player, enemy)
             player.flags.append('barrens boss')
-            player.flags.append('barrens complete')
-            break
+            if 'barrens complete' not in player.flags:
+                player.flags.append('barrens complete')
         else: #Retreat
-            player.flags.append('barrens complete')
-            break
+            input("You return back to your camp before you are spotted by the goblin.")
+            if 'barrens complete' not in player.flags:
+                player.flags.append('barrens complete')
+    else: #barrens boss has been defeated
+        print("You spot another staff wielding goblin in the distance.")
+        questions = [
+            inquirer.List('choice',
+                message="Do you want to approach or try to sneak past?",
+                choices=["Approach (Fight Boss)", "Go Around (Continue)"]
+            ),
+        ]
+        answer = inquirer.prompt(questions)
+        action = answer['choice']
+        if action == 'Approach (Fight Boss)':
+            combat(player, enemy)
+        else: #Continue past
+            input("You decide to take a slightly longer route to avoid the fight.")
+                
 
 events = [
     Event(
