@@ -20,19 +20,18 @@ def barrens(player):
         shuffle(events)
         for event in events:
             Helper.clear_screen()
-            if not event.flag:
-                event.func(player)
-                while True:
-                    Helper.clear_screen()
-                    print("Do you want to access your inventory?")
-                    ans = input(">> ")
-                    if Helper.yes_or_no(ans) == 1:
-                        inventory(player)
-                        break
-                    elif Helper.yes_or_no(ans) == 0:
-                        break
-                    else:
-                        input("Invalid answer. Try typing 'yes' or 'no'.")
+            event.func(player)
+            while True:
+                Helper.clear_screen()
+                print("Do you want to access your inventory?")
+                ans = input(">> ")
+                if Helper.yes_or_no(ans) == 1:
+                    inventory(player)
+                    break
+                elif Helper.yes_or_no(ans) == 0:
+                    break
+                else:
+                    input("Invalid answer. Try typing 'yes' or 'no'.")
         Helper.clear_screen()
         event = Event.get_event("Goblin Shaman")  
         event.func(player)
@@ -65,19 +64,18 @@ def barrens(player):
         shuffle(events)
         for event in events:
             Helper.clear_screen()
-            if not event.flag:
-                event.func(player)
-                while True:
-                    Helper.clear_screen()
-                    print("Do you want to access your inventory?")
-                    ans = input(">> ")
-                    if Helper.yes_or_no(ans) == 1:
-                        inventory(player)
-                        break
-                    elif Helper.yes_or_no(ans) == 0:
-                        break
-                    else:
-                        input("Invalid answer. Try typing 'yes' or 'no'.")
+            event.func(player)
+            while True:
+                Helper.clear_screen()
+                print("Do you want to access your inventory?")
+                ans = input(">> ")
+                if Helper.yes_or_no(ans) == 1:
+                    inventory(player)
+                    break
+                elif Helper.yes_or_no(ans) == 0:
+                    break
+                else:
+                    input("Invalid answer. Try typing 'yes' or 'no'.")
         if 'barrens boss' not in player.flags:
             Helper.clear_screen()
             event = Event.get_event("Goblin Shaman")  

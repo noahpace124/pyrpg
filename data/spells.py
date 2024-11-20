@@ -23,6 +23,7 @@ class Spell:
         for spell in cls.all_spells:
             if spell.name == spell_name:
                 return spell
+        print('Error')
         return None
 
 def fireball(attacker, defender):

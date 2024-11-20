@@ -22,9 +22,9 @@ class Player:
         dex = max(race.dex, job.dex)
         lck = max(race.lck, job.lck)
         lvl = con + mag + str + int + dex + lck
-        hp = max(20 + ((con - 1) * 5), 1)
-        mp = max(10 + ((int - 1) * 5), 0)
-        tp = max(10 + ((dex - 1) * 5), 0)
+        hp = 20 + (5 * con)
+        mp = int * 5
+        tp = dex * 5
 
         # Basic Information
         self.name = name
@@ -78,7 +78,7 @@ class Player:
         self.conditions = []
         self.gold = 0
         self.location = location
-        self.flags = []
+        self.flags = ['barrens complete', 'barrens boss']
 
     def view_stats(self):
         Helper.clear_screen()

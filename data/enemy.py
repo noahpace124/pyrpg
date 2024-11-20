@@ -12,11 +12,11 @@ class Enemy:
         self.name = name
 
         self.lvl = con + mag + str + int + dex + lck
-        self.hp = max(20 + ((con - 1) * 5), 1)
+        self.hp = 20 + (5 * con)
         self.chp = self.hp
-        self.mp = max(10 + ((int - 1) * 5), 0)
+        self.mp = int * 5
         self.cmp = self.mp
-        self.tp = max(10 + ((dex - 1) * 5), 0)
+        self.tp = dex * 5
         self.ctp = self.tp
 
         self.con = con
@@ -63,9 +63,9 @@ class Enemy:
         print(f"Equipped Armor: {self.EQarmor.name}")
         print()
         # Display equipped spell and skill details
-        equipped_spells = [spell.name for spell in self.spells]
+        equipped_skills = [skill.name for skill in self.skills if skill is not None]
+        equipped_spells = [spell.name for spell in self.spells if spell is not None]
         print(f"Prepaired Spells: {', '.join(equipped_spells)}")
-        equipped_skills = [skill.name for skill in self.skills]
         print(f"Prepaired Skills: {', '.join(equipped_skills)}")
         print()
         # Display status conditions
@@ -133,37 +133,38 @@ class Enemy:
     def get_dodge(self):
         return self.get_dex() + randint(0, self.get_lck())
 
-    def get_action(self): #returns the enemy object
-        skill_options = []
-        spell_options = []
-        if len(self.skills) > 0:
-            for skill in self.skills:
-                if self.ctp >= skill.cost:
-                    skill_options.append(skill)
-        if len(self.spells) > 0:
-            for spell in self.spells:
-                if self.cmp >= spell.cost:
-                    spell_options.append(spell)
-        if self.str == self.mag:
-            if self.dex == self.int:
-                if (self.dex + self.str) >= (self.mag + self.int) and len(skill_options) > 0:
-                    return choice(skill_options)
-                elif (self.mag + self.int) >= (self.str + self.dex) and len(spell_options) > 0:
-                    return choice(spell_options)
-                else:
-                    return None
-            elif self.dex > self.mag and len(skill_options) > 0:
+    def get_action(self):
+        """
+        Determines and returns the action (skill or spell) the enemy should take.
+        Returns None if we should just attack.
+        """
+        # Collect usable skills and spells based on resource costs
+        skill_options = [skill for skill in self.skills if skill is not None and self.ctp >= skill.cost]
+        spell_options = [spell for spell in self.spells if spell is not None and self.cmp >= spell.cost]
+
+        # Determine whether to prefer skills or spells
+        physical_score = self.str + self.dex
+        magical_score = self.mag + self.int
+
+        # Equal scores
+        if physical_score == magical_score:
+            if len(skill_options) > 0:
                 return choice(skill_options)
-            elif self.mag > self.dex and len(spell_options) > 0:
+            elif len(spell_options) > 0:
                 return choice(spell_options)
             else:
                 return None
-        if self.str > self.mag and len(skill_options) > 0:
+
+        # Prefer physical actions
+        if physical_score > magical_score and len(skill_options) > 0:
             return choice(skill_options)
-        elif self.mag > self.str and len(spell_options) > 0:
+
+        # Prefer magical actions
+        if magical_score > physical_score and len(spell_options) > 0:
             return choice(spell_options)
-        else:
-            return None
+
+        # Fallback if no options are available
+        return None
 
     def upkeep(self):
         self.ctp += max(self.get_dex(), 0)

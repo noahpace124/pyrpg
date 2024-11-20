@@ -199,7 +199,7 @@ def guard(player, enemy):
     return 3
 
 def run(player, enemy):
-    if randint(1, 100) <= 10 + (player.get_spd() - enemy.get_spd()):
+    if randint(1, 100) <= max(player.get_dex() - enemy.get_dex(), 10) + player.get_lck():
         return True
     else:
         return False
