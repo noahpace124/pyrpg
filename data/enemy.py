@@ -47,27 +47,27 @@ class Enemy:
         print(f"HP: {self.chp}/{self.hp}")
         print(f"MP: {self.cmp}/{self.mp}")
         print(f"TP: {self.ctp}/{self.tp}")
-        print(f"Strength: {self.str}")
         print(f"Constitution: {self.con}")
         print(f"Magic: {self.mag}")
+        print(f"Strength: {self.str}")
         print(f"Intelligence: {self.int}")
         print(f"Dexterity: {self.dex}")
         print(f"Luck: {self.lck}")
         print(f"Physical Defense: {self.df}")
         print(f"Magical Defense: {self.mdf}")
-
+        print()
         # Display equipped weapon details
         print(f"Equipped Weapon: {self.EQweapon.name}")
 
         # Display equipped armor details
         print(f"Equipped Armor: {self.EQarmor.name}")
-
+        print()
         # Display equipped spell and skill details
         equipped_spells = [spell.name for spell in self.spells]
         print(f"Prepaired Spells: {', '.join(equipped_spells)}")
         equipped_skills = [skill.name for skill in self.skills]
         print(f"Prepaired Skills: {', '.join(equipped_skills)}")
-
+        print()
         # Display status conditions
         status_conditions = []
         for condition in self.conditions:
@@ -145,7 +145,7 @@ class Enemy:
                 if self.cmp >= spell.cost:
                     spell_options.append(spell)
         if self.str == self.mag:
-            if self.dex == self.mag:
+            if self.dex == self.int:
                 if (self.dex + self.str) >= (self.mag + self.int) and len(skill_options) > 0:
                     return choice(skill_options)
                 elif (self.mag + self.int) >= (self.str + self.dex) and len(spell_options) > 0:
@@ -174,6 +174,17 @@ class Enemy:
             self.cmp = self.mp
         for condition in self.conditions:
             if condition and condition.duration_type == 'turn':
+                if condition.stat == 'hp':
+                    if condition.type == 'debuff':
+                        self.chp -= condition.multiplier
+                        input(f"{self.name} took {condition.multiplier} damage from {condition.name}.")
+                        if self.chp < 0:
+                            self.chp = 0
+                    elif condition.type == 'buff':
+                        self.chp += condition.multiplier
+                        input(f"{self.name} gained {condition.multiplier} hp from {condition.name}.")
+                        if self.chp > self.hp:
+                            self.chp = self.hp
                 condition.duration -= 1
                 if condition.duration == 0:
                     self.conditions.remove(condition)

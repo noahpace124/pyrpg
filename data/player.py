@@ -85,7 +85,7 @@ class Player:
         Helper.make_banner(f"{self.name}'s Stats")
         print(f"Race: {self.race.name}")
         print(f"Class: {self.job.name}")
-        
+        print()
         # Display player attributes
         print(f"HP: {self.chp}/{self.hp}")
         print(f"MP: {self.cmp}/{self.mp}")
@@ -99,19 +99,19 @@ class Player:
         print(f"Luck: {self.lck}")
         print(f"Physical Defense: {self.df}")
         print(f"Magical Defense: {self.mdf}")
-
+        print()
         # Display equipped weapon details
         print(f"Equipped Weapon: {self.EQweapon.name}")
 
         # Display equipped armor details
         print(f"Equipped Armor: {self.EQarmor.name}")
-
+        print()
         # Display equipped spell and skill details
         equipped_spells = [spell.name for spell in self.EQspells]
         print(f"Prepaired Spells: {', '.join(equipped_spells)}")
         equipped_skills = [skill.name for skill in self.EQskills]
         print(f"Prepaired Skills: {', '.join(equipped_skills)}")
-
+        print()
         # Display status conditions
         status_conditions = []
         for condition in self.conditions:
@@ -295,6 +295,17 @@ class Player:
             self.cmp = self.mp
         for condition in self.conditions:
             if condition and condition.duration_type == 'turn':
+                if condition.stat == 'hp':
+                    if condition.type == 'debuff':
+                        self.chp -= condition.multiplier
+                        input(f"{self.name} took {condition.multiplier} damage from {condition.name}.")
+                        if self.chp < 0:
+                            self.chp = 0
+                    elif condition.type == 'buff':
+                        self.chp += condition.multiplier
+                        input(f"{self.name} gained {condition.multiplier} hp from {condition.name}.")
+                        if self.chp > self.hp:
+                            self.chp = self.hp
                 condition.duration -= 1
                 if condition.duration == 0:
                     self.conditions.remove(condition)

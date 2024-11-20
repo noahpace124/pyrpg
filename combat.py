@@ -45,8 +45,20 @@ def combat(player, enemy):
             input(">> ")
             exit()
         elif res == 3: #3 - correct response, game continues
-            player.upkeep()
             enemy.upkeep()
+            #check hp
+            if enemy.chp <= 0: #enemy dies
+                combat_win(player, enemy)
+                break
+            player.upkeep()
+            if player.chp <= 0: #player dies
+                input(f"{player.name} died.")
+                Helper.clear_screen()
+                Helper.make_banner("GAME OVER", True)
+                print(f"{player.name} was killed by a status condition.")
+                input(">> ")
+                exit()
+            
             #increase turn count
             turn_count += 1
 
@@ -93,10 +105,10 @@ def combat_round(player, enemy, obj=None):
         if obj == None: #atk
             attack(player, enemy)
         elif obj == 'run':
-            if speed_test(player, enemy): #player is faster
+            if run(player, enemy): #player is faster
                 return 1 #runs away
             else:
-                print(f"{player.name} could not run away!")
+                input(f"{player.name} could not run away!")
         elif isinstance(obj, Item): #item
             obj.func(player)
         else: #skill or spell
@@ -129,14 +141,14 @@ def combat_round(player, enemy, obj=None):
             return 2 #player win
         if player.chp <= 0:
             return 0 #player loss
-         #player acts
+        #player acts
         if obj == None: #atk
             attack(player, enemy)
         elif obj == 'run':
-            if speed_test(player, enemy): #player is faster
+            if run(player, enemy): #player is faster
                 return 1 #runs away
             else:
-                print(f"{player.name} could not run away!")
+                input(f"{player.name} could not run away!")
         elif isinstance(obj, Item): #item
             obj.func(player)
         else: #skill or spell
@@ -185,6 +197,12 @@ def guard(player, enemy):
         return 0 #player loss
     #end of round
     return 3
+
+def run(player, enemy):
+    if randint(1, 100) <= 10 + (player.get_spd() - enemy.get_spd()):
+        return True
+    else:
+        return False
 
 def use_skill(player, enemy):
     #make a list of all skills and 'go back'
@@ -290,9 +308,12 @@ def combat_inventory(player, enemy):
                 return -1
 
 def combat_win(player, enemy):
-    print(f"{enemy.name} was defeated.")
+    print()
+    input(f"{enemy.name} was defeated.")
+    print()
     xp = round(enemy.lvl * (50 / player.lvl))
-    print(f"{player.name} gained {xp} experience.")
+    input(f"{player.name} gained {xp} experience.")
+    print()
     player.xp += xp
     points = 0
     while player.xp > player.lvlnxt:
@@ -300,10 +321,9 @@ def combat_win(player, enemy):
         player.lvl += 1
         player.lvlnxt = player.lvl * 100
         points += 1
-        print(f"{player.name} leveled up to level {player.lvl}!")
-    input("(Press enter to continue...) ")
+        input(f"{player.name} leveled up to level {player.lvl}!")
     while points > 0:
-        Helper.clear_screen()
+        print()
         questions = [
             inquirer.List('choice',
                         message="What stat do you want to increase? (Stat Points Remaining: {points})",
@@ -331,16 +351,18 @@ def combat_win(player, enemy):
         player.cmp = player.mp
         player.ctp = player.tp
         points -= 1
-    Helper.clear_screen()
+        print()
     gold = enemy.lvl * (1 + randint(0, player.get_lck()))
     input(f"{player.name} gained {gold} gold.")
+    print()
     if len(enemy.inv) > 0:
         if randint(1, 100) <= player.get_lck():
             shuffle(enemy.inv)
             item = enemy.inv[0]
-            print(f"{player.name} found a {item.name}.")
+            input(f"{player.name} found a {item.name}!")
             player.inv.append({'name': item.name, 'count': 1})
     for condition in player.conditions: #drop all turn based conditions at battle end
         if condition and condition.duration_type == 'turn':
             player.conditions.remove(condition)
-    input("(Press enter to continue...) ")
+    #reset the enemy conditions
+    for condition in enemy.conditions: enemy.conditions.remove(condition)

@@ -24,11 +24,17 @@ class Event:
         Event.all_events.append(self)
     
     @classmethod
-    def get_events_by_location(cls, location):
+    def get_events_by_location(cls, location, flags=None): #only adds events in player flags
         events = []
         for event in cls.all_events:
             if location in event.locations:
-                events.append(event)
+                if event.flag:
+                    if flags:
+                        if event.flag in flags:
+                            events.append(event)
+                else:
+                    events.append(event)
+        print(events)
         return events
     
     @classmethod
@@ -61,12 +67,12 @@ def goblin_battle(player):
 def kobold_battle(player):
     enemy = Enemy(
         name='Kobold',
-        con=1 + randint(1, 2),
-        mag=-1,
-        str=0 + randint(0, 1),
-        int=-1,
+        con=1 + randint(0, 1),
+        mag=0,
+        str=0,
+        int=0,
         dex=3 + randint(0, 2),
-        lck=1 + randint(0, 1),
+        lck=3 + randint(0, 2),
         df=5,
         mdf=0,
         weapon=Weapon.get_weapon('Sling'),
@@ -116,7 +122,7 @@ def boulder(player):
             input(f"{player.name} gets hit by the boulder and takes 10 damage.")
         else:
             print("When the boulder is about to strike you, it suddenly splits into two.")
-            gold = 0 #Get random gold
+            gold = randint(10, 50)
             input(f"Inside the boulder, you find {gold}. Isn't that something.")
     else:   #take the hit
         player.chp -= 10
@@ -129,6 +135,43 @@ def boulder(player):
         input(">> ")
         exit()
 
+def goblin_shaman(player):
+    enemy = Enemy(
+        name='Goblin Shaman',
+        con=1 + randint(0, 1),
+        mag=2 + randint(0, 1),
+        str=2 + randint(0, 1),
+        int=2 + randint(0, 1),
+        dex=2 + randint(0, 1),
+        lck=3 + randint(0, 2),
+        df=0,
+        mdf=0,
+        weapon=Weapon.get_weapon('Wooden Staff'),
+        armor=Armor.get_armor('Cloth'),
+        skills=[Skill.get_skill('Fast Strikes')],
+        spells=[Spell.get_spell('Zap')],
+        inv=[Weapon.get_weapon('Wooden Staff'), Armor.get_armor('Cloth')]
+    )
+    while True:
+        Helper.clear_screen()
+        print(f"Coming close to the end of the barrens you see some lightning crackling in the distance.")
+        print(f"Upon coming closer you see what apears to be another standard goblin, however this one wields a staff.")
+        questions = [
+            inquirer.List('choice',
+                message="Do you want to approach or retreat for now?",
+                choices=["Approach (Fight Boss)", "Retreat (Return to Camp)"],
+            ),
+        ]
+        answer = inquirer.prompt(questions)
+        action = answer['choice']
+        if action == 'Approach (Fight Boss)':
+            combat(player, enemy)
+            player.flags.append('barrens boss')
+            player.flags.append('barrens complete')
+            break
+        else: #Retreat
+            player.flags.append('barrens complete')
+            break
 
 events = [
     Event(
@@ -151,5 +194,13 @@ events = [
         "A boulder is falling toward you!",
         2,
         boulder
+    ),
+    Event(
+        "Goblin Shaman",
+        ["barrens"],
+        "A goblin shaman want to fight you.",
+        1,
+        goblin_shaman,
+        flag='barrens boss'
     )
 ]

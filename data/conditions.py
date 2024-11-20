@@ -121,5 +121,12 @@ conditions = [
         desc="Raises luck.",
         stat='lck',
         multiplier=1.33
+    ),
+    Condition(
+        name="Poison",
+        type="debuff",
+        desc="Damages the target in between turns.",
+        stat='hp',
+        multiplier=5
     )
 ]

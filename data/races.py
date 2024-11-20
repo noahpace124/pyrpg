@@ -39,6 +39,18 @@ races = [
         mdf=0
     ),
     Race(
+        name='Kobold',
+        desc='Kobolds are small reptilian creatures often explained as \'dragon dogs\'. Kobolds are swift and hold some physical resistance with their scales, but aren\'t adept at much else. They like to live in packs and are huge treasure seekers who love all things shiny.',
+        con=1,
+        mag=0,
+        str=1,
+        int=0,
+        dex=3,
+        lck=3,
+        df=5,
+        mdf=0
+    ),
+    Race(
         name='Xeran',
         desc='Xeran are extremely rare and powerful with magic. Xeran have the looks of a goat, but the figure of a human. Xeran females become mages while males become warriors that weave weapon and magic. They struggle to find a place among other races even though they fought for peace among all.',
         con=0, 

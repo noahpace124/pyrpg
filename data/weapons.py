@@ -32,7 +32,9 @@ class Weapon:
 weapons = [
     Weapon('None', '', 'threw a punch', 0, 0, 0, 0, 'str'),
     Weapon('Club', 'A crude wooden club.', 'swung their club', 0, 2, 0, 0, 'str', 'str', 2),
-    Weapon('Sling', 'A sling made from cloth to fire small pebbles.', 'slung a rock', 0, 2, 0, 0, 'dex', 'dex', 2),
+    Weapon('Wooden Staff', 'A simple wooden staff for basic magic.', 0, 1, 0, 1, 'str', 'int', 2),
+    Weapon('Sling', 'A sling made from cloth to fire small pebbles.', 'slung a rock', 0, 1, 0, 0, 'dex', 'dex', 2),
+    Weapon('Dagger', 'A simple iron dagger.', 'stabbed with their dagger', 0, 2, 0, 0, 'dex', 2),
     Weapon('Rusty Sword', 'A rusty shortsword.', 'slashed their sword', 1, 2, 0, 0, 'str', 3),
-    Weapon('Beginner\'s Staff', 'An easy to use staff for casting magic.', 'swung their staff', 0, 0, 0, 2,'str', 'int', 2),
+    Weapon('Beginner\'s Staff', 'An easy to use staff for casting magic.', 'swung their staff', 0, 1, 0, 2,'str', 'int', 2),
 ]

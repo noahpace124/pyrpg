@@ -77,7 +77,7 @@ def damage_armor(attacker, defender):
         apply = True
         for condition in defender.conditions: #check if we already have the condition
             if condition and condition.name == "Defense Down":
-                condition.duration = 3
+                condition.duration = 4
                 apply = False
         if apply: #we don't have the condition
             defender.conditions.append(Condition.get_condition("Defense Down", 4))
@@ -128,6 +128,27 @@ def empowering_strike(attacker, defender):
     else:
         input(f"{defender.name} avoided {attacker.name}\'s attack!")
 
+def poison_stab(attacker, defender):
+    print(f"{attacker.name} uses Poison Stab.")
+    attacker.ctp -= 10
+    dodge_chance = max(defender.get_dodge() - attacker.get_dex(), 0)
+    if randint(1, 100) > dodge_chance:
+        atk = round(attacker.get_atk() * 0.77)
+        df = defender.get_df(atk)
+        dmg = max(atk - df, 1)
+        defender.chp -= dmg
+        input(f"{attacker.name} tried to poison {defender.name} and did {dmg} damage.")
+        apply = True
+        for condition in defender.conditions: #check if we already have the condition
+            if condition and condition.name == "Poison":
+                condition.duration = 5
+                apply = False
+        if apply: #we don't have the condition
+            defender.conditions.append(Condition.get_condition("Poison", 5))
+        input(f"{attacker.name} poisoned {defender.name}.")
+    else:
+        input(f"{defender.name} avoided {attacker.name}\'s attack!")
+
 # Create skill instances
 skills = [
     Skill(
@@ -136,7 +157,7 @@ skills = [
         cost=1,
         type='instant',
         reqa='int',
-        reqm=3,
+        reqm=10,
         func=instant_recharge
     ),
     Skill(
@@ -145,7 +166,7 @@ skills = [
         cost=10,
         type='instant',
         reqa='str',
-        reqm=3,
+        reqm=2,
         func=heavy_blow
     ),
     Skill(
@@ -154,7 +175,7 @@ skills = [
         cost=10,
         type='priority',
         reqa='dex',
-        reqm=3,
+        reqm=2,
         func=quick_strike
     ),
     Skill(
@@ -174,6 +195,15 @@ skills = [
         reqa='dex',
         reqm=3,
         func=fast_attacks
+    ),
+    Skill(
+        name='Poison Stab',
+        desc='Attack to inflict your oponent with poison for 5 turns.',
+        cost=10,
+        type='instant',
+        reqa='dex',
+        reqm='3',
+        func=poison_stab
     ),
     Skill(
         name='Empowering Strike',

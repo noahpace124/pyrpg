@@ -26,7 +26,7 @@ class Spell:
         return None
 
 def fireball(attacker, defender):
-    print(f"{attacker.name} uses Fireball.")
+    print(f"{attacker.name} casts Fireball.")
     attacker.cmp -= 10
     dodge_chance = max(defender.get_dodge() - attacker.get_dex(), 0)
     if randint(1, 100) > dodge_chance:
@@ -37,6 +37,19 @@ def fireball(attacker, defender):
         input(f"{attacker.name} cast Fireball on {defender.name} for {dmg} damage.")
     else:
         input(f"{defender.name} avoided {attacker.name}\'s Fireball!")
+
+def zap(attacker, defender):
+    print(f"{attacker.name} casts Zap.")
+    attacker.cmp -= 5
+    dodge_chance = max(defender.get_dodge() - attacker.get_dex(), 0)
+    if randint(1, 100) > dodge_chance:
+        matk = attacker.get_matk(Spell.get_spell('Zap'))
+        mdf = defender.get_mdf(matk)
+        dmg = max(matk - mdf, 1)
+        defender.chp -= dmg
+        input(f"{attacker.name} cast Zap on {defender.name} for {dmg} damage.")
+    else:
+        input(f"{defender.name} avoided {attacker.name}\'s Zap!")
 
 
 spells = [
@@ -49,5 +62,15 @@ spells = [
         matkmax=14,
         reqm=3,
         func=fireball
+    ),
+    Spell(
+        name='Zap',
+        desc='Shock your enemy with a quick small bolt of lightning.',
+        type='instant',
+        cost=5,
+        matkmin=4,
+        matkmax=7,
+        reqm=2,
+        func=zap
     )
 ]
