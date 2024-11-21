@@ -1,7 +1,10 @@
 Things to work on:
+change menus from inquirer to a,b,c... system (pyrogue.py and character_creation.py complete)
+add size to races for event choices and skills
+add racial passives to races (condition.type = 'passive')
 adding racial interactions with enemies of the same race
->>add xp to noncombat events
-fix level up system/implement level rewards
+implement level up rewards system based on classes
 implement saving and loading with the player class
+implement a crafting system
 adding more locations
 adding more content

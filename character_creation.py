@@ -1,6 +1,4 @@
 # Imports from Packages
-import os
-import inquirer
 
 # Imports from Files
 from helper import Helper
@@ -14,26 +12,27 @@ def choose_name():
     print("Let's start with your name.")
     name = input(">> ")
     print(f"{name} is your name? (y/n)")
-    ans = input(">> ").lower()
-    if Helper.yes_or_no(ans) == 1:
+    answer = Helper.yes_or_no()
+    if answer == 1:
         return name
-    return choose_name()
+    elif answer == 0:
+        return choose_name()
+    else:
+        input("Invalid Answer: Try typing yes or no.")
+        return choose_name()
 
 def choose_race():
-    Helper.clear_screen()  # Clear the screen at the start
+    Helper.clear_screen()
     print("Next, what race are you?")
 
-    questions = [
-        inquirer.List('selected_race',
-                      message="Please select a race",
-                      choices=[race.name for race in races],  # Only display the race name
-                      ),
-    ]
+    answer = Helper.prompt([race.name for race in races])
 
-    answer = inquirer.prompt(questions)
+    if answer == -1:
+        input("Invalid Answer: Try typing the letter or the name of the choice.")
+        return choose_race()
 
     # Extract the chosen race name from the answer
-    chosen_race_name = answer['selected_race']
+    chosen_race_name = [race.name for race in races][answer]
 
     # Find the chosen race object
     chosen_race = next(race for race in races if race.name == chosen_race_name)
@@ -41,29 +40,29 @@ def choose_race():
     # Print the description before confirming
     print(f"{chosen_race.desc}")
     print(f"You are a {chosen_race_name}? (y/n)")
-    ans = Helper.yes_or_no(input(">> ").lower())
+    ans = Helper.yes_or_no()
 
     if ans == 1:
         return chosen_race  # Return the chosen race object
-
-    return choose_race()  # Repeat the selection process if invalid
+    elif ans == 0:
+        return choose_race()
+    else:
+        input("Invalid Answer: Try typing yes or no.")
+        return choose_race()
 
 
 def choose_job():
     Helper.clear_screen()
     print("Finally, what class are you?")
 
-    questions = [
-        inquirer.List('selected_job',
-                      message="Please select a job",
-                      choices=[f"{job.name}" for job in jobs],
-                      ),
-    ]
+    answer =Helper.prompt([job.name for job in jobs])
 
-    answer = inquirer.prompt(questions)
+    if answer == -1:
+        input("Invalid Answer: Try typing the letter or the name of the choice.")
+        return choose_job()
 
     # Extract the chosen job name from the answer
-    chosen_job_name = answer['selected_job'].split(':')[0].strip()
+    chosen_job_name = [job.name for job in jobs][answer]
 
     # Find the chosen job object
     chosen_job = next(job for job in jobs if job.name == chosen_job_name)
@@ -71,12 +70,15 @@ def choose_job():
     # Confirm the chosen job
     print(f"{chosen_job.desc}")
     print(f"You are a {chosen_job_name}? (y/n)")
-    ans = Helper.yes_or_no(input(">> ").lower())
+    ans = Helper.yes_or_no()
+
     if ans == 1:
-        for job in jobs:
-            if job.name.lower() == chosen_job_name.lower():
-                return job
-    return choose_job()
+        return chosen_job  # Return the chosen race object
+    elif ans == 0:
+        return choose_job()
+    else:
+        input("Invalid Answer: Try typing yes or no.")
+        return choose_job()
 
 def create_player(name, race, job):
     return Player(  # Return the created player instance
@@ -89,10 +91,10 @@ def create_player(name, race, job):
 def character_creation():
     Helper.clear_screen()
     print("You are approaching the land of Zenith:")
-    print("a place full of travelers trying to achieve their peaks...")
-    print("and also full of unknown creatures ready to put you back in your place...")
-    print("Your reason for coming may be a secret, but not all things can remain hidden...")
-    input("(Press enter to continue...) ")
+    print("a place full of travelers trying to grow one way or another,")
+    print("a place full of monsters ready to humble any over eager adventurer,")
+    print("and a place surrounded with mysterious treasures waiting to be uncovered.")
+    input("Your reason for traveling here may be a secret, but some things need to be made clear...")
 
     name = choose_name()
     race = choose_race()
@@ -101,12 +103,12 @@ def character_creation():
     while True:
         Helper.clear_screen()
         print(f"You are {name} the {race.name} {job.name}? (y/n)")
-        ans = input(">> ").lower()
+        answer = Helper.yes_or_no()
         
-        if Helper.yes_or_no(ans) == 1:
+        if answer == 1:
             player = create_player(name, race, job)  # Create the player instance
             return player
-        elif Helper.yes_or_no(ans) == 0:
+        elif answer == 0:
             return character_creation()
-        elif Helper.yes_or_no(ans) == -1:
-            input("Invalid answer. Try typing 'yes' or 'no'.")
+        else:
+            input("Invalid Answer: Try typing yes or no.")

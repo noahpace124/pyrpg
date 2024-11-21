@@ -5,7 +5,6 @@ from random import randint, choice
 from helper import Helper
 from .weapons import Weapon
 from .armors import Armor
-from .crit import crit
 
 class Enemy:
     def __init__(self, name, con, mag, str, int, dex, lck, df, mdf, weapon=Weapon.get_weapon('None'), armor=Armor.get_armor('None'), skills=[], spells=[], inv=[], conditions=[], flags=[]):
@@ -83,7 +82,7 @@ class Enemy:
         else:   #stat == dex
             stat = self.get_dex()
         atk = max(stat + randint(self.EQweapon.atkmin, self.EQweapon.atkmax), 1)
-        if crit(self):
+        if Helper.crit(self):
             print("Critical Hit!")
             atk = atk * 2
         return atk
@@ -95,7 +94,7 @@ class Enemy:
 
     def get_matk(self, spell):
         matk = max(((self.get_mag() * 2) + randint(spell.matkmin, spell.matkmax) + randint(self.EQweapon.matkmin, self.EQweapon.matkmax)), 1)
-        if crit(self):
+        if Helper.crit(self):
             print("Critical Hit!")
             matk = matk * 2
         return matk

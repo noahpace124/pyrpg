@@ -2,6 +2,8 @@
 import os
 import platform
 import inquirer
+import string
+from random import randint
 
 #Import from File
 
@@ -14,9 +16,31 @@ class Helper:
             os.system("clear")
 
     @staticmethod
-    def yes_or_no(ans):
-        ans = ans.replace(" ", "")
-        if ans == 'y' or ans == 'ye' or ans == 'yes':
+    def prompt(choices):
+        choice_array = []
+        i = 0
+        alphabet = string.ascii_lowercase
+        for choice in choices:
+            choice_array.append(f"{alphabet[i]}) {choice}")
+            i += 1
+        for choice in choice_array:
+            print(choice)
+        answer = input(">> ").lower()
+        i = 0
+        for choice in choice_array:
+            temp = choice.split(') ')
+            if len(answer.strip()) == 1 and answer.strip() == temp[0]:
+                return i
+            if answer in temp[1].lower():
+                return i
+            i += 1
+        return -1 #If we get here no answer was selected correctly
+
+    @staticmethod
+    def yes_or_no():
+        ans  = input('>> ')
+        ans = ans.lower().strip()
+        if ans == 'y' or ans == 'ye' or ans == 'es' or ans == 'ys' or ans == 'yes':
             return 1
         elif ans == 'n' or ans == 'no':
             return 0
@@ -80,3 +104,11 @@ class Helper:
             player.ctp = player.tp
             points -= 1
             print()
+
+    @staticmethod        
+    def crit(attacker):
+        if randint(1, 100) <= attacker.get_lck():
+            return True
+        else:
+            return False
+        
