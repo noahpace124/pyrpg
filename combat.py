@@ -21,28 +21,62 @@ def combat(player, enemy):
             print(f"MP: {Helper.render_bar(player.cmp, player.mp, 'b')}")
         print(f"{enemy.name}")
         print(f"HP: {Helper.render_bar(enemy.chp, enemy.hp, 'r')}")
-        choices = ['Attack', 'Guard', 'Skills', 'Spells', 'Inventory', 'Status', 'Enemy Status']
+        choices = ['Attack', 'Guard']
+        for skill in player.EQskills: # Add equipped skills
+            skill_info = f"{skill.name}: {skill.cost} TP"
+            choices.append(skill_info)
+        for spell in player.EQspells: # Add equipped spells
+            spell_info = f"{spell.name}: {spell.cost} MP"
+            choices.append(spell_info)
+        choices.append('Items')
+        choices.append('Status')
+        choices.append('Enemy Status')
         if 'Boss' not in enemy.flags:
             choices.append('Run')
 
         answer = Helper.prompt(choices)
+        print()
 
-        res = handle_combat_choice(choices[answer], player, enemy)
+        response = -1
+        if choices[answer] == 'Attack':
+            response = combat_round(player, enemy)
+        elif choices[answer] == 'Guard':
+            response = guard(player, enemy)
+        elif choices[answer] == 'Items':
+            response = combat_inventory(player, enemy)
+        elif choices[answer] == 'Status':
+            player.view_stats()
+        elif choices[answer] == 'Enemy Status':
+            enemy.view_stats()
+        elif choices[answer] == 'Run':
+            response = combat_round(player, enemy, 'run')
+        elif isinstance(Skill.get_skill(choices[answer].split(':')[0]), Skill):
+            skill = Skill.get_skill(choices[answer].split(':')[0])
+            if player.ctp < skill.cost:
+                input(f"You don't have enough TP!")
+            else:
+                response = combat_round(player, enemy, skill)
+        elif isinstance(Spell, Spell.get_spell(choices[answer].split(':')[0]), Spell):
+            if player.cmp < spell.cost:
+                input(f"You don't have enough MP!")
+            else:
+                response = combat_round(player, enemy, spell)
 
-        if res == 2: #player win
+
+        if response == 2: #player win
             combat_win(player, enemy)
             break
-        elif res == 1: #run
+        elif response == 1: #run
             input(f"{player.name} managed to run away...")
             break
-        elif res == 0: #player loss
+        elif response == 0: #player loss
             input(f"{player.name} died.")
             Helper.clear_screen()
             Helper.make_banner("GAME OVER", True)
             print(f"{player.name} was killed by the {enemy.name}.")
             input(">> ")
             exit()
-        elif res == 3: #3 - correct response, game continues
+        elif response == 3: #3 - correct response, game continues
             enemy.upkeep()
             #check hp
             if enemy.chp <= 0: #enemy dies
@@ -59,27 +93,6 @@ def combat(player, enemy):
             
             #increase turn count
             turn_count += 1
-
-def handle_combat_choice(choice, player, enemy):
-    if choice == "Attack":
-        return combat_round(player, enemy)
-    elif choice == "Guard":
-        return guard(player, enemy)
-    elif choice == "Skills":
-        return use_skill(player, enemy)
-    elif choice == "Spells":
-        return use_spell(player, enemy)
-    elif choice == "Inventory":
-        return combat_inventory(player, enemy)
-    elif choice == "Status":
-        player.view_stats()
-        return -1
-    elif choice == "Enemy Status":
-        enemy.view_stats()
-        return -1
-    elif choice == "Run":
-        return combat_round(player, enemy, 'run')
-    return
 
 def combat_round(player, enemy, obj=None):
     #player option check
@@ -116,6 +129,7 @@ def combat_round(player, enemy, obj=None):
             return 2 #player win
         if player.chp <= 0:
             return 0 #player loss
+        print()
         #enemy acts
         if enemy_obj == None: #atk
             attack(enemy, player)
@@ -139,6 +153,7 @@ def combat_round(player, enemy, obj=None):
             return 2 #player win
         if player.chp <= 0:
             return 0 #player loss
+        print()
         #player acts
         if obj == None: #atk
             attack(player, enemy)
@@ -202,52 +217,6 @@ def run(player, enemy):
     else:
         return False
 
-def use_skill(player, enemy):
-    #make a list of all skills and 'go back'
-    skill_choices = []
-    for skill in player.EQskills:
-        skill_info = f"{skill.name}: {skill.cost} TP"
-        skill_choices.append(skill_info)
-    skill_choices.append("Go Back")
-    #prompt user for skill or to go back
-    print("Select a skill to use: ")
-    answer = Helper.prompt(skill_choices)
-    #no action taken
-    if skill_choices[answer] == "Go Back":
-        return -1
-    else:
-        #action taken
-        skill_name = skill_choices[answer].split(": ")[0]  # Get the skill name
-        skill = Skill.get_skill(skill_name)
-        if player.ctp < skill.cost:
-            input(f"You don't have enough TP!")
-            return -1
-        else:
-            return combat_round(player, enemy, skill)
-
-def use_spell(player, enemy):
-    #make a list of all spells and 'go back'
-    spell_choices = []
-    for spell in player.EQspells:
-        spell_info = f"{spell.name}: {spell.cost} MP"
-        spell_choices.append(spell_info)
-    spell_choices.append("Go Back")
-    #prompt user for spell or to go back
-    print("Select a spell to use: ")
-    answer = Helper.prompt(spell_choices)
-    #no action taken
-    if spell_choices[answer] == "Go Back":
-        return -1
-    else:
-        #action taken
-        spell_name = spell_choices[answer].split(": ")[0]  # Get the spell name
-        spell = Spell.get_spell(spell_name)
-        if player.cmp < spell.cost:
-            input(f"You don't have enough MP!")
-            return -1
-        else:
-            return combat_round(player, enemy, spell)
-
 def combat_inventory(player, enemy):
     while True:  # Loop to return to the items menu
         item_choices = []
@@ -293,7 +262,6 @@ def combat_inventory(player, enemy):
                 return -1
 
 def combat_win(player, enemy):
-    print()
     input(f"{enemy.name} was defeated.")
     print()
     xp = round((enemy.hp * 10) * max(1 + ((enemy.lvl - player.lvl)/player.lvl), 1))

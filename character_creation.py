@@ -13,6 +13,7 @@ def choose_name():
         input("Invalid Name: Name must be made of characters.")
         return choose_name()
     name = Helper.string_color(name, 'y')
+    print()
     print(f"{name} is your name? (y/n)")
     answer = Helper.yes_or_no()
     if answer == 1:
@@ -31,6 +32,8 @@ def choose_race():
 
     # Find the chosen race object
     chosen_race = next(race for race in races if race.name == chosen_race_name)
+
+    print()
 
     # Print the description before confirming
     print(f"{chosen_race.desc}")
@@ -54,6 +57,8 @@ def choose_job():
 
     # Find the chosen job object
     chosen_job = next(job for job in jobs if job.name == chosen_job_name)
+
+    print()
 
     # Confirm the chosen job
     print(f"{chosen_job.desc}")
