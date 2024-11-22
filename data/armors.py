@@ -10,9 +10,6 @@ class Armor:
         self.reqm = reqm
         Armor.all_armors.append(self)  # Automatically add the instance to the class-level list
 
-    def __repr__(self):
-        return f"<Armor(name={self.name}, df={self.df}, mdf={self.mdf})>"
-
     @classmethod
     def get_armor(cls, armor_name):
         for armor in cls.all_armors:

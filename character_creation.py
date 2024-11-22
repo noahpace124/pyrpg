@@ -1,6 +1,4 @@
-# Imports from Packages
-
-# Imports from Files
+# Imports
 from helper import Helper
 from data.races import races
 from data.jobs import jobs
@@ -11,14 +9,15 @@ def choose_name():
     Helper.clear_screen()
     print("Let's start with your name.")
     name = input(">> ")
+    if len(name.strip()) == 0:
+        input("Invalid Name: Name must be made of characters.")
+        return choose_name()
+    name = Helper.string_color(name, 'y')
     print(f"{name} is your name? (y/n)")
     answer = Helper.yes_or_no()
     if answer == 1:
         return name
     elif answer == 0:
-        return choose_name()
-    else:
-        input("Invalid Answer: Try typing yes or no.")
         return choose_name()
 
 def choose_race():
@@ -26,10 +25,6 @@ def choose_race():
     print("Next, what race are you?")
 
     answer = Helper.prompt([race.name for race in races])
-
-    if answer == -1:
-        input("Invalid Answer: Try typing the letter or the name of the choice.")
-        return choose_race()
 
     # Extract the chosen race name from the answer
     chosen_race_name = [race.name for race in races][answer]
@@ -46,20 +41,13 @@ def choose_race():
         return chosen_race  # Return the chosen race object
     elif ans == 0:
         return choose_race()
-    else:
-        input("Invalid Answer: Try typing yes or no.")
-        return choose_race()
 
 
 def choose_job():
     Helper.clear_screen()
-    print("Finally, what class are you?")
+    print("Finally, what background are you?")
 
-    answer =Helper.prompt([job.name for job in jobs])
-
-    if answer == -1:
-        input("Invalid Answer: Try typing the letter or the name of the choice.")
-        return choose_job()
+    answer = Helper.prompt([job.name for job in jobs])
 
     # Extract the chosen job name from the answer
     chosen_job_name = [job.name for job in jobs][answer]
@@ -75,9 +63,6 @@ def choose_job():
     if ans == 1:
         return chosen_job  # Return the chosen race object
     elif ans == 0:
-        return choose_job()
-    else:
-        input("Invalid Answer: Try typing yes or no.")
         return choose_job()
 
 def create_player(name, race, job):
@@ -110,5 +95,3 @@ def character_creation():
             return player
         elif answer == 0:
             return character_creation()
-        else:
-            input("Invalid Answer: Try typing yes or no.")

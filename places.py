@@ -1,8 +1,6 @@
 #Imports
 from random import shuffle
-import inquirer
 
-#Import from File
 from helper import Helper
 from inventory import camp, inventory
 from data.events import Event
@@ -24,14 +22,12 @@ def barrens(player):
             while True:
                 Helper.clear_screen()
                 print("Do you want to access your inventory?")
-                ans = input(">> ")
-                if Helper.yes_or_no(ans) == 1:
+                answer = Helper.yes_or_no()
+                if answer == 1:
                     inventory(player)
                     break
-                elif Helper.yes_or_no(ans) == 0:
+                elif answer == 0:
                     break
-                else:
-                    input("Invalid answer. Try typing 'yes' or 'no'.")
         Helper.clear_screen()
         event = Event.get_event("Goblin Shaman")  
         event.func(player)
@@ -41,52 +37,48 @@ def barrens(player):
             return barrens(player) #REPLACE WITH NEW LOCATION
         else: #ran away from boss
             return barrens(player)
+        
     else: #barrens complete
         event_choices = Event.get_events_by_location('barrens', player.flags)
         events = []
         while len(events) < 5:
             Helper.clear_screen()
-            questions = [
-                inquirer.List('selected_event',
-                            message=f"Select your events ({len(events)}/5)",
-                            choices=[f'{event.name}: {event.desc} (Count: {events.count(event)}/{event.max})' for event in event_choices],
-                            ),
-            ]
 
-            answer = inquirer.prompt(questions)
+            print("Choose your events: ")
+            answer = Helper.prompt([f'{event.name}: {event.desc} (Count: {events.count(event)}/{event.max})' for event in event_choices])
             chosen_event_name = answer['selected_event'].split(':')[0].strip()
             event = Event.get_event(chosen_event_name)
+
             if events.count(event) < event.max:
                 events.append(event)
             else:
                 input(f"You already have the most of this event possible. (Count: {events.count(event)}/{event.max})")
+
         while True:
             Helper.clear_screen()
             print("Your events:")
             for event in events: print(f"   {event.name}: {event.desc}")
             print("Do you want venture out with these events?")
-            ans = Helper.yes_or_no(input(">> ").lower())
-            if ans == 1: #yes
+            answer = Helper.yes_or_no()
+            if answer == 1: #yes
                 break
-            elif ans == 0: #no
+            elif answer == 0: #no
                 return barrens(player)
-            else:
-                input("Invalid answer. Try typing 'yes' or 'no'.")
         shuffle(events)
         for event in events:
             Helper.clear_screen()
             event.func(player)
+
             while True:
                 Helper.clear_screen()
                 print("Do you want to access your inventory?")
-                ans = input(">> ")
-                if Helper.yes_or_no(ans) == 1:
+                answer = Helper.yes_or_no()
+                if answer == 1:
                     inventory(player)
                     break
-                elif Helper.yes_or_no(ans) == 0:
+                elif answer == 0:
                     break
-                else:
-                    input("Invalid answer. Try typing 'yes' or 'no'.")
+
         if 'barrens boss' not in player.flags:
             Helper.clear_screen()
             event = Event.get_event("Goblin Shaman")  
@@ -96,7 +88,3 @@ def barrens(player):
                 return barrens(player) #REPLACE WITH NEW LOCATION
             else: #did not beat boss
                 return barrens(player)
-
-                
-
-

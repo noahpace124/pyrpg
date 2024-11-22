@@ -1,4 +1,5 @@
 #Import
+from helper import Helper
 
 class Condition:
     all_conditions = []

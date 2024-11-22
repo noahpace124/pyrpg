@@ -8,7 +8,7 @@ from .armors import Armor
 
 class Enemy:
     def __init__(self, name, con, mag, str, int, dex, lck, df, mdf, weapon=Weapon.get_weapon('None'), armor=Armor.get_armor('None'), skills=[], spells=[], inv=[], conditions=[], flags=[]):
-        self.name = name
+        self.name = Helper.string_color(name, 'r')
 
         self.lvl = con + mag + str + int + dex + lck
         self.hp = 20 + (5 * con)
@@ -70,11 +70,16 @@ class Enemy:
         # Display status conditions
         status_conditions = []
         for condition in self.conditions:
-            condition_info = f"{condition.name}: {condition.duration} {condition.duration_type}"
-            status_conditions.append(condition_info)
+            if condition:
+                color = ''
+                if condition.type == 'buff':
+                    color = 'o'
+                elif condition.type == 'debuff':
+                    color = 'p'
+                condition_info = f"{Helper.string_color(condition.name, color)} - {condition.duration} {condition.duration_type}"
+                status_conditions.append(condition_info)
         print(f"Conditions: {', '.join(status_conditions)}\n")
-
-        input("(Press enter to continue...) ")
+        input()
     
     def get_atk(self):
         if self.EQweapon.stat == 'str':

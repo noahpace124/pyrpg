@@ -1,7 +1,7 @@
 #Imports
 from random import randint
 
-#Imports from File
+from helper import Helper
 from .conditions import Condition
 
 class Skill:
@@ -35,9 +35,9 @@ def instant_recharge(attacker, defender):
         attacker.cmp += amount
         attacker.ctp -= amount
     if attacker.cmp == attacker.mp:
-        input(f"{attacker.name} recharged their MP fully.")
+        input(f"{attacker.name} {Helper.string_color('recharged', 'o')} their MP fully.")
     else:
-        input(f"{attacker.name} recharged their MP somewhat.")
+        input(f"{attacker.name} {Helper.string_color('recharged', 'o')} their MP somewhat.")
 
 def heavy_blow(attacker, defender):
     print(f"{attacker.name} uses Heavy Blow.")
@@ -48,7 +48,7 @@ def heavy_blow(attacker, defender):
         df = defender.get_df(atk)
         dmg = max(atk - df, 1)
         defender.chp -= dmg
-        input(f"{attacker.name} landed a heavy blow on {defender.name} for {dmg} damage.")
+        input(f"{attacker.name} landed a heavy blow on {defender.name} for {Helper.string_color(dmg, 'r')} damage.")
     else:
         input(f"{defender.name} avoided {attacker.name}\'s attack!")
 
@@ -60,7 +60,7 @@ def quick_strike(attacker, defender):
         df = defender.get_df(atk)
         dmg = max(atk - df, 1)
         defender.chp -= dmg
-        input(f"{attacker.name} striked quickly at {defender.name} for {dmg} damage.")
+        input(f"{attacker.name} striked quickly at {defender.name} for {Helper.string_color(dmg, 'r')} damage.")
     else:
         input(f"{defender.name} avoided {attacker.name}\'s attack!")
 
@@ -73,7 +73,7 @@ def damage_armor(attacker, defender):
         df = defender.get_df(atk)
         dmg = max(atk - df, 1)
         defender.chp -= dmg
-        input(f"{attacker.name} tried to destroy some of {defender.name}\'s armor and did {dmg} damage.")
+        input(f"{attacker.name} tried to destroy some of {defender.name}\'s armor and did {Helper.string_color(dmg, 'r')} damage.")
         apply = True
         for condition in defender.conditions: #check if we already have the condition
             if condition and condition.name == "Defense Down":
@@ -81,7 +81,7 @@ def damage_armor(attacker, defender):
                 apply = False
         if apply: #we don't have the condition
             defender.conditions.append(Condition.get_condition("Defense Down", 4))
-        input(f"{attacker.name} lowered {defender.name}\'s defense.")
+        input(f"{attacker.name} {Helper.string_color('lowered', 'p')} {defender.name}\'s defense.")
     else:
         input(f"{defender.name} avoided {attacker.name}\'s attack!")
 
@@ -94,7 +94,7 @@ def fast_attacks(attacker, defender):
         df = defender.get_df(atk)
         dmg = max(atk - df, 1)
         defender.chp -= dmg
-        input(f"{attacker.name} attacks a first time at {defender.name} for {dmg} damage.")
+        input(f"{attacker.name} attacks a first time at {defender.name} for {Helper.string_color(dmg, 'r')} damage.")
     else:
         input(f"{defender.name} avoided {attacker.name}\'s first attack!")
     dodge_chance = max(defender.get_dodge() - attacker.get_dex(), 0)
@@ -103,7 +103,7 @@ def fast_attacks(attacker, defender):
         df = defender.get_df(atk)
         dmg = max(atk - df, 1)
         defender.chp -= dmg
-        input(f"{attacker.name} attacks a second time at {defender.name} for {dmg} damage.")
+        input(f"{attacker.name} attacks a second time at {defender.name} for {Helper.string_color(dmg, 'r')} damage.")
     else:
         input(f"{defender.name} avoided {attacker.name}\'s second attack!")
 
@@ -116,7 +116,7 @@ def empowering_strike(attacker, defender):
         df = defender.get_df(atk)
         dmg = max(atk - df, 1)
         defender.chp -= dmg
-        input(f"{attacker.name} lands a strike against {defender.name} for {dmg} damage.")
+        input(f"{attacker.name} lands a strike against {defender.name} for {Helper.string_color(dmg, 'r')} damage.")
         apply = True
         for condition in defender.conditions: #check if we already have the condition
             if condition and condition.name == "Strength Up":
@@ -124,7 +124,7 @@ def empowering_strike(attacker, defender):
                 apply = False
         if apply: #we don't have the condition
             attacker.conditions.append(Condition.get_condition("Strength Up", 4))
-        input(f"{attacker.name} increased their Strength.")
+        input(f"{attacker.name} {Helper.string_color('increased', 'o')} their Strength.")
     else:
         input(f"{defender.name} avoided {attacker.name}\'s attack!")
 
@@ -137,7 +137,7 @@ def poison_stab(attacker, defender):
         df = defender.get_df(atk)
         dmg = max(atk - df, 1)
         defender.chp -= dmg
-        input(f"{attacker.name} tried to poison {defender.name} and did {dmg} damage.")
+        input(f"{attacker.name} tried to poison {defender.name} and did {Helper.string_color(dmg, 'r')} damage.")
         apply = True
         for condition in defender.conditions: #check if we already have the condition
             if condition and condition.name == "Poison":
@@ -145,7 +145,7 @@ def poison_stab(attacker, defender):
                 apply = False
         if apply: #we don't have the condition
             defender.conditions.append(Condition.get_condition("Poison", 5))
-        input(f"{attacker.name} poisoned {defender.name}.")
+        input(f"{attacker.name} {Helper.string_color('poisoned', 'p')} {defender.name}.")
     else:
         input(f"{defender.name} avoided {attacker.name}\'s attack!")
 

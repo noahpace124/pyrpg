@@ -26,7 +26,7 @@ class Player:
         tp = dex * 5
 
         # Basic Information
-        self.name = name
+        self.name = Helper.string_color(name, 'y')
         self.lvl = lvl
         self.lvlnxt = 100 + (self.lvl * 100)
         self.xp = 0
@@ -114,11 +114,16 @@ class Player:
         # Display status conditions
         status_conditions = []
         for condition in self.conditions:
-            condition_info = f"{condition.name} - {condition.duration} {condition.duration_type}"
-            status_conditions.append(condition_info)
+            if condition:
+                color = ''
+                if condition.type == 'buff':
+                    color = 'o'
+                elif condition.type == 'debuff':
+                    color = 'p'
+                condition_info = f"{Helper.string_color(condition.name, color)} - {condition.duration} {condition.duration_type}"
+                status_conditions.append(condition_info)
         print(f"Conditions: {', '.join(status_conditions)}\n")
-
-        input("(Press enter to continue...) ")
+        input("")
 
     def equip_weapon(self, weapon):
         if weapon:

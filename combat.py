@@ -1,8 +1,6 @@
 #Imports
-import inquirer
 from random import randint, shuffle
 
-#Imports from File
 from helper import Helper
 from data.skills import Skill
 from data.spells import Spell
@@ -15,22 +13,22 @@ def combat(player, enemy):
         Helper.clear_screen()
         Helper.make_banner('COMBAT', True)
         Helper.make_banner(f'Turn {turn_count}')
-        print(f'{player.name}: {player.chp}/{player.hp} HP VS {enemy.name}: {enemy.chp}/{enemy.hp} HP')
-        print(f'MP: {player.cmp}/{player.mp} - TP: {player.ctp}/{player.tp}')
-        
+        print(f'{player.name}')
+        print(f"HP: {Helper.render_hp_bar(player.chp, player.hp)}")
+        if player.tp != 0:
+            print(f"TP: {Helper.render_bar(player.ctp, player.tp, 'dg')}")
+        if player.mp != 0:
+            print(f"MP: {Helper.render_bar(player.cmp, player.mp, 'b')}")
+        print(f"{enemy.name}")
+        print(f"HP: {Helper.render_bar(enemy.chp, enemy.hp, 'r')}")
         choices = ['Attack', 'Guard', 'Skills', 'Spells', 'Inventory', 'Status', 'Enemy Status']
         if 'Boss' not in enemy.flags:
             choices.append('Run')
 
-        questions = [
-            inquirer.List('choice',
-                        message="Choose an option",
-                        choices=choices,
-                        ),
-        ]
+        answer = Helper.prompt(choices)
 
-        answer = inquirer.prompt(questions)
-        res = handle_combat_choice(answer['choice'], player, enemy)
+        res = handle_combat_choice(choices[answer], player, enemy)
+
         if res == 2: #player win
             combat_win(player, enemy)
             break
@@ -174,7 +172,7 @@ def attack(attacker, defender):
         df = defender.get_df(atk)
         dmg = max(atk - df, 1)
         defender.chp -= dmg
-        input(f"{attacker.name} {attacker.EQweapon.msg} at {defender.name} for {dmg} damage.")
+        input(f"{attacker.name} {attacker.EQweapon.msg} at {defender.name} for {Helper.string_color(dmg, 'r')} damage.")
     else:
         input(f"{defender.name} avoided {attacker.name}\'s attack!")
 
@@ -208,22 +206,18 @@ def use_skill(player, enemy):
     #make a list of all skills and 'go back'
     skill_choices = []
     for skill in player.EQskills:
-        skill_info = f"{skill.name}: {skill.cost} TP - {skill.desc}"
+        skill_info = f"{skill.name}: {skill.cost} TP"
         skill_choices.append(skill_info)
     skill_choices.append("Go Back")
     #prompt user for skill or to go back
-    questions = [
-        inquirer.List('skill_choice',
-                        message="Select a skill to use or go back",
-                        choices=skill_choices),
-    ]
-    answer = inquirer.prompt(questions)
+    print("Select a skill to use: ")
+    answer = Helper.prompt(skill_choices)
     #no action taken
-    if answer['skill_choice'] == "Go Back":
+    if skill_choices[answer] == "Go Back":
         return -1
     else:
         #action taken
-        skill_name = answer['skill_choice'].split(": ")[0]  # Get the skill name
+        skill_name = skill_choices[answer].split(": ")[0]  # Get the skill name
         skill = Skill.get_skill(skill_name)
         if player.ctp < skill.cost:
             input(f"You don't have enough TP!")
@@ -235,22 +229,18 @@ def use_spell(player, enemy):
     #make a list of all spells and 'go back'
     spell_choices = []
     for spell in player.EQspells:
-        spell_info = f"{spell.name}: {spell.cost} MP - {spell.desc}"
+        spell_info = f"{spell.name}: {spell.cost} MP"
         spell_choices.append(spell_info)
     spell_choices.append("Go Back")
     #prompt user for spell or to go back
-    questions = [
-        inquirer.List('spell_choice',
-                        message="Select a spell to cast or go back",
-                        choices=spell_choices),
-    ]
-    answer = inquirer.prompt(questions)
+    print("Select a spell to use: ")
+    answer = Helper.prompt(spell_choices)
     #no action taken
-    if answer['spell_choice'] == "Go Back":
+    if spell_choices[answer] == "Go Back":
         return -1
     else:
         #action taken
-        spell_name = answer['spell_choice'].split(": ")[0]  # Get the spell name
+        spell_name = spell_choices[answer].split(": ")[0]  # Get the spell name
         spell = Spell.get_spell(spell_name)
         if player.cmp < spell.cost:
             input(f"You don't have enough MP!")
@@ -273,19 +263,14 @@ def combat_inventory(player, enemy):
         item_choices.append("Go Back")
 
         # Create the inquirer prompt for item selection
-        questions = [
-            inquirer.List('item_choice',
-                          message="Select an item to use",
-                          choices=item_choices,
-                          ),
-        ]
+        print("Select an item to use: ")
 
-        answer = inquirer.prompt(questions)
+        answer = Helper.prompt(item_choices)
 
-        if answer['item_choice'] == "Go Back":
+        if item_choices[answer] == "Go Back":
             break  # Exit the loop to go back
 
-        item_name = answer['item_choice'].split(": ")[0]  # Get the item name
+        item_name = item_choices[answer].split(": ")[0]  # Get the item name
         item = Item.get_item(item_name)
         item_in_inventory = next((i for i in player.inv if i['name'] == item.name), None)
 

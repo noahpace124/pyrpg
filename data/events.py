@@ -1,5 +1,4 @@
 #Import
-import inquirer
 from random import randint
 
 #Import from File
@@ -87,21 +86,17 @@ def kobold_battle(player):
 def boulder(player):
     print(f"While walking along the gravel path by boundless hills,")
     print(f"suddenly a boulder begins rolling toward you down the slope!")
-    questions = [
-        inquirer.List('choice',
-            message="Act fast or get hit",
-            choices=["Stop It (Strength)", "Dodge (Dexterity)", "Pray (Luck)", "Take the Hit (Lose HP)"],
-        ),
-    ]
-    answer = inquirer.prompt(questions)
-    action = answer['choice']
+    print("Act fast of get hit: ")
+    choices = ["Stop It (Strength)", "Dodge (Dexterity)", "Pray (Luck)", "Take the Hit (Lose HP)"]
+    answer = Helper.prompt(choices)
+    action = choices[answer]
     if action == "Stop It (Strength)":
         check = player.get_str() + randint(0, player.get_lck())
         print(f"Strength Check: {check}")
         input(f"Needed: 20")
         if check < 20:
             player.chp -= 10
-            input(f"{player.name} gets hit by the boulder and takes 10 damage.")
+            input(f"{player.name} gets hit by the boulder and takes {Helper.string_color('10', 'r')} damage.")
         else:
             input(f"In a rush of adrenaline you successfully manage to redirect the boulder.")
             Helper.award_xp(player, 600)
@@ -111,7 +106,7 @@ def boulder(player):
         input(f"Needed: 5")
         if check < 5:
             player.chp -= 10
-            input(f"{player.name} gets hit by the boulder and takes 10 damage.")
+            input(f"{player.name} gets hit by the boulder and takes {Helper.string_color('10', 'r')} damage.")
         else:
             input(f"You deftly sidestep the boulder, avoiding it completely.")
             Helper.award_xp(player, 300)
@@ -121,14 +116,14 @@ def boulder(player):
         input(f"Needed: 10")
         if check < 10:
             player.chp -= 10
-            input(f"{player.name} gets hit by the boulder and takes 10 damage.")
+            input(f"{player.name} gets hit by the boulder and takes {Helper.string_color('10', 'r')} damage.")
         else:
             print("When the boulder is about to strike you, it suddenly splits into two.")
             gold = 100 * randint(1, 3)
             input(f"Inside the boulder, you find {gold}. Isn't that something.")
     else:   #take the hit
         player.chp -= 10
-        input(f"{player.name} gets hit by the boulder and takes 10 damage.")
+        input(f"{player.name} gets hit by the boulder and takes {Helper.string_color('10', 'r')} damage.")
     if player.chp <= 0:
         input(f"{player.name} died.")
         Helper.clear_screen()
@@ -158,14 +153,10 @@ def goblin_shaman(player):
     if 'barrens boss' not in player.flags:
         print("Coming close to the end of the barrens you see some lightning crackling in the distance.")
         print("Upon coming closer you see what apears to be another standard goblin, however this one wields a staff.")
-        questions = [
-            inquirer.List('choice',
-                message="Do you want to approach or retreat for now?",
-                choices=["Approach (Fight Boss)", "Retreat (Return to Camp)"],
-            ),
-        ]
-        answer = inquirer.prompt(questions)
-        action = answer['choice']
+        print("Do you want to approach or retreat for now? ")
+        choices = ["Approach (Fight Boss)", "Retreat (Return to Camp)"]
+        answer = Helper.prompt(choices)
+        action = choices[answer]
         if action == 'Approach (Fight Boss)':
             combat(player, enemy)
             player.flags.append('barrens boss')
@@ -177,14 +168,10 @@ def goblin_shaman(player):
                 player.flags.append('barrens complete')
     else: #barrens boss has been defeated
         print("You spot another staff wielding goblin in the distance.")
-        questions = [
-            inquirer.List('choice',
-                message="Do you want to approach or try to sneak past?",
-                choices=["Approach (Fight Boss)", "Go Around (Continue)"]
-            ),
-        ]
-        answer = inquirer.prompt(questions)
-        action = answer['choice']
+        print("Do you want to approach or try to sneak past? ")
+        choices = ["Approach (Fight Boss)", "Go Around (Continue)"]
+        answer = Helper.prompt(choices)
+        action = choices[answer]
         if action == 'Approach (Fight Boss)':
             combat(player, enemy)
         else: #Continue past

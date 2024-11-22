@@ -24,9 +24,6 @@ class Job:
         self.skills = skills
         Job.all_jobs.append(self)  # Automatically add the instance to the class-level list
 
-    def __repr__(self):
-        return f"<Job(name={self.name}, con={self.con}, mag={self.mag}, weapon={self.weapon}, armor={self.armor})>"
-
     @classmethod
     def get_job(cls, job_name):
         for job in cls.all_jobs:

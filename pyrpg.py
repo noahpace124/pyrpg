@@ -1,6 +1,4 @@
-#Imports from Packages
-
-#Imports from Files
+#Imports
 from character_creation import character_creation
 from helper import Helper
 
@@ -19,8 +17,6 @@ def main():
             input("Loading game is not implemented yet.")
         elif answer == 2:
             exit()
-        else: #-1
-            input("Invalid Answer: Try typing the letter or the name of the choice.")
     
     Helper.load_location(player)
 

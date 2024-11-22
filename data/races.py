@@ -14,9 +14,6 @@ class Race:
         self.mdf = mdf
         Race.all_races.append(self)  # Automatically add the instance to the class-level list
 
-    def __repr__(self):
-        return f"<Race(name={self.name}, con={self.con}, mag={self.mag}, df={self.df}, mdf={self.mdf})>"
-
     @classmethod
     def get_race(cls, race_name):
         for race in cls.all_races:

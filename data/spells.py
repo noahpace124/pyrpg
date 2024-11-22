@@ -1,6 +1,8 @@
 #Imports
 from random import randint
 
+from helper import Helper
+
 class Spell:
     all_spells = []  # Class-level attribute to hold all spell instances
 
@@ -14,9 +16,6 @@ class Spell:
         self.reqm = reqm
         self.func = func
         Spell.all_spells.append(self)  # Automatically add the instance to the class-level list
-
-    def __repr__(self):
-        return f"<Spell(name={self.name}, desc={self.desc}, cost={self.cost}, matkmin={self.matkmin}, matkmax={self.matkmax}, reqm={self.reqm})>"
     
     @classmethod
     def get_spell(cls, spell_name):
@@ -35,7 +34,7 @@ def fireball(attacker, defender):
         mdf = defender.get_mdf(matk)
         dmg = max(matk - mdf, 1)
         defender.chp -= dmg
-        input(f"{attacker.name} cast Fireball on {defender.name} for {dmg} damage.")
+        input(f"{attacker.name} cast Fireball on {defender.name} for {Helper.string_color(dmg, 'r')} damage.")
     else:
         input(f"{defender.name} avoided {attacker.name}\'s Fireball!")
 
@@ -48,7 +47,7 @@ def zap(attacker, defender):
         mdf = defender.get_mdf(matk)
         dmg = max(matk - mdf, 1)
         defender.chp -= dmg
-        input(f"{attacker.name} cast Zap on {defender.name} for {dmg} damage.")
+        input(f"{attacker.name} cast Zap on {defender.name} for {Helper.string_color(dmg, 'r')} damage.")
     else:
         input(f"{defender.name} avoided {attacker.name}\'s Zap!")
 
