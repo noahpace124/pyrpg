@@ -1,8 +1,7 @@
 Things to work on:
 Always check for proper spacing!
->>update event selection to exclude events from list if max selected/minimize repetitive code in places if possible
 ask if user wants to unequip current gear for new gear when equipping
-display gold in inventory/add more colors and etc
+display gold in inventory/add more colors and etc/edit level up screen and make player status visible in between evens
 make it so all status conditions need to roll against the respective stat to apply
 implement randomized dungeon to explore system
 add accessory slots that provide passive buffs/add two hands, legs, chest and head instead of weapon and armor

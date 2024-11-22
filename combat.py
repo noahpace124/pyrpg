@@ -267,6 +267,7 @@ def combat_win(player, enemy):
     xp = round((enemy.hp * 10) * max(1 + ((enemy.lvl - player.lvl)/player.lvl), 1))
     Helper.award_xp(player, xp)
     gold = max(enemy.get_lck() * 10, 10) * (1 + randint(0, player.get_lck()))
+    player.gold += gold
     input(f"{player.name} gained {gold} gold.")
     print()
     if len(enemy.inv) > 0:

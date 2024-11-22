@@ -1,7 +1,6 @@
 #Import
 from random import randint
 
-#Import from File
 from combat import combat
 from helper import Helper
 from .enemy import Enemy
@@ -35,6 +34,17 @@ class Event:
                     events.append(event)
         print(events)
         return events
+    
+    @classmethod
+    def get_boss_events_by_location(cls, location):
+        events = []
+        for event in cls.all_events:
+            if location in event.locations:
+                if event.flag:
+                    if 'boss' in event.flag:
+                        events.append(event)
+        return events
+
     
     @classmethod
     def get_event(cls, event_name):
@@ -150,7 +160,7 @@ def goblin_shaman(player):
         inv=[Weapon.get_weapon('Wooden Staff'), Armor.get_armor('Cloth')]
     )
     Helper.clear_screen()
-    if 'barrens boss' not in player.flags:
+    if 'goblin shaman boss' not in player.flags:
         print("Coming close to the end of the barrens you see some lightning crackling in the distance.")
         print("Upon coming closer you see what apears to be another standard goblin, however this one wields a staff.")
         print("Do you want to approach or retreat for now? ")
@@ -159,7 +169,7 @@ def goblin_shaman(player):
         action = choices[answer]
         if action == 'Approach (Fight Boss)':
             combat(player, enemy)
-            player.flags.append('barrens boss')
+            player.flags.append('goblin shaman boss')
             if 'barrens complete' not in player.flags:
                 player.flags.append('barrens complete')
         else: #Retreat
@@ -206,6 +216,6 @@ events = [
         "A goblin shaman want to fight you.",
         1,
         goblin_shaman,
-        flag='barrens boss'
+        flag='goblin shaman boss'
     )
 ]
