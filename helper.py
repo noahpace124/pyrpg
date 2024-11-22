@@ -30,6 +30,15 @@ class Helper:
 
     @staticmethod
     def prompt(choices):
+        def generate_labels():
+            """Generate labels like 'a', 'b', ..., 'z', 'aa', 'ab', ..."""
+            alphabet = string.ascii_lowercase
+            length = 1
+            while True:
+                for letters in product(alphabet, repeat=length):
+                    yield ''.join(letters)
+                length += 1
+                
         #create labels for choice
         label_generator = generate_labels()
 
@@ -231,12 +240,3 @@ def match_count(string, input):
                         break
                 max_count = max(max_count, count)
             return max_count
-
-def generate_labels():
-    """Generate labels like 'a', 'b', ..., 'z', 'aa', 'ab', ..."""
-    alphabet = string.ascii_lowercase
-    length = 1
-    while True:
-        for letters in product(alphabet, repeat=length):
-            yield ''.join(letters)
-        length += 1
