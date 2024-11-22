@@ -38,28 +38,62 @@ class Helper:
         for choice in choice_array:
             print(choice)
 
-        while True:
+        while True: #loop until valid answer
             # Input handling
-            answer = input(">> ").strip().lower()
+            while True:
+                answer = input(">> ").strip().lower()
+                if len(answer) > 0:
+                    break
+                else:
+                    print("Invalid Answer: answer cannot be blank.")
+
+            # match by label
             for i, choice in enumerate(choice_array):
                 label, text = choice.split(') ', maxsplit=1)
-                text_lower = text.lower()
-                # Match by label or exact/starting text match
-                if answer == label or answer == text_lower or text_lower.startswith(answer):
+                if answer == label:
                     return i
+            
+            # else: match by consecutive char match
+            # Step 1: Get scores for all options
+            scores = [match_count(choice, answer) for choice in choices]
+            max_score = max(scores)
 
-            print("Invalid Answer: Try typing the option or the name of the choice.")
+            # Step 2: Get all options with the highest score
+            best_matches = [i for i, score in enumerate(scores) if score == max_score]
+
+            if len(best_matches) == 1:
+                # Step 3: Return the index of the best match if there's only one
+                return best_matches[0]
+            else:
+                # Step 4: If too many matches
+                print("Invalid Answer: answer needs to be more specific.")
 
     @staticmethod
     def yes_or_no():
+        choices = ['yes', 'no']
         while True:
-            ans  = input('>> ').lower().strip()
-            if ans == 'y' or ans == 'ye' or ans == 'es' or ans == 'ys' or ans == 'yes':
-                return 1
-            elif ans == 'n' or ans == 'no':
-                return 0
+            answer = input(">> ").strip().lower()
+            if len(answer) > 0:
+                break
             else:
-                print("Invalid Answer: Try typing yes or no.")
+                print("Invalid Answer: answer cannot be blank.")
+        # Step 1: Get scores for all options
+        scores = [match_count(choice, answer) for choice in choices]
+        max_score = max(scores)
+
+        # Step 2: Get all options with the highest score
+        best_matches = [i for i, score in enumerate(scores) if score == max_score]
+
+        if len(best_matches) == 1:
+            # Step 3: Return the index of the best match if there's only one
+            if choices[best_matches[0]] == 'yes':
+                return 1
+            else: 
+                return 0
+        else:
+            # Step 4: If too many matches
+            print("Invalid Answer: Try typing yes or no.")
+            return Helper.yes_or_no() #loop until valid answer
     
     @staticmethod
     def make_banner(banner, spaces=False):
@@ -183,6 +217,20 @@ class Helper:
         else:
             return False
 
+def match_count(string, input):
+            """Returns the count of consecutive characters matched within the option."""
+            string = string.strip().lower()
+
+            max_count = 0
+            for i in range(len(string)):
+                count = 0
+                for j in range(len(input)):
+                    if i + j < len(string) and string[i + j] == input[j]:
+                        count += 1
+                    else:
+                        break
+                max_count = max(max_count, count)
+            return max_count
 
 def generate_labels():
     """Generate labels like 'a', 'b', ..., 'z', 'aa', 'ab', ..."""

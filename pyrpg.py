@@ -17,6 +17,7 @@ def main():
             input("Loading game is not implemented yet.")
         elif answer == 2:
             exit()
+        input(answer)
     
     Helper.load_location(player)
 
