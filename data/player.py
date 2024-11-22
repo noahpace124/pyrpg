@@ -302,12 +302,12 @@ class Player:
                 if condition.stat == 'hp':
                     if condition.type == 'debuff':
                         self.chp -= condition.multiplier
-                        input(f"{self.name} took {condition.multiplier} damage from {condition.name}.")
+                        input(f"{self.name} took {Helper.string_color(condition.multiplier, 'r')} damage from {Helper.string_color(condition.name, 'p')}.")
                         if self.chp < 0:
                             self.chp = 0
                     elif condition.type == 'buff':
                         self.chp += condition.multiplier
-                        input(f"{self.name} gained {condition.multiplier} hp from {condition.name}.")
+                        input(f"{self.name} gained {Helper.string_color(condition.multiplier, 'r')} hp from {Helper.string_color(condition.name, 'o')}.")
                         if self.chp > self.hp:
                             self.chp = self.hp
                 condition.duration -= 1

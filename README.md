@@ -1,8 +1,7 @@
 Things to work on:
-fix color for status conditions in upkeep and view
 change combat menu to be quicker (instead of selecting view skills, just display quick skills, etc.)
 update event selection to exclude events from list if max selected
-display gold in inventory
+display gold in inventory/add more colors and etc
 add accessory slots that provide passive buffs/add two hands, legs, chest and head instead of weapon and armor
 implement saving and loading with the player class
 ask if user wants to unequip current gear for new gear when equipping
