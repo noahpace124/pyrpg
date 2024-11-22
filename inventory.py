@@ -45,7 +45,7 @@ def inventory(player):
         Helper.clear_screen()
         Helper.make_banner('INVENTORY')
 
-        answer = Helper.prompt(["Weapons", "Armors", "Skills", "Spells", "Items", "Conditions", "Go Back"])
+        answer = Helper.prompt(["Weapons", "Armors", "Skills", "Spells", "Items", "Status", "Conditions", "Go Back"])
 
         if answer == 0:
             view_weapons(player)
@@ -58,8 +58,10 @@ def inventory(player):
         elif answer == 4:
             view_items(player)
         elif answer == 5:
-            view_conditions(player)
+            player.view_stats()
         elif answer == 6:
+            view_conditions(player)
+        elif answer == 7:
             return
 
 def view_weapons(player):

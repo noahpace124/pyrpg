@@ -212,7 +212,7 @@ def guard(player, enemy):
     return 3
 
 def run(player, enemy):
-    if randint(1, 100) <= max(player.get_dex() - enemy.get_dex(), 10) + player.get_lck():
+    if randint(1, 100) <= max((player.get_dex() - enemy.get_dex()) * 10, 1) + player.get_lck():
         return True
     else:
         return False
@@ -263,7 +263,6 @@ def combat_inventory(player, enemy):
 
 def combat_win(player, enemy):
     input(f"{enemy.name} was defeated.")
-    print()
     xp = round((enemy.hp * 10) * max(1 + ((enemy.lvl - player.lvl)/player.lvl), 1))
     Helper.award_xp(player, xp)
     gold = max(enemy.get_lck() * 10, 10) * (1 + randint(0, player.get_lck()))

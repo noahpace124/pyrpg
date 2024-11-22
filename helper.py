@@ -201,7 +201,7 @@ class Helper:
         while points > 0:
             print()
             print(f"What stat do you want to increase? (Stat Points Remaining: {points})")
-            answer = Helper.prompt(['Constitution', 'Magic', 'Strength', 'Intelligence', 'Dexterity', 'Luck'])
+            answer = Helper.prompt([f'Constitution ({player.con})', f'Magic ({player.mag})', f'Strength ({player.str})', f'Intelligence ({player.int})', f'Dexterity ({player.dex})', f'Luck ({player.lck})'])
             if answer == 0:
                 player.con += 1
                 player.hp = 20 + ((player.con - 1) * 5)
@@ -221,7 +221,8 @@ class Helper:
             player.cmp = player.mp
             player.ctp = player.tp
             points -= 1
-            print()
+            player.view_stats()
+            input()
 
     @staticmethod        
     def crit(attacker):
@@ -231,16 +232,16 @@ class Helper:
             return False
 
 def match_count(string, input):
-            """Returns the count of consecutive characters matched within the option."""
-            string = string.strip().lower()
+    """Returns the count of consecutive characters matched within the option."""
+    string = string.strip().lower()
 
-            max_count = 0
-            for i in range(len(string)):
-                count = 0
-                for j in range(len(input)):
-                    if i + j < len(string) and string[i + j] == input[j]:
-                        count += 1
-                    else:
-                        break
-                max_count = max(max_count, count)
-            return max_count
+    max_count = 0
+    for i in range(len(string)):
+        count = 0
+        for j in range(len(input)):
+            if i + j < len(string) and string[i + j] == input[j]:
+                count += 1
+            else:
+                break
+        max_count = max(max_count, count)
+    return max_count

@@ -1,7 +1,6 @@
 #Imports
 from random import randint
 
-#File Imports
 from .weapons import Weapon
 from .armors import Armor
 from helper import Helper
@@ -54,7 +53,6 @@ class Player:
         # Inventory and Equipment
         self.inv = [
             {'name': 'Lesser HP Potion', 'count': 3}, 
-            {'name': 'Lesser MP Potion', 'count': 3},
             {'name': self.job.weapon.name, 'count': 1},  # Add weapon to inventory
             {'name': self.job.armor.name, 'count': 1}    # Add armor to inventory
         ]
@@ -90,6 +88,7 @@ class Player:
         print(f"MP: {self.cmp}/{self.mp}")
         print(f"TP: {self.ctp}/{self.tp}")
         print(f"XP: {self.xp}/{self.lvlnxt} LVL: {self.lvl}")
+        print(f"Gold: {self.gold}")
         print(f"Strength: {self.str}")
         print(f"Constitution: {self.con}")
         print(f"Magic: {self.mag}")
@@ -247,19 +246,29 @@ class Player:
         return max(0, total_magic_defense) #Ensure the magic defense value doesn't drop below 0
 
     def get_str(self):
-        return round(self.str * self.get_condition_multiplier('str'))
+        multiplier = self.get_condition_multiplier('str')
+        adder = self.get_condition_adder('str')
+        return round((self.str + adder) * multiplier)
 
     def get_dex(self):
-        return round(self.dex * self.get_condition_multiplier('dex'))
+        multiplier = self.get_condition_multiplier('dex')
+        adder = self.get_condition_adder('dex')
+        return round((self.dex + adder) * multiplier)
 
     def get_mag(self):
-        return round(self.mag * self.get_condition_multiplier('mag'))
+        multiplier = self.get_condition_multiplier('mag')
+        adder = self.get_condition_adder('mag')
+        return round((self.mag + adder) * multiplier)
 
     def get_int(self):
-        return round(self.int * self.get_condition_multiplier('int'))
+        multiplier = self.get_condition_multiplier('int')
+        adder = self.get_condition_adder('int')
+        return round((self.int + adder) * multiplier)
 
     def get_lck(self):
-        return round(self.lck * self.get_condition_multiplier('lck'))
+        multiplier = self.get_condition_multiplier('lck')
+        adder = self.get_condition_adder('lck')
+        return round((self.lck + adder) * multiplier)
 
     def get_spd(self):
         return max((self.get_dex() * 2) + max(0, self.get_lck()), 0)
@@ -267,9 +276,20 @@ class Player:
     def get_condition_multiplier(self, stat):
         multiplier = 1
         for condition in self.conditions:
-            if condition and condition.stat == stat:
-                multiplier *= condition.multiplier
+            if condition:
+                if condition.modification == '*':
+                    if condition.stat == stat:
+                        multiplier *= condition.multiplier
         return multiplier
+    
+    def get_condition_adder(self, stat):
+        adder = 0
+        for condition in self.conditions:
+            if condition:
+                if condition.modification == '+':
+                    if condition.stat == stat:
+                        adder += condition.multiplier
+        return adder
 
     def get_dodge(self):
         return self.get_dex() + randint(0, self.get_lck())
@@ -301,13 +321,25 @@ class Player:
             if condition and condition.duration_type == 'turn':
                 if condition.stat == 'hp':
                     if condition.type == 'debuff':
-                        self.chp -= condition.multiplier
-                        input(f"{self.name} took {Helper.string_color(condition.multiplier, 'r')} damage from {Helper.string_color(condition.name, 'p')}.")
+                        hp_loss = 0
+                        if condition.modification == '*':
+                            hp_loss = round(condition.modifier * self.hp)
+                            self.chp -= hp_loss
+                        elif condition.modification == '+':
+                            hp_loss = condition.modifier
+                            self.chp -= hp_loss
+                        input(f"{self.name} took {Helper.string_color(hp_loss, 'r')} damage from {Helper.string_color(condition.name, 'p')}.")
                         if self.chp < 0:
                             self.chp = 0
                     elif condition.type == 'buff':
-                        self.chp += condition.multiplier
-                        input(f"{self.name} gained {Helper.string_color(condition.multiplier, 'g')} hp from {Helper.string_color(condition.name, 'o')}.")
+                        hp_gain = 0
+                        if condition.modification == '*':
+                            hp_gain = round(condition.modifier * self.hp)
+                            self.chp += hp_gain
+                        elif condition.modification == '+':
+                            hp_gain = condition.modifier
+                            self.chp += hp_gain
+                        input(f"{self.name} gained {Helper.string_color(hp_gain, 'g')} hp from {Helper.string_color(condition.name, 'o')}.")
                         if self.chp > self.hp:
                             self.chp = self.hp
                 condition.duration -= 1
