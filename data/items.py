@@ -1,4 +1,5 @@
 #Import
+from helper import Helper
 
 class Item:
     all_items = []
@@ -34,7 +35,7 @@ def lesser_hp_potion_use(player):
             player.inv.remove(item_in_inventory)
         input(f"{player.name} had their HP fully restored!")
     else:
-        input(f"{player.name} had their HP recovered by 30.")
+        input(f"{player.name} had their HP recovered by {Helper.string_color('30', 'g')}.")
     return True
 
 def lesser_mp_potion_can_use(player):
@@ -54,7 +55,7 @@ def lesser_mp_potion_use(player):
             player.inv.remove(item_in_inventory)
         input(f"{player.name} had their MP fully restored!")
     else:
-        input(f"{player.name} had their MP recovered by 30.")
+        input(f"{player.name} had their MP recovered by {Helper.string_color('30', 'b')}.")
     return True
 
 items = [

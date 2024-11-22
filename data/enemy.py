@@ -187,7 +187,7 @@ class Enemy:
                             self.chp = 0
                     elif condition.type == 'buff':
                         self.chp += condition.multiplier
-                        input(f"{self.name} gained {Helper.string_color(condition.multiplier, 'r')} hp from {Helper.string_color(condition.name, 'o')}.")
+                        input(f"{self.name} gained {Helper.string_color(condition.multiplier, 'g')} hp from {Helper.string_color(condition.name, 'o')}.")
                         if self.chp > self.hp:
                             self.chp = self.hp
                 condition.duration -= 1

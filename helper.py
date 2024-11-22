@@ -124,6 +124,10 @@ class Helper:
             string_color = COLORS['reset']
         elif color == 'r':
             string_color = COLORS['red']
+        elif color == 'g':
+            string_color = COLORS['green']
+        elif color == 'b':
+            string_color = COLORS['blue']
         elif color == 'y':
             string_color = COLORS['yellow']
         elif color == 'p':
