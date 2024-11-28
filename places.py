@@ -1,5 +1,5 @@
 #Imports
-from random import shuffle
+import sys
 
 from dungen import Dungeon
 from data.dungeons.barrens import barrens_descriptions
@@ -7,20 +7,60 @@ from helper import Helper
 from inventory import camp, inventory
 from data.events import Event
 
+
+#Constants
+COMMANDS = [
+    "Help",
+    "Inventory",
+    "Look",
+    "View Room",
+    "North",
+    "East",
+    "South",
+    "West"
+]
+
 #Functions
-def run_events(player, num_rooms, events, location):
+def run_events(player, events, location):
     #Get Descriptions based on location
     if location == "barrens":
         descriptions = barrens_descriptions
 
-    dungeon = Dungeon(num_rooms, descriptions, events)
+    dungeon = Dungeon(events, barrens_descriptions)
 
     room = dungeon.start
+    previous_room = None
 
     while True:
         Helper.clear_screen()
-        print(room.describe())
-        input()
+        result = room.visit(player)
+        if result:
+            if room.room_type == 'boss':
+                break
+            while True:
+                answer = Helper.handle_command(COMMANDS)
+                if answer == 0: #help
+                    print("All commands:")
+                    for command in COMMANDS:
+                        print(command)
+                elif answer == 1:
+                    inventory(player)
+                elif 2 <= answer <= 3: #look/view room
+                    Helper.clear_screen()
+                    print(room.describe())
+                elif 4 <= answer <= 7: #direction
+                    direction = COMMANDS[answer].lower()
+                    if room.connection_exists(direction):
+                        previous_room = room
+                        room = room.connections[direction]
+                        break
+                    else:
+                        input(f"There is no path to the {direction}.")
+        else: #ran
+            room = previous_room
+    input("Dungeon Complete")
+    sys.exit()
+
 
     # shuffle(events)
     # for event in events:
@@ -97,15 +137,16 @@ def barrens(player):
         print("As you approach the land of Zenith for the first time you end up in a dark and moutainous area.")
         print("It's hard to see without a light even in the daytime from the mysterious darkness here.")
         input("It would be rather easy to get lost or run into some unwanted company. Better be careful...")
-        events = [Event.get_event("Goblin Encounter"), Event.get_event("Goblin Encounter"), Event.get_event("Kobold Encounter"), Event.get_event("Kobold Encounter"), Event.get_event("Boulder")]
-        if run_events(player, 5, events, 'barrens'): #beat the boss
+        events = [Event.get_event("Goblin Encounter"), Event.get_event("Goblin Encounter"), Event.get_event("Kobold Encounter"), Event.get_event("Kobold Encounter"), Event.get_event("Boulder"), Event.get_event("Goblin Shaman")]
+        if run_events(player, events, 'barrens'): #beat the boss
             return #NEXT AREA
         else: #did not beat boss
             return barrens(player)
-        
-    else: #barrens complete
-        events = select_events(player, 'barrens')
-        if run_events(player, 5, events, 'barrens'): #beat the boss
-            return #NEXT AREA
-        else: #did not beat boss
-            return barrens(player)
+    # else:
+    # TODO: Add event selection with dungeon
+    # else: #barrens complete
+    #     events = select_events(player, 'barrens')
+    #     if run_events(player, 7, events, 'barrens'): #beat the boss
+    #         return #NEXT AREA
+    #     else: #did not beat boss
+    #         return barrens(player)

@@ -105,6 +105,32 @@ class Helper:
             return Helper.yes_or_no() #loop until valid answer
     
     @staticmethod
+    def handle_command(options):
+        while True: #loop until valid answer
+            # Input handling
+            while True:
+                print("What would you like to do?")
+                answer = input(">> ").strip().lower()
+                if len(answer) > 0:
+                    break
+                else:
+                    print("Invalid Answer: answer cannot be blank.")
+            
+            # Step 1: Get scores for all options
+            scores = [match_count(choice, answer) for choice in options]
+            max_score = max(scores)
+
+            # Step 2: Get all options with the highest score
+            best_matches = [i for i, score in enumerate(scores) if score == max_score]
+
+            if len(best_matches) == 1:
+                # Step 3: Return the index of the best match if there's only one
+                return best_matches[0]
+            else:
+                # Step 4: If too many matches
+                print("Invalid Answer: try typing \'help\' for a list of commands.")
+    
+    @staticmethod
     def make_banner(banner, spaces=False):
         if spaces == False:
             print(f" - - - {banner} - - -")

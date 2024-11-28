@@ -1,7 +1,6 @@
 #Imports
 from random import randint
 
-from dungen import Dungeon
 from helper import Helper
 from combat import combat
 from ..enemy import Enemy
@@ -9,7 +8,6 @@ from ..weapons import Weapon
 from ..armors import Armor
 from ..skills import Skill
 from ..spells import Spell
-from ..events import Event
 
 #Event Functions
 def goblin_battle(player):
@@ -30,7 +28,8 @@ def goblin_battle(player):
         inv=[Weapon.get_weapon('Club'), Armor.get_armor('Cloth')]
     )
     input("You are suddenly attacked by a Goblin!")
-    combat(player, enemy)
+    return combat(player, enemy)
+    
 
 def kobold_battle(player):
     enemy = Enemy(
@@ -50,7 +49,7 @@ def kobold_battle(player):
         inv=[Weapon.get_weapon('Sling')]
     )
     input("You are suddenly attacked by a Kobold!")
-    combat(player, enemy)
+    return combat(player, enemy)
 
 def boulder(player):
     print(f"While walking along the gravel path by boundless hills,")
@@ -100,6 +99,7 @@ def boulder(player):
         print(f"{player.name} was flattened by a boulder.")
         input(">> ")
         exit()
+    return True
 
 def goblin_shaman(player):
     enemy = Enemy(
@@ -123,60 +123,32 @@ def goblin_shaman(player):
         print("Coming close to the end of the barrens you see some lightning crackling in the distance.")
         print("Upon coming closer you see what apears to be another standard goblin, however this one wields a staff.")
         print("Do you want to approach or retreat for now? ")
-        choices = ["Approach (Fight Boss)", "Retreat (Return to Camp)"]
+        choices = ["Approach (Fight Boss)", "Retreat (Previous Room)"]
         answer = Helper.prompt(choices)
         action = choices[answer]
         if action == 'Approach (Fight Boss)':
-            combat(player, enemy)
-            player.flags.append('goblin shaman boss')
-            if 'barrens complete' not in player.flags:
-                player.flags.append('barrens complete')
+            result = combat(player, enemy)
+            if result: #won
+                player.flags.append('goblin shaman boss')
+                if 'barrens complete' not in player.flags:
+                    player.flags.append('barrens complete')
+                    return True
+            else: #ran
+                return False
         else: #Retreat
-            input("You return back to your camp before you are spotted by the goblin.")
-            if 'barrens complete' not in player.flags:
-                player.flags.append('barrens complete')
+            input("You retreat to the previous area before you are spotted by the goblin.")
+            return False
     else: #barrens boss has been defeated
         print("You spot another staff wielding goblin in the distance.")
-        print("Do you want to approach or try to sneak past? ")
-        choices = ["Approach (Fight Boss)", "Go Around (Continue)"]
+        print("Do you want to approach or retreat? ")
+        choices = ["Approach (Fight Boss)", "Retreat (Previous Room)"]
         answer = Helper.prompt(choices)
         action = choices[answer]
         if action == 'Approach (Fight Boss)':
-            combat(player, enemy)
-        else: #Continue past
-            input("You decide to take a slightly longer route to avoid the fight.")
-
-barrens_events = [
-    Event(
-        "Goblin Encounter",
-        ["barrens"],
-        "A basic fight with a goblin.", 
-        4,
-        goblin_battle
-    ),
-    Event(
-        "Kobold Encounter",
-        ["barrens"],
-        "A basic fight with a kobold.",
-        4,
-        kobold_battle
-    ),
-    Event(
-        "Boulder",
-        ["barrens"],
-        "A boulder is falling toward you!",
-        2,
-        boulder
-    ),
-    Event(
-        "Goblin Shaman",
-        ["barrens"],
-        "A goblin shaman want to fight you.",
-        1,
-        goblin_shaman,
-        flag='goblin shaman boss'
-    )
-]
+            return combat(player, enemy)
+        else: #
+            input("You retreat to the previous area before you are spotted by the goblin.")
+            return False
 
 # List of rooms in the Barrens
 barrens_descriptions = [

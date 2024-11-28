@@ -1,4 +1,5 @@
 Things to work on:
+>>add navigation
 implement randomized dungeon to explore system
 add accessory slots that provide passive buffs/add two hands, legs, chest and head instead of weapon and armor
 implement saving and loading with the player class

@@ -56,7 +56,7 @@ def combat(player, enemy):
                 input(f"You don't have enough TP!")
             else:
                 response = combat_round(player, enemy, skill)
-        elif isinstance(Spell, Spell.get_spell(choices[answer].split(':')[0]), Spell):
+        elif isinstance(Spell.get_spell(choices[answer].split(':')[0]), Spell):
             if player.cmp < spell.cost:
                 input(f"You don't have enough MP!")
             else:
@@ -65,10 +65,10 @@ def combat(player, enemy):
 
         if response == 2: #player win
             combat_win(player, enemy)
-            break
+            return True
         elif response == 1: #run
             input(f"{player.name} managed to run away...")
-            break
+            return False
         elif response == 0: #player loss
             input(f"{player.name} died.")
             Helper.clear_screen()
@@ -81,7 +81,7 @@ def combat(player, enemy):
             #check hp
             if enemy.chp <= 0: #enemy dies
                 combat_win(player, enemy)
-                break
+                return True
             player.upkeep()
             if player.chp <= 0: #player dies
                 input(f"{player.name} died.")
@@ -251,7 +251,7 @@ def combat_inventory(player, enemy):
         # Ask if the player wants to use the item
         while True:
             print("Do you want to use this item? (y/n)")
-            ans = Helper.yes_or_no(input(">> ").lower())
+            ans = Helper.yes_or_no()
             
             if ans == 1:  # Yes
                 if item.can_use(player):

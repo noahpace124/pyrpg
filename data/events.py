@@ -1,4 +1,6 @@
 #Import
+from data.dungeons.barrens import goblin_battle, kobold_battle, boulder, goblin_shaman
+
 class Event:
     all_events = []
 
@@ -42,3 +44,34 @@ class Event:
             if event.name == event_name:
                 return event
                 
+events = [
+    Event(
+        "Goblin Encounter",
+        ["barrens"],
+        "A basic fight with a goblin.", 
+        4,
+        goblin_battle
+    ),
+    Event(
+        "Kobold Encounter",
+        ["barrens"],
+        "A basic fight with a kobold.",
+        4,
+        kobold_battle
+    ),
+    Event(
+        "Boulder",
+        ["barrens"],
+        "A boulder is falling toward you!",
+        2,
+        boulder
+    ),
+    Event(
+        "Goblin Shaman",
+        ["barrens"],
+        "A goblin shaman want to fight you.",
+        1,
+        goblin_shaman,
+        flag='goblin shaman boss'
+    )
+]

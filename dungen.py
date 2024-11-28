@@ -10,6 +10,11 @@ class Room:
         self.objects = objects
         self.connections = {}
 
+        if self.event: #if there is an event
+            self.event_complete = False
+        else:
+            self.event_complete = True
+
         self.visited = False
     
     def __repr__(self):
@@ -39,16 +44,26 @@ class Room:
             room.connect(opposite_direction, self)
     
     def describe(self):
-        if not self.visited: #first time here
-            self.visited = True
-            return self.desc
-        else: #every other time here
-            return self.short_desc
-
+        print(self.desc)
+        for connection in self.connections:
+            print(f"{connection.capitalize()}: {self.connections[connection].short_desc}")
+        print()
     
+    def visit(self, player):
+        self.describe()
+        if not self.event_complete:
+            result = self.event.func(player)
+            if result:
+                self.event_complete = True
+            else:
+                return False
+        self.visited = True
+        return True
+
+
 class Dungeon:
-    def __init__(self, num_rooms, descriptions, events=None, objects=None, max_secret_rooms=0):
-        self.num_rooms = num_rooms
+    def __init__(self, events, descriptions, objects=None, max_secret_rooms=0):
+        self.num_rooms = len(events)
         self.descriptions = descriptions
         self.events = events
         self.objects = objects
@@ -56,12 +71,23 @@ class Dungeon:
         self.start = None
 
         shuffle(self.descriptions)
+        shuffle(self.events)
 
         self.rooms = []
 
         self.generate_dungeon()
     
     def generate_dungeon(self):
+        #Get Boss Event if Possible
+        boss_events = []
+        boss_event = None
+        for event in self.events:
+            if event.flag:
+                if 'boss' in event.flag:
+                    boss_events.append(event)
+        if boss_events:
+            boss_event = choice(boss_events)
+
         #Create Starting Room
         i = 0
         starting_room = Room("start", self.descriptions[i][0], self.descriptions[i][1])
@@ -69,9 +95,15 @@ class Dungeon:
         self.start = starting_room
         i += 1
 
+        #Calculate how many Regular Rooms Are Needed to meet Events
+        if boss_event:
+            regular_rooms_needed = self.num_rooms - 1
+        else:
+            regular_rooms_needed = self.num_rooms
+
         #Create and connect Regular Rooms
-        while i < self.num_rooms - 1:
-            new_room = Room("regular", self.descriptions[i][0], self.descriptions[i][1])
+        while i < regular_rooms_needed:
+            new_room = Room("regular", self.descriptions[i][0], self.descriptions[i][1], self.events[i - 1])
             random_room = choice(self.rooms)
             directions = ["north", "south", "east", "west"]
             while directions:
@@ -83,17 +115,19 @@ class Dungeon:
                     i += 1
                     break
         
-        #Create and connect Boss Room
-        boss_room = Room("boss", self.descriptions[i][0], self.descriptions[i][1])
-        while i != self.num_rooms:
-            random_room = choice(self.rooms)
-            if random_room.room_type != "start":
-                directions = ["north", "south", "east", "west"]
-                while directions:
-                    random_direction = choice(directions)
-                    directions.remove(random_direction)
-                    if not random_room.connection_exists(random_direction):
-                        random_room.connect(random_direction, boss_room)
-                        self.rooms.append(boss_room)
-                        i += 1
-                        break
+        #Create and connect Boss Room if Boss Event exists
+        if boss_event:
+            boss_room = Room("boss", self.descriptions[i][0], self.descriptions[i][1], boss_event)
+            while i != self.num_rooms:
+                random_room = choice(self.rooms)
+                if random_room.room_type != "start":
+                    directions = ["north", "south", "east", "west"]
+                    while directions:
+                        random_direction = choice(directions)
+                        directions.remove(random_direction)
+                        if not random_room.connection_exists(random_direction):
+                            random_room.connect(random_direction, boss_room)
+                            self.rooms.append(boss_room)
+                            i += 1
+                            break
+
