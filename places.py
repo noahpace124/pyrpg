@@ -1,43 +1,58 @@
 #Imports
 from random import shuffle
 
+from dungen import Dungeon
+from data.dungeons.barrens import barrens_descriptions
 from helper import Helper
 from inventory import camp, inventory
 from data.events import Event
 
 #Functions
-def run_events(player, events, location):
-    shuffle(events)
-    for event in events:
+def run_events(player, num_rooms, events, location):
+    #Get Descriptions based on location
+    if location == "barrens":
+        descriptions = barrens_descriptions
+
+    dungeon = Dungeon(num_rooms, descriptions, events)
+
+    room = dungeon.start
+
+    while True:
         Helper.clear_screen()
-        event.func(player)
+        print(room.describe())
+        input()
 
-        while True:
-            Helper.clear_screen()
-            print("Do you want to access your inventory?")
-            answer = Helper.yes_or_no()
-            if answer == 1:
-                inventory(player)
-                break
-            elif answer == 0:
-                break
+    # shuffle(events)
+    # for event in events:
+    #     Helper.clear_screen()
+    #     event.func(player)
 
-    boss_events = Event.get_boss_events_by_location(location)
-    for e in boss_events:
-        if e.flag in player.flags:
-            return
+    #     while True:
+    #         Helper.clear_screen()
+    #         print("Do you want to access your inventory?")
+    #         answer = Helper.yes_or_no()
+    #         if answer == 1:
+    #             inventory(player)
+    #             break
+    #         elif answer == 0:
+    #             break
 
-    Helper.clear_screen()
-    shuffle(boss_events)
-    event = boss_events[0]
-    event.func(player)
-    flag = f"{location} complete"
-    player.flags.append(flag)
-    Helper.clear_screen()
-    if event.flag in player.flags:
-        return True
-    else:
-        return False
+    # boss_events = Event.get_boss_events_by_location(location)
+    # for e in boss_events:
+    #     if e.flag in player.flags:
+    #         return
+
+    # Helper.clear_screen()
+    # shuffle(boss_events)
+    # event = boss_events[0]
+    # event.func(player)
+    # flag = f"{location} complete"
+    # player.flags.append(flag)
+    # Helper.clear_screen()
+    # if event.flag in player.flags:
+    #     return True
+    # else:
+    #     return False
 
 def select_events(player, location):
     all_events = Event.get_events_by_location(location, player.flags)
@@ -83,14 +98,14 @@ def barrens(player):
         print("It's hard to see without a light even in the daytime from the mysterious darkness here.")
         input("It would be rather easy to get lost or run into some unwanted company. Better be careful...")
         events = [Event.get_event("Goblin Encounter"), Event.get_event("Goblin Encounter"), Event.get_event("Kobold Encounter"), Event.get_event("Kobold Encounter"), Event.get_event("Boulder")]
-        if run_events(player, events, 'barrens'): #beat the boss
+        if run_events(player, 5, events, 'barrens'): #beat the boss
             return #NEXT AREA
         else: #did not beat boss
             return barrens(player)
         
     else: #barrens complete
         events = select_events(player, 'barrens')
-        if run_events(player, events, 'barrens'): #beat the boss
+        if run_events(player, 5, events, 'barrens'): #beat the boss
             return #NEXT AREA
         else: #did not beat boss
             return barrens(player)

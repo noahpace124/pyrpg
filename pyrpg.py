@@ -1,4 +1,9 @@
 #Imports
+import sys
+
+from data.player import Player
+from data.races import Race
+from data.jobs import Job
 from character_creation import character_creation
 from helper import Helper
 
@@ -21,7 +26,14 @@ def main():
     
     Helper.load_location(player)
 
+def debug():
+    player = Player("Ralsei", Race.get_race("Xeran"), Job.get_job("Wizard"), 'barrens')
+    Helper.load_location(player)
+
 
 #Execute
 if __name__ == "__main__":
-    main()
+    if "--debug" in sys.argv:
+        debug()
+    else: 
+        main()
