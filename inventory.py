@@ -6,6 +6,7 @@ from data.skills import Skill
 from data.spells import Spell
 from data.items import Item
 
+
 def camp(player):
     while True:
         Helper.clear_screen()

@@ -30,7 +30,6 @@ def goblin_battle(player):
     input("You are suddenly attacked by a Goblin!")
     return combat(player, enemy)
     
-
 def kobold_battle(player):
     enemy = Enemy(
         name='Kobold',
@@ -87,7 +86,7 @@ def boulder(player):
             input(f"{player.name} gets hit by the boulder and takes {Helper.string_color('10', 'r')} damage.")
         else:
             print("When the boulder is about to strike you, it suddenly splits into two.")
-            gold = 100 * randint(1, 3)
+            gold = 11 * (1 + randint(0, player.get_lck()))
             input(f"Inside the boulder, you find {gold}. Isn't that something.")
     else:   #take the hit
         player.chp -= 10
@@ -150,6 +149,38 @@ def goblin_shaman(player):
             input("You retreat to the previous area before you are spotted by the goblin.")
             return False
 
+#Interactables
+def good_abandoned_sack(player):
+    gold = 6 * (1 + randint(0, player.get_lck()))
+    print("You approach the abandoned sack. It appears to be moist and might not be safe to touch.")
+    print("Do you still want to reach inside?")
+    response = Helper.yes_or_no()
+    if response == 1:
+        input(f"You reach inside and while uncomfortable, you manage to pull out {gold} gold! Lucky!")
+        return True
+    else:
+        input("You decide not to reach in a bad with who knows what inside. Better safe than sorry.")
+        return False
+    
+def bad_abandoned_sack(player):
+    print("You approach the abandoned sack. It appears to be moist and might not be safe to touch.")
+    print("Do you still want to reach inside?")
+    response = Helper.yes_or_no()
+    if response == 1:
+        input(f"You reach inside the sack, but immediately your hand starts to burn. You take {Helper.string_color('5', 'r')} damage from the liquid.")
+        player.chp -= 5
+        if player.chp <= 0:
+            input(f"{player.name} died.")
+            Helper.clear_screen()
+            Helper.make_banner("GAME OVER", True)
+            print(f"{player.name} died from an unknown liquid.")
+            input(">> ")
+            exit()
+        return True
+    else:
+        input("You decide not to reach in a bad with who knows what inside. Better safe than sorry.")
+        return False
+
 # List of rooms in the Barrens
 barrens_descriptions = [
     ["A flat, dusty expanse stretches endlessly.", 
@@ -184,7 +215,3 @@ barrens_descriptions = [
      "The trail is marked by deep gouges as if some massive creature once dragged itself "
      "through here. The trail leads off into the wasteland with no end in sight."],
 ]
-
-#Interactables
-
-

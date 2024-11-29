@@ -279,7 +279,7 @@ class Player:
             if condition:
                 if condition.modification == '*':
                     if condition.stat == stat:
-                        multiplier *= condition.multiplier
+                        multiplier *= condition.modifier
         return multiplier
     
     def get_condition_adder(self, stat):
@@ -288,7 +288,7 @@ class Player:
             if condition:
                 if condition.modification == '+':
                     if condition.stat == stat:
-                        adder += condition.multiplier
+                        adder += condition.modifier
         return adder
 
     def get_dodge(self):

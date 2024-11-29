@@ -125,7 +125,7 @@ class Helper:
 
             if len(best_matches) == 1:
                 # Step 3: Return the index of the best match if there's only one
-                return best_matches[0]
+                return f"{best_matches[0]} {answer}"
             else:
                 # Step 4: If too many matches
                 print("Invalid Answer: try typing \'help\' for a list of commands.")

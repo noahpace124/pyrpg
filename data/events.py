@@ -24,7 +24,6 @@ class Event:
                             events.append(event)
                 else:
                     events.append(event)
-        print(events)
         return events
     
     @classmethod

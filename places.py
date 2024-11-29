@@ -2,7 +2,6 @@
 import sys
 
 from dungen import Dungeon
-from data.dungeons.barrens import barrens_descriptions
 from helper import Helper
 from inventory import camp, inventory
 from data.events import Event
@@ -10,10 +9,10 @@ from data.events import Event
 
 #Constants
 COMMANDS = [
-    "Help",
+    "Help Commands",
     "Inventory",
-    "Look",
-    "View Room",
+    "View Look Room",
+    "Interact",
     "North",
     "East",
     "South",
@@ -22,11 +21,7 @@ COMMANDS = [
 
 #Functions
 def run_events(player, events, location):
-    #Get Descriptions based on location
-    if location == "barrens":
-        descriptions = barrens_descriptions
-
-    dungeon = Dungeon(events, barrens_descriptions)
+    dungeon = Dungeon(events, location)
 
     room = dungeon.start
     previous_room = None
@@ -39,23 +34,25 @@ def run_events(player, events, location):
                 break
             while True:
                 answer = Helper.handle_command(COMMANDS)
-                if answer == 0: #help
+                if int(answer[0]) == 0: #help
                     print("All commands:")
                     for command in COMMANDS:
                         print(command)
-                elif answer == 1:
+                elif int(answer[0]) == 1:
                     inventory(player)
-                elif 2 <= answer <= 3: #look/view room
+                elif int(answer[0]) == 2: #look/view room
                     Helper.clear_screen()
-                    print(room.describe())
-                elif 4 <= answer <= 7: #direction
-                    direction = COMMANDS[answer].lower()
+                    print(room)
+                elif int(answer[0]) == 3:
+                    room.interact(player, answer)
+                elif 4 <= int(answer[0]) <= 7: #direction
+                    direction = COMMANDS[int(answer[0])].lower()
                     if room.connection_exists(direction):
                         previous_room = room
                         room = room.connections[direction]
                         break
                     else:
-                        input(f"There is no path to the {direction}.")
+                        print(f"There is no path to the {direction}.")
         else: #ran
             room = previous_room
     input("Dungeon Complete")
