@@ -40,6 +40,7 @@ def run_events(player, events, location):
                         print(command)
                 elif int(answer[0]) == 1:
                     inventory(player)
+                    break
                 elif int(answer[0]) == 2: #look/view room
                     Helper.clear_screen()
                     print(room)
@@ -53,43 +54,10 @@ def run_events(player, events, location):
                         break
                     else:
                         print(f"There is no path to the {direction}.")
-        else: #ran
+        else: #ran/retreated
             room = previous_room
     input("Dungeon Complete")
     sys.exit()
-
-
-    # shuffle(events)
-    # for event in events:
-    #     Helper.clear_screen()
-    #     event.func(player)
-
-    #     while True:
-    #         Helper.clear_screen()
-    #         print("Do you want to access your inventory?")
-    #         answer = Helper.yes_or_no()
-    #         if answer == 1:
-    #             inventory(player)
-    #             break
-    #         elif answer == 0:
-    #             break
-
-    # boss_events = Event.get_boss_events_by_location(location)
-    # for e in boss_events:
-    #     if e.flag in player.flags:
-    #         return
-
-    # Helper.clear_screen()
-    # shuffle(boss_events)
-    # event = boss_events[0]
-    # event.func(player)
-    # flag = f"{location} complete"
-    # player.flags.append(flag)
-    # Helper.clear_screen()
-    # if event.flag in player.flags:
-    #     return True
-    # else:
-    #     return False
 
 def select_events(player, location):
     all_events = Event.get_events_by_location(location, player.flags)

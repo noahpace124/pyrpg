@@ -150,36 +150,30 @@ def goblin_shaman(player):
             return False
 
 #Interactables
-def good_abandoned_sack(player):
-    gold = 6 * (1 + randint(0, player.get_lck()))
+def abandoned_sack(player):
     print("You approach the abandoned sack. It appears to be moist and might not be safe to touch.")
     print("Do you still want to reach inside?")
     response = Helper.yes_or_no()
     if response == 1:
-        input(f"You reach inside and while uncomfortable, you manage to pull out {gold} gold! Lucky!")
-        return True
+        if randint(1, 100) >= (50 - randint(0, player.getlck())): #Chance for good vs bad
+            gold = 6 * (1 + randint(0, player.get_lck()))
+            input(f"You reach inside and while uncomfortable, you manage to pull out {gold} gold! Lucky!")
+            return True
+        else:
+            input(f"You reach inside the sack, but immediately your hand starts to burn. You take {Helper.string_color('5', 'r')} damage from the liquid.")
+            player.chp -= 5
+            if player.chp <= 0:
+                input(f"{player.name} died.")
+                Helper.clear_screen()
+                Helper.make_banner("GAME OVER", True)
+                print(f"{player.name} died from an unknown liquid.")
+                input(">> ")
+                exit()
+            return True
     else:
         input("You decide not to reach in a bad with who knows what inside. Better safe than sorry.")
         return False
-    
-def bad_abandoned_sack(player):
-    print("You approach the abandoned sack. It appears to be moist and might not be safe to touch.")
-    print("Do you still want to reach inside?")
-    response = Helper.yes_or_no()
-    if response == 1:
-        input(f"You reach inside the sack, but immediately your hand starts to burn. You take {Helper.string_color('5', 'r')} damage from the liquid.")
-        player.chp -= 5
-        if player.chp <= 0:
-            input(f"{player.name} died.")
-            Helper.clear_screen()
-            Helper.make_banner("GAME OVER", True)
-            print(f"{player.name} died from an unknown liquid.")
-            input(">> ")
-            exit()
-        return True
-    else:
-        input("You decide not to reach in a bad with who knows what inside. Better safe than sorry.")
-        return False
+
 
 # List of rooms in the Barrens
 barrens_descriptions = [

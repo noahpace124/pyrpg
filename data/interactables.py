@@ -1,5 +1,5 @@
 #Import
-from data.dungeons.barrens import good_abandoned_sack, bad_abandoned_sack
+from data.dungeons.barrens import abandoned_sack
 
 class Interactable:
     all_interactables = []
@@ -26,17 +26,10 @@ class Interactable:
 
 interactables = [
     Interactable(
-        name="Abandoned Sack (Good)",
+        name="Abandoned Sack",
         locations=["barrens"],
         desc="There is an abandoned sack on the ground. It appears to be moist with a weird liquid.",
-        func=good_abandoned_sack,
-        chance=33
-    ),
-    Interactable(
-        name="Abandoned Sack (Bad)",
-        locations=["barrens"],
-        desc="There is an abandoned sack on the ground. It appears to be moist with a weird liquid.",
-        func=bad_abandoned_sack,
-        chance=16
-    ),
+        func=abandoned_sack,
+        chance=25
+    )
 ]

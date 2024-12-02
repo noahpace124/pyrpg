@@ -22,13 +22,13 @@ class Room:
         self.visited = False
 
     def __repr__(self):
-        str = self.desc
+        str = f'{self.desc}\n'
         if self.interactables:
             for interactable in self.interactables:
-                str += f" {interactable.desc}"
+                str += f"{Helper.string_color(interactable.desc, 'o')}\n"
         if self.connections:
             for connection in self.connections:
-                str += f" To the {connection.capitalize()} there are is {self.connections[connection].short_desc.lower()}"
+                str += f"To the {Helper.string_color(f'{connection.capitalize()}: {self.connections[connection].short_desc.lower()}', 'g')}\n"
         return str
 
     def connection_exists(self, direction):
@@ -132,7 +132,6 @@ class Dungeon:
             for interactable in interactables:
                 if randint(1, 100) <= interactable.chance:
                     objects.append(interactable)
-                    interactables.remove(interactable)
             if objects:
                 new_room = Room("regular", descriptions[i][0], descriptions[i][1], events[i - 1], objects)
             else:
