@@ -208,4 +208,12 @@ barrens_descriptions = [
     ["A trail of deep gouges scars the land.", 
      "The trail is marked by deep gouges as if some massive creature once dragged itself "
      "through here. The trail leads off into the wasteland with no end in sight."],
+    
+    ["A jagged rock formation juts out of the ground.", 
+     "These sharp, irregular rocks rise like broken teeth from the earth, their edges "
+     "weathered by the elements. The area feels starkly hostile, devoid of shelter."],
+    
+    ["A cluster of brittle, sun-bleached bones lies scattered.", 
+     "The bones are cracked and weathered, likely from years of exposure. Whatever "
+     "creature left these remains here is long gone, but the scene hints at an untold story."]
 ]

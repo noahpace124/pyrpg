@@ -1,6 +1,8 @@
 #Imports
 import sys
+from random import choice
 
+from data.dungeons.barrens import barrens_descriptions
 from dungen import Dungeon
 from helper import Helper
 from inventory import camp, inventory
@@ -21,7 +23,10 @@ COMMANDS = [
 
 #Functions
 def run_events(player, events, location):
-    dungeon = Dungeon(events, location)
+    if location == "barrens":
+        descriptions = barrens_descriptions
+
+    dungeon = Dungeon(events, descriptions, location)
 
     room = dungeon.start
     previous_room = None
@@ -61,8 +66,28 @@ def run_events(player, events, location):
 
 def select_events(player, location):
     all_events = Event.get_events_by_location(location, player.flags)
+
+    if location == "barrens":
+        descriptions = barrens_descriptions
+        
     events = []
-    while len(events) < 5:
+    
+    boss_events = []
+    for event in all_events:
+        if event.flag:
+            if 'boss' in event.flag:
+                boss_events.append(event)
+    if not boss_events: #no boss event in options, add a random boss event by location
+        events.append(choice(Event.get_boss_events_by_location(location)))
+
+    if boss_events: #boss option
+        factor = 1
+        min = 6
+    else:
+        factor = 2
+        min = 5
+
+    while len(events) <= len(descriptions) - factor:
         Helper.clear_screen()
 
         event_choices = []
@@ -70,9 +95,29 @@ def select_events(player, location):
             if events.count(event) < event.max:
                 event_choices.append(event)
 
+        if boss_events: #boss option
+            print(f"{len(events)}/{len(descriptions) - factor} (Minimum: {min} with boss event)") #-1 for the starting room
+        else:
+            print(f"{len(events) - 1}/{len(descriptions) - factor} (Minimum: {min})") #-1 for boss event, -2 for the starting room and boss event
         print("Choose your events: ")
-        answer = Helper.prompt([f'{event.name}: {event.desc} (Count: {events.count(event)}/{event.max})' for event in event_choices])
-        events.append(event_choices[answer])
+        choices = [f'{event.name}: {event.desc} (Count: {events.count(event)}/{event.max})' for event in event_choices]
+        choices.append('Finish')
+        answer = Helper.prompt(choices)
+        if answer == (len(choices) - 1): #Finish
+            if len(events) >= min:
+                temp = []
+                for event in events:
+                    if event.flag:
+                        if 'boss' in event.flag:
+                            temp.append(event)
+                if not temp: #no boss event in our choices
+                    input(f"You need a boss event!")
+                else:
+                    break
+            else: #not enough events
+                input(f"You need at least {min} events!")
+        else:
+            events.append(event_choices[answer])
 
     while True:
         Helper.clear_screen()
@@ -103,15 +148,13 @@ def barrens(player):
         print("It's hard to see without a light even in the daytime from the mysterious darkness here.")
         input("It would be rather easy to get lost or run into some unwanted company. Better be careful...")
         events = [Event.get_event("Goblin Encounter"), Event.get_event("Goblin Encounter"), Event.get_event("Kobold Encounter"), Event.get_event("Kobold Encounter"), Event.get_event("Boulder"), Event.get_event("Goblin Shaman")]
+        if run_events(player, events,'barrens'): #beat the boss
+            return #NEXT AREA
+        else: #did not beat boss
+            return barrens(player)
+    else: #barrens complete
+        events = select_events(player, 'barrens')
         if run_events(player, events, 'barrens'): #beat the boss
             return #NEXT AREA
         else: #did not beat boss
             return barrens(player)
-    # else:
-    # TODO: Add event selection with dungeon
-    # else: #barrens complete
-    #     events = select_events(player, 'barrens')
-    #     if run_events(player, 7, events, 'barrens'): #beat the boss
-    #         return #NEXT AREA
-    #     else: #did not beat boss
-    #         return barrens(player)

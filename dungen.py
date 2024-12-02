@@ -28,7 +28,7 @@ class Room:
                 str += f"{Helper.string_color(interactable.desc, 'o')}\n"
         if self.connections:
             for connection in self.connections:
-                str += f"To the {Helper.string_color(f'{connection.capitalize()}: {self.connections[connection].short_desc.lower()}', 'g')}\n"
+                str += f"{Helper.string_color(f'To the {connection.capitalize()}: {self.connections[connection].short_desc.lower()}', 'g')}\n"
         return str
 
     def connection_exists(self, direction):
@@ -83,12 +83,10 @@ class Room:
 
 
 class Dungeon:
-    def __init__(self, events, location, max_secret_rooms=0):
+    def __init__(self, events, descriptions, location, max_secret_rooms=0):
         #Get Descriptions and Interactables based on location
         if location == "barrens":
-            descriptions = barrens_descriptions
             interactables = Interactable.get_interactables_by_location(location)
-
 
         self.max_secret_rooms = max_secret_rooms
         self.start = None
@@ -101,7 +99,7 @@ class Dungeon:
         self.generate_dungeon(events, descriptions, interactables)
     
     def generate_dungeon(self, events, descriptions, interactables):
-        #Get Boss Event if Possible
+        #Get Boss Event
         boss_events = []
         boss_event = None
         for event in events:
@@ -111,6 +109,9 @@ class Dungeon:
         if boss_events:
             boss_event = choice(boss_events)
             events.remove(boss_event)
+        if not boss_event:
+            print("Error: No boss event!")
+            exit()
 
         #Create Starting Room
         i = 0
@@ -119,14 +120,8 @@ class Dungeon:
         self.start = starting_room
         i += 1
 
-        #Calculate how many Regular Rooms Are Needed to meet Events
-        if boss_event:
-            regular_rooms_needed = len(events)
-        else:
-            regular_rooms_needed = len(events) + 1
-
         #Create and connect Regular Rooms
-        while i < regular_rooms_needed:
+        while i < len(events):
             #Generate Interactables based on chances for regular rooms
             objects = []
             for interactable in interactables:
@@ -147,18 +142,17 @@ class Dungeon:
                     i += 1
                     break
         
-        #Create and connect Boss Room if Boss Event exists
-        if boss_event:
-            boss_room = Room("boss", descriptions[i][0], descriptions[i][1], boss_event)
-            while i != len(events) + 1:
-                random_room = choice(self.rooms)
-                if random_room != self.start:
-                    directions = ["north", "south", "east", "west"]
-                    while directions:
-                        random_direction = choice(directions)
-                        directions.remove(random_direction)
-                        if not random_room.connection_exists(random_direction):
-                            random_room.connect(random_direction, boss_room)
-                            self.rooms.append(boss_room)
-                            i += 1
-                            break
+        #Create and connect Boss Room=
+        boss_room = Room("boss", descriptions[i][0], descriptions[i][1], boss_event)
+        while i != len(events) + 1:
+            random_room = choice(self.rooms)
+            if random_room != self.start:
+                directions = ["north", "south", "east", "west"]
+                while directions:
+                    random_direction = choice(directions)
+                    directions.remove(random_direction)
+                    if not random_room.connection_exists(random_direction):
+                        random_room.connect(random_direction, boss_room)
+                        self.rooms.append(boss_room)
+                        i += 1
+                        break

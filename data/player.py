@@ -7,7 +7,7 @@ from helper import Helper
 
 #Class
 class Player:
-    def __init__(self, name, race, job, location):
+    def __init__(self, name, race, job, location, flags=None):
         # Retrieve race and job instances
         self.race = race
         self.job = job
@@ -75,7 +75,7 @@ class Player:
         self.conditions = []
         self.gold = 0
         self.location = location
-        self.flags = []
+        self.flags = flags if flags else []
 
     def view_stats(self):
         Helper.clear_screen()
