@@ -1,5 +1,5 @@
 #Import
-from data.dungeons.barrens import abandoned_sack
+from data.dungeons.barrens import abandoned_sack, abandoned_barrels
 
 class Interactable:
     all_interactables = []
@@ -26,10 +26,17 @@ class Interactable:
 
 interactables = [
     Interactable(
-        name="Abandoned Sack",
+        name="Sack",
         locations=["barrens"],
-        desc="There is an abandoned sack on the ground. It appears to be moist with a weird liquid.",
+        desc="There is a sack on the ground. It appears to be moist with a weird liquid.",
         func=abandoned_sack,
-        chance=25
+        chance=100
+    ),
+    Interactable(
+        name="Barrels",
+        locations=["barrens"],
+        desc="There are some wooden barrels here. There might be something inside.",
+        func=abandoned_barrels,
+        chance=100
     )
 ]

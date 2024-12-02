@@ -14,7 +14,6 @@ COMMANDS = [
     "Help Commands",
     "Inventory",
     "View Look Room",
-    "Interact",
     "North",
     "East",
     "South",
@@ -38,7 +37,7 @@ def run_events(player, events, location):
             if room.room_type == 'boss':
                 break
             while True:
-                answer = Helper.handle_command(COMMANDS)
+                answer = Helper.handle_command(COMMANDS, room)
                 if int(answer[0]) == 0: #help
                     print("All commands:")
                     for command in COMMANDS:
@@ -49,9 +48,7 @@ def run_events(player, events, location):
                 elif int(answer[0]) == 2: #look/view room
                     Helper.clear_screen()
                     print(room)
-                elif int(answer[0]) == 3:
-                    room.interact(player, answer)
-                elif 4 <= int(answer[0]) <= 7: #direction
+                elif 3 <= int(answer[0]) <= 6: #direction
                     direction = COMMANDS[int(answer[0])].lower()
                     if room.connection_exists(direction):
                         previous_room = room
@@ -59,6 +56,8 @@ def run_events(player, events, location):
                         break
                     else:
                         print(f"There is no path to the {direction}.")
+                else:
+                    room.interact(player, answer.split(' ')[1])
         else: #ran/retreated
             room = previous_room
     input("Dungeon Complete")

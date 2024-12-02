@@ -62,7 +62,6 @@ def combat(player, enemy):
             else:
                 response = combat_round(player, enemy, spell)
 
-
         if response == 2: #player win
             combat_win(player, enemy)
             return True

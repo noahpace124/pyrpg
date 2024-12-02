@@ -105,7 +105,13 @@ class Helper:
             return Helper.yes_or_no() #loop until valid answer
     
     @staticmethod
-    def handle_command(options):
+    def handle_command(options, room = None):
+        temp = options.copy()
+        if room:
+            if room.interactables:
+                for interactable in room.interactables:
+                    temp.append(interactable.name)
+
         while True: #loop until valid answer
             # Input handling
             while True:
@@ -117,7 +123,7 @@ class Helper:
                     print("Invalid Answer: answer cannot be blank.")
             
             # Step 1: Get scores for all options
-            scores = [match_count(choice, answer) for choice in options]
+            scores = [match_count(choice, answer) for choice in temp]
             max_score = max(scores)
 
             # Step 2: Get all options with the highest score
@@ -125,7 +131,7 @@ class Helper:
 
             if len(best_matches) == 1:
                 # Step 3: Return the index of the best match if there's only one
-                return f"{best_matches[0]} {answer}"
+                return f"{best_matches[0]} {temp[best_matches[0]]}"
             else:
                 # Step 4: If too many matches
                 print("Invalid Answer: try typing \'help\' for a list of commands.")

@@ -149,13 +149,16 @@ def goblin_shaman(player):
             input("You retreat to the previous area before you are spotted by the goblin.")
             return False
 
+def barrens_secret(player):
+    input("Made it to the scret room!")
+
 #Interactables
 def abandoned_sack(player):
     print("You approach the abandoned sack. It appears to be moist and might not be safe to touch.")
     print("Do you still want to reach inside?")
     response = Helper.yes_or_no()
     if response == 1:
-        if randint(1, 100) >= (50 - randint(0, player.getlck())): #Chance for good vs bad
+        if randint(1, 100) >= (50 - randint(0, player.get_lck())): #Chance for good vs bad
             gold = 6 * (1 + randint(0, player.get_lck()))
             input(f"You reach inside and while uncomfortable, you manage to pull out {gold} gold! Lucky!")
             return True
@@ -171,9 +174,47 @@ def abandoned_sack(player):
                 exit()
             return True
     else:
-        input("You decide not to reach in a bad with who knows what inside. Better safe than sorry.")
+        input("You decide not to reach in a bag with who knows what inside. Better safe than sorry.")
         return False
 
+def abandoned_barrels(player):
+    print("You approach the wooden barrels. The lids aren't on tight so they might have been searched already.")
+    print("Or they could just be old from the time they've been out here.")
+    print("Do you want open them?")
+    response = Helper.yes_or_no()
+    if response == 1:
+        lck = randint(0, player.get_lck())
+        odds = randint(1, 100)
+        if odds >= 70 - lck: #Chance for good
+            gold = 6 * (1 + randint(0, player.get_lck()))
+            input(f"You reach inside and find some scrap worth about {gold} gold! Nice find.")
+            return True
+        elif odds >= max(20 - lck, 1): #nothing really
+            input("There really isn't anything worth grabbing in these barrels after all...")
+            return True
+        else: #bad result
+            enemy = Enemy(
+            name='Goblin',
+            con=1 + randint(0, 1),
+            mag=0,
+            str=1 + randint(0, 2),
+            int=0,
+            dex=2,
+            lck=2 + randint(0, 1),
+            df=0,
+            mdf=0,
+            weapon=Weapon.get_weapon('Club'),
+            armor=Armor.get_armor('Cloth'),
+            skills=[Skill.get_skill('Heavy Blow')],
+            spells=[],
+            inv=[Weapon.get_weapon('Club'), Armor.get_armor('Cloth')]
+            )
+            input("As you reach for the barrel, a Goblin suddenly pops the lid off and jumps out!")
+            combat(player, enemy)
+            return True
+    else:
+        input("You decide investigating the barrels aren't worth it right now. Maybe later.")
+        return False
 
 # List of rooms in the Barrens
 barrens_descriptions = [

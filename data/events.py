@@ -1,5 +1,5 @@
 #Import
-from data.dungeons.barrens import goblin_battle, kobold_battle, boulder, goblin_shaman
+from data.dungeons.barrens import goblin_battle, kobold_battle, boulder, goblin_shaman, barrens_secret
 
 class Event:
     all_events = []
@@ -24,6 +24,16 @@ class Event:
                             events.append(event)
                 else:
                     events.append(event)
+        return events
+    
+    @classmethod
+    def get_secret_events_by_location(cls, location):
+        events = []
+        for event in cls.all_events:
+            if location in event.locations:
+                if event.flag:
+                    if 'secret' in event.flag:
+                        events.append(event)
         return events
     
     @classmethod
@@ -72,5 +82,13 @@ events = [
         1,
         goblin_shaman,
         flag='goblin shaman boss'
+    ),
+    Event(
+        "Barrens Secret Room",
+        ["barrens"],
+        "You found a secret room in the barrens.",
+        0,
+        barrens_secret,
+        flag='secret'
     )
 ]
