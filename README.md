@@ -4,6 +4,7 @@ Things to work on:
 >>add secret rooms
 add resist status checks
 update camp menus and inventory menus 
+add more luck factors in events and positive effects
 add accessory slots that provide passive buffs/add two hands, legs, chest and head instead of weapon and armor
 add size to races for event choices and skills/adding racial interactions with enemies of the same race
 add racial passives to races (condition.type = 'passive')
