@@ -58,6 +58,7 @@ def run_events(player, events, location):
                         print(f"There is no path to the {direction}.")
                 else:
                     room.interact(player, answer.split(' ')[1])
+                    Helper.clear_screen()
         else: #ran/retreated
             room = previous_room
     input("Dungeon Complete")
@@ -100,6 +101,7 @@ def select_events(player, location):
             print(f"{len(events) - 1}/{len(descriptions) - factor} (Minimum: {min})") #-1 for boss event, -2 for the starting room and boss event
         print("Choose your events: ")
         choices = [f'{event.name}: {event.desc} (Count: {events.count(event)}/{event.max})' for event in event_choices]
+        choices.append('Random Events')
         choices.append('Finish')
         answer = Helper.prompt(choices)
         if answer == (len(choices) - 1): #Finish
@@ -115,6 +117,9 @@ def select_events(player, location):
                     break
             else: #not enough events
                 input(f"You need at least {min} events!")
+        elif answer == (len(choices) - 2): #Random Events
+            events = generate_random_events(player, location)
+            break
         else:
             events.append(event_choices[answer])
 
@@ -137,6 +142,27 @@ def select_events(player, location):
             return events
         elif answer == 0: #no
             return select_events(player, location)
+
+def generate_random_events(player, location):
+    events = []
+    all_events = Event.get_events_by_location(location, player.flags)
+
+    boss_events = []
+    for event in all_events:
+        if event.flag:
+            if 'boss' in event.flag:
+                boss_events.append(event)
+                all_events.remove(event)
+    
+    while len(events) < 5:
+        events.append(choice(all_events))
+    
+    if not boss_events: #no boss event in options, add a random boss event by location
+        events.append(choice(Event.get_boss_events_by_location(location)))
+    else:
+        events.append(choice(boss_events))
+
+    return events
 
 #location functions
 def barrens(player):

@@ -258,7 +258,6 @@ class Helper:
             player.ctp = player.tp
             points -= 1
             player.view_stats()
-            input()
 
     @staticmethod        
     def crit(attacker):

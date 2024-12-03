@@ -3,7 +3,7 @@ from random import shuffle, choice, randint
 
 from helper import Helper
 from data.interactables import Interactable
-from data.secret import Secret_Interactable, Secret
+from data.secrets import Secret_Interactable, Secret
 
 class Room:
     def __init__(self, room_type, short_desc, desc, event=None, interactables=[]):

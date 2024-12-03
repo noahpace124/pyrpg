@@ -27,7 +27,7 @@ def main():
     Helper.load_location(player)
 
 def debug():
-    player = Player("Ralsei", Race.get_race("Xeran"), Job.get_job("Wizard"), 'barrens')
+    player = Player("Ralsei", Race.get_race("Xeran"), Job.get_job("Wizard"), 'barrens', 'barrens complete')
     Helper.load_location(player)
 
 
