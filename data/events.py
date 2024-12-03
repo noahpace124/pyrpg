@@ -43,8 +43,6 @@ class Event:
             if event.name == event_name:
                 return event
 
-
-
 events = [
     Event(
         "Goblin Encounter",

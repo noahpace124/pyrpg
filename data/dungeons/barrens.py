@@ -1,5 +1,5 @@
 #Imports
-from random import randint
+from random import randint, choice
 
 from helper import Helper
 from combat import combat
@@ -215,6 +215,36 @@ def abandoned_barrels(player):
     else:
         input("You decide investigating the barrels aren't worth it right now. Maybe later.")
         return False
+    
+
+#Secrets Functions
+def secret_barrels(player):
+    print("You approach the wooden barrels. The lids aren't on tight so they might have been searched already.")
+    print("Or they could just be old from the time they've been out here.")
+    print("Do you want open them?")
+    response = Helper.yes_or_no()
+    if response == 1:
+        print("As you begin looking through the barrels, you accidentally move them noticing how light they are.")
+        input("When you do, you discover a secret pathway!")
+        return True
+    else:
+        input("You decide investigating the barrels aren't worth it right now. Maybe later.")
+        return False
+
+def secret_chest(player):
+    loot = choice([Weapon.get_weapon('Club'), Weapon.get_weapon('Staff'), Weapon.get_weapon('Sling')])
+    gold = 9 * (1 + randint(0, player.get_lck()))
+    print("In the middle of this dusty room is a wooden chest, untouched.")
+    input(f"Upon opening it you find a {loot.name} and {gold} gold pieces!")
+    added = False
+    for item in player.inv:
+        if item["name"] == loot.name:
+            item["count"] += 1
+            added = True
+    if not added:
+        player.inv.append({'name': loot.name, 'count': 1})
+    return True
+
 
 # List of rooms in the Barrens
 barrens_descriptions = [

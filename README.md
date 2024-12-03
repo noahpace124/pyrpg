@@ -1,6 +1,5 @@
 Things to work on:
 >>bug check dungen and related material (events and event selection, interactables, secret rooms, boss placement, and general layout)
->>add secret rooms
 >>add random events selection
 add resist status checks
 add more luck factors in events and positive effects
