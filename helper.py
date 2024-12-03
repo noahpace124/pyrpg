@@ -111,6 +111,10 @@ class Helper:
             if room.interactables:
                 for interactable in room.interactables:
                     temp.append(interactable.name)
+        if room.connections:
+            for connection in room.connections:
+                if room.connections[connection].room_type == "secret":
+                    temp.append(room.connections[connection].event.name.split(' (')[0])
 
         while True: #loop until valid answer
             # Input handling

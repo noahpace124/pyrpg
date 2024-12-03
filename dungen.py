@@ -6,13 +6,15 @@ from data.interactables import Interactable
 from data.events import Event
 
 class Room:
-    def __init__(self, room_type, short_desc, desc, event=None, interactables=None):
+    def __init__(self, room_type, short_desc, desc, event=None, interactables=None, traversable=True):
         self.room_type = room_type
         self.short_desc = short_desc
         self.desc = desc
         self.event = event
         self.interactables = interactables
         self.connections = {}
+
+        self.traversable = traversable
 
         if self.event: #if there is an event
             self.event_complete = False
@@ -26,17 +28,18 @@ class Room:
         if self.interactables:
             for interactable in self.interactables:
                 str += f"{Helper.string_color(interactable.desc, 'o')}\n"
+
         if self.connections:
             for connection in self.connections:
-                if self.connections[connection].room_type == 'secret':
-                    str += f"{Helper.string_color(f'To the {connection.capitalize()}: {self.connections[connection].short_desc.lower()}', 'p')}\n"
-                else:
-                    str += f"{Helper.string_color(f'To the {connection.capitalize()}: {self.connections[connection].short_desc.lower()}', 'g')}\n"
+                str += f"{Helper.string_color(f'To the {connection.capitalize()}: {self.connections[connection].short_desc.lower()}', 'g')}\n"
         return str
 
     def connection_exists(self, direction):
         if direction in self.connections:
-            return True
+            if self.connections[direction].traversable:
+                return True
+            else:
+                return False
         else:
             return False
         
@@ -98,7 +101,6 @@ class Dungeon:
     def generate_dungeon(self, events, descriptions):
         #prep stuff
         interactables = Interactable.get_interactables_by_location(self.location)
-        location_secret_events = Event.get_secret_events_by_location(self.location)
 
         #Get Boss Event
         boss_events = []
@@ -160,30 +162,33 @@ class Dungeon:
                 else:
                     break  # Exit if no directions work
         
-        #determine how many secret rooms we should make if any
-        if len(events) < len(descriptions) - 2: #have enough descriptions minus starting room and boss room
-            secret_room_num = (len(descriptions) - 2) - len(events) #diff is the possible number of secret rooms based on description amount
-            while secret_room_num >= 1: #while we have secret rooms
-                if location_secret_events: #while we have secret events
-                    if randint(1, 100) <= 11: #chance for a secret room to appear
-                        secret_event = choice(location_secret_events)
-                        location_secret_events.remove(secret_event)
-                        secret_room = Room("secret", descriptions[i][0], descriptions[i][1], secret_event)
-                        while True:
-                            random_room = choice(self.rooms)
-                            if random_room != self.start and random_room != self.boss: 
-                                directions = ["north", "south", "east", "west"]
-                                while directions:
-                                    random_direction = choice(directions)
-                                    directions.remove(random_direction)
-                                    print(f"Trying direction: {random_direction}, Directions left: {directions}")
-                                    if not random_room.connection_exists(random_direction):
-                                        random_room.connect(random_direction, secret_room)
-                                        self.rooms.append(secret_room)
-                                        i += 1
-                                        break
-                                else:
-                                    break  # Exit if no directions work
-                    secret_room_num -= 1 #decrement whether or not we added a secret room
-                else:
-                    break
+        # #determine how many secret rooms we should make if any
+        # if len(events) < len(descriptions) - 2: #have enough descriptions minus starting room and boss room
+        #     secret_room_num = (len(descriptions) - 2) - len(events) #diff is the possible number of secret rooms based on description amount
+        #     while secret_room_num >= 1: #while we have secret rooms
+        #         if location_secret_events: #while we have secret events
+        #             if randint(1, 100) <= 100: #chance for a secret room to appear
+        #                 secret_event = choice(location_secret_events)
+        #                 location_secret_events.remove(secret_event)
+        #                 secret_room = Room("secret", descriptions[i][0], descriptions[i][1], secret_event, traversable=False)
+        #                 while True:
+        #                     random_room = choice(self.rooms)
+        #                     if random_room != self.start and random_room != self.boss: 
+        #                         directions = ["north", "south", "east", "west"]
+        #                         while directions:
+        #                             random_direction = choice(directions)
+        #                             directions.remove(random_direction)
+        #                             if not random_room.connection_exists(random_direction):
+        #                                 random_room.connect(random_direction, secret_room)
+        #                                 if random_room.interactables:
+        #                                     for interactable in random_room.interactables:
+        #                                         if interactable.desc == secret_event.desc: #if our secret uses this interactable as a diguise, remove this interactable
+        #                                             random_room.interactables.remove(interactable)
+        #                                 self.rooms.append(secret_room)
+        #                                 i += 1
+        #                                 break
+        #                         else:
+        #                             break  # Exit if no directions work
+        #             secret_room_num -= 1 #decrement whether or not we added a secret room
+        #         else:
+        #             break
