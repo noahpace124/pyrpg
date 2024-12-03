@@ -61,8 +61,6 @@ def run_events(player, events, location):
                     Helper.clear_screen()
         else: #ran/retreated
             room = previous_room
-    input("Dungeon Complete")
-    sys.exit()
 
 def select_events(player, location):
     all_events = Event.get_events_by_location(location, player.flags)
