@@ -8,8 +8,8 @@ from character_creation import character_creation
 from helper import Helper
 
 COMMANDS = [
-    'New',
-    'Load',
+    'New Game',
+    'Load Game',
     'Exit'
 ]
 
@@ -30,20 +30,23 @@ def main():
             player = character_creation()
             break
         elif int(answer[0]) == 2:
-            input("Loading game is not implemented yet.")
+            print("Load what character? ")
+            name = input(">> ")
+            if len(name.strip()) == 0:
+                input("Invalid Name: Name must be made of characters.")
+            player = Helper.load(name)
+            break
         elif int(answer[0]) == 3:
             exit()
     
     Helper.load_location(player)
 
-def debug():
-    player = Player("Ralsei", Race.get_race("Xeran"), Job.get_job("Wizard"), 'barrens')
-    Helper.load_location(player)
-
+def debug(): #for debugging
+    return
 
 #Execute
 if __name__ == "__main__":
-    if "--debug" in sys.argv:
+    if "--debug" or "--d" in sys.argv:
         debug()
     else: 
         main()

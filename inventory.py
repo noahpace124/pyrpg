@@ -53,7 +53,7 @@ def camp(player):
         elif int(answer[0]) == 6:
             view_conditions(player)
         elif int(answer[0]) == 7:
-            input("Save functionality is coming soon!")
+            Helper.save(player)
         elif int(answer[0]) == 8:
             return
 

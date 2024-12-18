@@ -2,6 +2,7 @@
 import os
 import platform
 import string
+import pickle
 from itertools import product
 from random import randint
 
@@ -267,6 +268,20 @@ class Helper:
             return True
         else:
             return False
+        
+    @staticmethod
+    def save(player):
+        name = player.name.lower()
+        with open(f'saves/{name}.pkl', 'wb') as file:
+            pickle.dump(player, file)
+
+        input(f"Saved to {name}.pkl!")
+
+    @staticmethod
+    def load(name):
+        with open(f'saves/{name.lower()}.pkl', 'rb') as file:
+            player = pickle.load(file)
+        return player
 
 def match_count(string, input):
     """Returns the count of consecutive characters matched within the option."""

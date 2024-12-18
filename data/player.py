@@ -25,7 +25,7 @@ class Player:
         tp = dex * 5
 
         # Basic Information
-        self.name = Helper.string_color(name, 'y')
+        self.name = name
         self.lvl = lvl
         self.lvlnxt = 100 + (self.lvl * 100)
         self.xp = 0

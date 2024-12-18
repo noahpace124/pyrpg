@@ -12,7 +12,6 @@ def choose_name():
     if len(name.strip()) == 0:
         input("Invalid Name: Name must be made of characters.")
         return choose_name()
-    name = Helper.string_color(name, 'y')
     print()
     print(f"{name} is your name? (y/n)")
     answer = Helper.yes_or_no()
