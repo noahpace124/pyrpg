@@ -105,29 +105,21 @@ class Helper:
             return Helper.yes_or_no() #loop until valid answer
     
     @staticmethod
-    def handle_command(options, room = None):
-        temp = options.copy()
-        if room:
-            if room.interactables:
-                for interactable in room.interactables:
-                    temp.append(interactable.name)
-        if room.connections:
-            for connection in room.connections:
-                if room.connections[connection].room_type == "secret":
-                    temp.append(room.connections[connection].event.name.split(' (')[0])
-
+    def handle_command(commands):
+        options = commands.copy()
+        options.insert(0, 'Help') #add help to options
         while True: #loop until valid answer
             # Input handling
             while True:
-                print("What would you like to do?")
-                answer = input(">> ").strip().lower()
+                print("What would you like to do? (Type 'Help' for a list of commands.)")
+                answer = input(">> ").lower()
                 if len(answer) > 0:
                     break
                 else:
                     print("Invalid Answer: answer cannot be blank.")
             
             # Step 1: Get scores for all options
-            scores = [match_count(choice, answer) for choice in temp]
+            scores = [match_count(choice, answer) for choice in options]
             max_score = max(scores)
 
             # Step 2: Get all options with the highest score
@@ -135,10 +127,20 @@ class Helper:
 
             if len(best_matches) == 1:
                 # Step 3: Return the index of the best match if there's only one
-                return f"{best_matches[0]} {temp[best_matches[0]]}"
+                if options[best_matches[0]] == 'Help':
+                    print("All commands:")
+                    for command in options:
+                        print(command)
+                    return Helper.handle_command(commands)
+                else:
+                    args = answer.split(' ')
+                    if len(args) == 1:
+                        return f"{best_matches[0]}"
+                    else:
+                        return f"{best_matches[0]}:{args[1]}"
             else:
                 # Step 4: If too many matches
-                print("Invalid Answer: try typing \'help\' for a list of commands.")
+                print("Invalid Answer: try to be more specific.")
     
     @staticmethod
     def make_banner(banner, spaces=False):

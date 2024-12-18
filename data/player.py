@@ -124,8 +124,16 @@ class Player:
         print(f"Conditions: {', '.join(status_conditions)}\n")
         input("")
 
-    def equip_weapon(self, weapon):
-        if weapon:
+    def equip(self, item):
+        item_name = item
+        for inv_item in self.inv:
+            if item in inv_item["name"].lower():
+                item_name = inv_item["name"]
+        if isinstance(Weapon.get_weapon(item_name), Weapon):
+            weapon = Weapon.get_weapon(item_name)
+            if self.EQweapon == weapon:
+                input(f"{self.name} already has the {weapon.name} equipped!")
+                return
             if weapon.req1a:
                 #weapon requirement 1 exists
                 if getattr(self, weapon.req1a) >= weapon.req1m:
@@ -150,11 +158,11 @@ class Player:
                 #no requirements for weapon
                 self.EQweapon = weapon
                 input(f"{self.name} equipped {weapon.name}.")
-        else:  
-            input(f"{self.name} cannot equip {weapon.name} because it was not found.")
-
-    def equip_armor(self, armor):
-        if armor:
+        elif isinstance(Armor.get_armor(item_name), Armor):
+            armor = Armor.get_armor(item_name)
+            if self.EQarmor == armor:
+                input(f"{self.name} alread has the {armor.name} equipped!")
+                return
             if armor.reqa:
                 #armor requirement exists
                 if getattr(self, armor.reqa) >= armor.reqm:
@@ -168,16 +176,22 @@ class Player:
                 #no requirements for armor
                 self.EQarmor = armor
                 input(f"{self.name} equipped {armor.name}.")
+        else:  
+            input(f"{self.name} cannot equip {item} because it isn't equippable.")
+    
+    def unequip(self, item):
+        item_name = item
+        for inv_item in self.inv:
+            if item in inv_item["name"].lower():
+                item_name = inv_item["name"]
+        if isinstance(Weapon.get_weapon(item_name), Weapon):
+            self.EQweapon = Weapon.get_weapon('None')
+            input(f"{self.name} unequipped {item_name}.")
+        elif isinstance(Armor.get_armor(item_name), Armor):
+            self.EQarmor = Armor.get_armor('None')
+            input(f"{self.name} unequipped {item_name}.")
         else:
-            input(f"{self.name} cannot equip {armor.name} because it was not found.")
-    
-    def unequip_weapon(self, weapon):
-        self.EQweapon = Weapon.get_weapon('None')
-        input(f"{self.name} unequipped {weapon.name}.")
-    
-    def unequip_armor(self, armor):
-        self.EQarmor = Armor.get_armor('None')
-        input(f"{self.name} unequipped {armor.name}.")
+            input(f"{self.name} cannot unequip {item} because it isn't unequippable.")
 
     def equip_skill(self, skill):
         # Check if player meets skill requirements

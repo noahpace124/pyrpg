@@ -11,9 +11,8 @@ from data.events import Event
 
 #Constants
 COMMANDS = [
-    "Help Commands",
     "Inventory",
-    "View Look Room",
+    "Look",
     "North",
     "East",
     "South",
@@ -37,19 +36,20 @@ def run_events(player, events, location):
             if room.room_type == 'boss':
                 break
             while True:
-                answer = Helper.handle_command(COMMANDS, room)
-                if int(answer[0]) == 0: #help
-                    print("All commands:")
-                    for command in COMMANDS:
-                        print(command)
-                elif int(answer[0]) == 1:
+                commands = COMMANDS.copy()
+                if room.interactables:
+                    for interactable in room.interactables:
+                        commands.append(interactable.name)
+                answer = Helper.handle_command(commands)
+
+                if int(answer[0]) == 1: #inventory
                     inventory(player)
                     break
                 elif int(answer[0]) == 2: #look/view room
                     Helper.clear_screen()
                     print(room)
                 elif 3 <= int(answer[0]) <= 6: #direction
-                    direction = COMMANDS[int(answer[0])].lower()
+                    direction = COMMANDS[int(answer[0]) - 1].lower() #-1 for the help command
                     if room.connection_exists(direction):
                         previous_room = room
                         room = room.connections[direction]
@@ -57,7 +57,7 @@ def run_events(player, events, location):
                     else:
                         print(f"There is no path to the {direction}.")
                 else:
-                    room.interact(player, answer.split(' ')[1])
+                    room.interact(player, commands[int(answer) - 1]) #-1 for the help command
                     Helper.clear_screen()
         else: #ran/retreated
             room = previous_room

@@ -6,6 +6,24 @@ from data.skills import Skill
 from data.spells import Spell
 from data.items import Item
 
+CAMP_COMMANDS = [
+    "Rest",
+    "Inventory",
+    "Skills",
+    "Spells",
+    "Status",
+    "Conditions",
+    "Save",
+    "Leave"
+]
+
+INVENTORY_COMMANDS = [
+    "Don",
+    "Doff",
+    "Use",
+    "Look",
+    "Back"
+]
 
 def camp(player):
     while True:
@@ -20,18 +38,24 @@ def camp(player):
             print(f"MP: {Helper.render_bar(player.cmp, player.mp, 'b')}")
         print(f"XP: {player.xp}/{player.lvlnxt} - Gold: {player.gold}")
 
-        answer = Helper.prompt(["Venture Onward", "Rest", "Inventory", "Status", "Save Game"])
+        answer = Helper.handle_command(CAMP_COMMANDS)
     
-        if answer == 0:
-            return
-        elif answer == 1:
+        if int(answer[0]) == 1:
             rest(player)
-        elif answer == 2:
+        elif int(answer[0]) == 2:
             inventory(player)
-        elif answer == 3:
+        elif int(answer[0]) == 3:
+            view_skills(player)
+        elif int(answer[0]) == 4:
+            view_spells(player)
+        elif int(answer[0]) == 5:
             player.view_stats()
-        elif answer == 4:
+        elif int(answer[0]) == 6:
+            view_conditions(player)
+        elif int(answer[0]) == 7:
             input("Save functionality is coming soon!")
+        elif int(answer[0]) == 8:
+            return
 
 def rest(player):
     player.chp = player.hp
@@ -44,149 +68,104 @@ def rest(player):
 def inventory(player):
     while True:
         Helper.clear_screen()
-        Helper.make_banner('INVENTORY')
+        Helper.make_banner('INVENTORY', True)
 
-        answer = Helper.prompt(["Weapons", "Armors", "Skills", "Spells", "Items", "Status", "Conditions", "Go Back"])
+        #Sort our inv items into catagories: Weapons, Armors, Consumables
+        weapons = []
+        armors = []
+        consumables = []
+        for item in player.inv:
+            if isinstance(Weapon.get_weapon(item["name"]), Weapon):
+                str = f"{item['name']} {item['count']}"
+                if Weapon.get_weapon(item["name"]) == player.EQweapon:
+                    str += " (Equipped)"
+                weapons.append(str)
+            elif isinstance(Armor.get_armor(item["name"]), Armor):
+                str = f"{item['name']} {item['count']}"
+                if Armor.get_armor(item["name"]) == player.EQarmor:
+                    str += " (Equipped)"
+                armors.append(str)
+            else: #consumable
+                consumables.append(f"{item['name']} {item['count']}")
 
-        if answer == 0:
-            view_weapons(player)
-        elif answer == 1:
-            view_armors(player)
-        elif answer == 2:
-            view_skills(player)
-        elif answer == 3:
-            view_spells(player)
-        elif answer == 4:
-            view_items(player)
-        elif answer == 5:
-            player.view_stats()
-        elif answer == 6:
-            view_conditions(player)
-        elif answer == 7:
-            return
-
-def view_weapons(player):
-    while True:  # Loop to return to the weapon menu
-        Helper.clear_screen()
-        Helper.make_banner(f"{player.name}'s Weapons")
-
-        weapon_choices = []
+        #Print our options and add them to commands
+        Helper.make_banner('Weapons')
+        for weapon in weapons:
+            print(weapon)
+            print()
+        Helper.make_banner('Armors')
+        for armor in armors:
+            print(armor)
+            print()
+        Helper.make_banner('Consumables')
+        for consumable in consumables:
+            print(consumable)
+            print()
         
-        # Create a list of weapon choices for inquirer
-        for item in player.inv:
-            if isinstance(Weapon.get_weapon(item['name']), Weapon):
-                weapon = Weapon.get_weapon(item['name'])
-                weapon_info = f"{weapon.name}"
-                if weapon.name == player.EQweapon.name:
-                    weapon_info += " (Equipped)"
-                weapon_choices.append(weapon_info)
+        answer = Helper.handle_command(INVENTORY_COMMANDS)
 
-        # Add an option to go back
-        weapon_choices.append("Go Back")
+        if int(answer[0]) == 1: #don
+            player.equip(answer.split(':')[1])
+        elif int(answer[0]) == 2: #doff 
+            player.unequip(answer.split(':')[1])
+        elif int(answer[0]) == 3: #use
+            answer.split(':')
+            if len(answer) > 1:
+                item_name = answer.split(':')[1]
 
-        answer = Helper.prompt(weapon_choices)
-
-        if answer == (len(weapon_choices) - 1): #Go Back
+                for inv_item in player.inv:
+                    if item_name in inv_item["name"].lower():
+                        item_name = inv_item["name"]
+                    
+                item = Item.get_item(item_name)  # Get the item instance
+                if item:
+                    if item.can_use(player):
+                        item.func(player)
+                else:
+                    input(f"{player.name} cannot use the {item_name} because it isn't a consumable.")
+            else:
+                input("Invalid Answer: type \'use\' and then the item to use.")
+        elif int(answer[0]) == 4: #look
+            for inv_item in player.inv:
+                if answer.split(':')[1] in inv_item["name"].lower():
+                    item_name = inv_item["name"]
+            if isinstance(Weapon.get_weapon(item_name), Weapon):
+                weapon = Weapon.get_weapon(item_name)
+                Helper.make_banner(f"{weapon.name}")
+                print(f"Description: {weapon.desc}")
+                for item in player.inv:
+                    if isinstance(Weapon.get_weapon(item['name']), Weapon):
+                        print(f"Count: {item['count']}")
+                print(f"Attack: {weapon.atkmin} to {weapon.atkmax}")
+                print(f"Magic Attack: {weapon.matkmin} to {weapon.matkmax}")
+                if weapon.req1a:
+                    print(f"Requirements: {weapon.req1a.upper()}: {weapon.req1m}")
+                    if weapon.req2a:
+                        print(f"              {weapon.req2a.upper()}: {weapon.req2m}")
+                input()
+            elif isinstance(Armor.get_armor(item_name), Armor):
+                armor = Armor.get_armor(item_name)
+                # Display armor details
+                Helper.make_banner(f"{armor.name}")
+                print(f"Description: {armor.desc}")
+                for item in player.inv:
+                    if isinstance(Armor.get_armor(item['name']), Armor):
+                        print(f"Count: {item['count']}")
+                print(f"Defense: {armor.df}")
+                print(f"Magic Defense: {armor.mdf}")
+                if armor.reqa:
+                    print(f"Requires: {armor.reqa.upper()}: {armor.reqm}")
+                input()
+            elif isinstance(Item.get_item(item_name), Item):
+                item = Item.get_item(item_name)
+                # Display item details
+                Helper.make_banner(f"{item.name}")
+                print(f"Description: {item.desc}")
+                input()
+            else: #not a valid item
+                input(f"{player.name} cannot look at the {item_name} because it doesn't exist.")  
+        else: #back
             return
-
-        weapon_name = weapon_choices[answer].split(" (")[0]
-        weapon = Weapon.get_weapon(weapon_name)  # Get the weapon instance
-
-        # Display weapon details
-        Helper.make_banner(f"{weapon.name}")
-        print(f"Description: {weapon.desc}")
-        for item in player.inv:
-            if isinstance(Weapon.get_weapon(item['name']), Weapon):
-                print(f"Count: {item['count']}")
-        print(f"Attack: {weapon.atkmin} to {weapon.atkmax}")
-        print(f"Magic Attack: {weapon.matkmin} to {weapon.matkmax}")
-        if weapon.req1a:
-            print(f"Requirements: {weapon.req1a.upper()}: {weapon.req1m}")
-            if weapon.req2a:
-                print(f"              {weapon.req2a.upper()}: {weapon.req2m}")
-
-        # Ask if the player wants to equip or unequip the weapon
-        if player.EQweapon.name == weapon.name:  # Currently equipped
-            while True:
-                print("Do you want to unequip this weapon? (y/n)")
-                ans = Helper.yes_or_no()
-                
-                if ans == 1:  # Yes
-                    player.unequip_weapon(weapon)
-                    break
-                elif ans == 0:  # No
-                    break
-
-        else:  # Not equipped
-            while True:
-                print("Do you want to equip this weapon? (y/n)")
-                ans = Helper.yes_or_no()
-                
-                if ans == 1:  # Yes
-                    player.equip_weapon(weapon)
-                    break
-                elif ans == 0:  # No
-                    break
-
-def view_armors(player):
-    while True:  # Loop to return to the armor menu
-        Helper.clear_screen()
-        Helper.make_banner(f"{player.name}'s Armor")
-
-        armor_choices = []
-
-        for item in player.inv:
-             if isinstance(Armor.get_armor(item['name']), Armor):
-                armor = Armor.get_armor(item['name'])
-                armor_info = f"{armor.name}"
-                if item['name'] == player.EQarmor.name:
-                    armor_info += " (Equipped)"
-                armor_choices.append(armor_info)
-
-        # Add an option to go back
-        armor_choices.append("Go Back")
-
-        answer = Helper.prompt(armor_choices)
-
-        if answer == (len(armor_choices) - 1):
-            break
-
-        armor_name = armor_choices[answer].split(" (")[0]
-        armor = Armor.get_armor(armor_name)  # Get the armor instance
-
-        # Display armor details
-        Helper.make_banner(f"{armor.name}")
-        print(f"Description: {armor.desc}")
-        for item in player.inv:
-            if isinstance(Armor.get_armor(item['name']), Armor):
-                print(f"Count: {item['count']}")
-        print(f"Defense: {armor.df}")
-        print(f"Magic Defense: {armor.mdf}")
-        if armor.reqa:
-            print(f"Requires: {armor.reqa.upper()}: {armor.reqm}")
-
-        # Ask if the player wants to equip or unequip the armor
-        if player.EQarmor.name == armor.name:  # Currently equipped
-            while True:
-                print("Do you want to unequip this armor? (y/n)")
-                ans = Helper.yes_or_no()
-                
-                if ans == 1:  # Yes
-                    player.unequip_armor(armor)
-                    break
-                elif ans == 0:  # No
-                    break
-
-        else:  # Not equipped
-            while True:
-                print("Do you want to equip this weapon? (y/n)")
-                ans = Helper.yes_or_no()
-                
-                if ans == 1:  # Yes
-                    player.equip_armor(armor)
-                    break
-                elif ans == 0:  # No
-                    break
 
 def view_skills(player):
     while True:
@@ -291,49 +270,6 @@ def view_spells(player):
                     break
                 elif ans == 0:  # No
                     break
-
-def view_items(player):
-    while True:  # Loop to return to the items menu
-        Helper.clear_screen()
-        Helper.make_banner(f"{player.name}'s Items")
-
-        item_choices = []
-        
-        # Create a list of item choices for inquirer, only including Item objects
-        for inv_item in player.inv:
-            if isinstance(Item.get_item(inv_item["name"]), Item):
-                name = inv_item["name"]
-                count = inv_item["count"]
-                item_choices.append(f"{name} - {count}")
-
-        # Add an option to go back
-        item_choices.append("Go Back")
-
-        answer = Helper.prompt(item_choices)
-
-        if answer == (len(item_choices) - 1):
-            break
-
-        item_name = item_choices[answer].split(" - ")[0]
-        item = Item.get_item(item_name)  # Get the item instance
-        item_in_inventory = next((i for i in player.inv if i['name'] == item.name))
-
-        # Display item details
-        Helper.make_banner(f"{item.name}")
-        print(f"Description: {item.desc}")
-        print(f"Amount: {item_in_inventory['count']}")
-
-        # Ask if the player wants to use the item
-        while True:
-            print("Do you want to use this item? (y/n)")
-            ans = Helper.yes_or_no()
-            
-            if ans == 1:  # Yes
-                if item.can_use(player):
-                    item.func(player)
-                    break
-            elif ans == 0:  # No
-                break
 
 def view_conditions(player):
     while True:
