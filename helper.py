@@ -5,6 +5,7 @@ import string
 import pickle
 from itertools import product
 from random import randint
+from data.commands import Commands
 
 #Costants
 BAR_LENGTH = 14
@@ -68,6 +69,10 @@ class Helper:
             scores = [match_count(choice, answer) for choice in choices]
             max_score = max(scores)
 
+            if max_score < 2:
+                print("Invalid Answer: answer needs to be more specific.")
+                return Helper.prompt(choices)
+
             # Step 2: Get all options with the highest score
             best_matches = [i for i, score in enumerate(scores) if score == max_score]
 
@@ -106,42 +111,36 @@ class Helper:
             return Helper.yes_or_no() #loop until valid answer
     
     @staticmethod
-    def handle_command(commands):
-        options = commands.copy()
-        options.insert(0, 'Help') #add help to options
-        while True: #loop until valid answer
-            # Input handling
-            while True:
-                print("What would you like to do? (Type 'Help' for a list of commands.)")
-                answer = input(">> ").lower()
-                if len(answer) > 0:
-                    break
-                else:
-                    print("Invalid Answer: answer cannot be blank.")
-            
-            # Step 1: Get scores for all options
-            scores = [match_count(choice, answer) for choice in options]
-            max_score = max(scores)
+    def handle_commands(menu):
+        options = Commands.get_commands(menu)
+        print("What would you like to do? (Type 'help' for a list of commands.)")
+        answer = input(">> ").lower()
 
-            # Step 2: Get all options with the highest score
-            best_matches = [i for i, score in enumerate(scores) if score == max_score]
+        scores = [match_count(option.format.split(' ')[0], answer.split(' ')[0]) for option in options]
+        max_score = max(scores)
 
-            if len(best_matches) == 1:
-                # Step 3: Return the index of the best match if there's only one
-                if options[best_matches[0]] == 'Help':
-                    print("All commands:")
-                    for command in options:
-                        print(command)
-                    return Helper.handle_command(commands)
-                else:
-                    args = answer.split(' ')
-                    if len(args) == 1:
-                        return f"{best_matches[0]}"
-                    else:
-                        return f"{best_matches[0]}:{args[1]}"
+        if max_score < 2:
+            print("Invalid Answer: answer needs to be more specific.")
+            return Helper.handle_commands(menu)
+
+        best_matches = [i for i, score in enumerate(scores) if score == max_score]
+
+        if len(best_matches) == 1:
+            if options[best_matches[0]].name == "Help":
+                for option in options:
+                    print(option)
+                print()
+                return Helper.handle_commands(menu)
+            elif (len(answer.split(" ")) - 1) != options[best_matches[0]].args:
+                print(f"Invalid Answer: {options[best_matches[0]].format}")
+                return Helper.handle_commands(menu)
             else:
-                # Step 4: If too many matches
-                print("Invalid Answer: try to be more specific.")
+                options[best_matches[0]].vals = ' '.join(answer.split(' ')[1:]).lower()
+                return options[best_matches[0]]
+        else:
+            print("Invalid Answer: answer needs to be more specific.")
+            return Helper.handle_commands(menu)
+        
     
     @staticmethod
     def make_banner(banner, spaces=False):
@@ -272,6 +271,8 @@ class Helper:
     @staticmethod
     def save(player):
         name = player.name.lower()
+        if not os.path.exists('saves'):
+            os.makedirs('saves')
         with open(f'saves/{name}.pkl', 'wb') as file:
             pickle.dump(player, file)
 

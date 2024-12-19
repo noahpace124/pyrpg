@@ -17,8 +17,6 @@ Add color coding
 
 implement level up rewards system based on classes
 
-implement saving and loading with the player class
-
 implement a crafting system/update drops system
 
 add resist status checks?

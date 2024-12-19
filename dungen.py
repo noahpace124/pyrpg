@@ -99,12 +99,14 @@ class Room:
     def interact(self, player, interactable_name):
         if self.interactables:
             for interactable in self.interactables:
-                if interactable_name in interactable.name:
+                if interactable_name in interactable.name.lower():
                     response = interactable.func(player)
                     if response:
                         self.interactables.remove(interactable)
+                        return
+            input(f"Invalid Answer: {interactable_name} is not in the room.")
         else: #no interactables
-            print("Invalid Answer: try typing \'help\' for a list of commands.")
+            input(f"Invalid Answer: {interactable_name} is not in the room.")
 
 class Dungeon:
     def __init__(self, events, descriptions, location):
@@ -219,5 +221,3 @@ class Dungeon:
                             else:
                                 break  # Exit if no directions work
                 secret_room_num -= 1
-
-

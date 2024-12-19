@@ -1,23 +1,14 @@
 #Imports
-import sys
 from random import choice
 
 from data.dungeons.barrens import barrens_descriptions
+from data.items import Item
+from data.weapons import Weapon
+from data.armors import Armor
 from dungen import Dungeon
 from helper import Helper
 from inventory import camp, inventory
 from data.events import Event
-
-
-#Constants
-COMMANDS = [
-    "Inventory",
-    "Look",
-    "North",
-    "East",
-    "South",
-    "West"
-]
 
 #Functions
 def run_events(player, events, location):
@@ -36,28 +27,73 @@ def run_events(player, events, location):
             if room.room_type == 'boss':
                 break
             while True:
-                commands = COMMANDS.copy()
-                if room.interactables:
-                    for interactable in room.interactables:
-                        commands.append(interactable.name)
-                answer = Helper.handle_command(commands)
-
-                if int(answer[0]) == 1: #inventory
+                answer = Helper.handle_commands("places")
+                
+                if answer.name == "Use":
+                    for inv_item in player.inv:
+                        if answer.vals in inv_item["name"].lower():
+                            item_name = inv_item["name"]                    
+                        item = Item.get_item(item_name)
+                    if item:
+                        if item.can_use(player):
+                            item.func(player)
+                    else:
+                        input(f"{player.name} cannot use the {answer.vals} because it isn't a consumable.")
+                elif answer.name == "View":
+                    for inv_item in player.inv:
+                        if answer.vals in inv_item["name"].lower():
+                            item_name = inv_item["name"]
+                    if isinstance(Weapon.get_weapon(item_name), Weapon):
+                        weapon = Weapon.get_weapon(item_name)
+                        Helper.make_banner(f"{weapon.name}")
+                        print(f"Description: {weapon.desc}")
+                        for item in player.inv:
+                            if isinstance(Weapon.get_weapon(item['name']), Weapon):
+                                print(f"Count: {item['count']}")
+                        print(f"Attack: {weapon.atkmin} to {weapon.atkmax}")
+                        print(f"Magic Attack: {weapon.matkmin} to {weapon.matkmax}")
+                        if weapon.req1a:
+                            print(f"Requirements: {weapon.req1a.upper()}: {weapon.req1m}")
+                            if weapon.req2a:
+                                print(f"              {weapon.req2a.upper()}: {weapon.req2m}")
+                        input()
+                    elif isinstance(Armor.get_armor(item_name), Armor):
+                        armor = Armor.get_armor(item_name)
+                        # Display armor details
+                        Helper.make_banner(f"{armor.name}")
+                        print(f"Description: {armor.desc}")
+                        for item in player.inv:
+                            if isinstance(Armor.get_armor(item['name']), Armor):
+                                print(f"Count: {item['count']}")
+                        print(f"Defense: {armor.df}")
+                        print(f"Magic Defense: {armor.mdf}")
+                        if armor.reqa:
+                            print(f"Requires: {armor.reqa.upper()}: {armor.reqm}")
+                        input()
+                    elif isinstance(Item.get_item(item_name), Item):
+                        item = Item.get_item(item_name)
+                        # Display item details
+                        Helper.make_banner(f"{item.name}")
+                        print(f"Description: {item.desc}")
+                        input()
+                    else: #not a valid item
+                        input(f"{player.name} cannot look at the {item_name} because it doesn't exist.") 
+                elif answer.name == "Inventory":
                     inventory(player)
                     break
-                elif int(answer[0]) == 2: #look/view room
+                elif answer.name == "Look":
                     Helper.clear_screen()
                     print(room)
-                elif 3 <= int(answer[0]) <= 6: #direction
-                    direction = COMMANDS[int(answer[0]) - 1].lower() #-1 for the help command
+                elif answer.name == "Go":
+                    direction = answer.vals
                     if room.connection_exists(direction):
                         previous_room = room
                         room = room.connections[direction]
                         break
                     else:
                         print(f"There is no path to the {direction}.")
-                else:
-                    room.interact(player, commands[int(answer) - 1]) #-1 for the help command
+                else: #Check
+                    room.interact(player, answer.vals)
                     Helper.clear_screen()
         else: #ran/retreated
             room = previous_room

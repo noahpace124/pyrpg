@@ -6,25 +6,6 @@ from data.skills import Skill
 from data.spells import Spell
 from data.items import Item
 
-CAMP_COMMANDS = [
-    "Rest",
-    "Inventory",
-    "Skills",
-    "Spells",
-    "Status",
-    "Conditions",
-    "Save",
-    "Leave"
-]
-
-INVENTORY_COMMANDS = [
-    "Don",
-    "Doff",
-    "Use",
-    "Look",
-    "Back"
-]
-
 def camp(player):
     while True:
         Helper.clear_screen()
@@ -38,23 +19,72 @@ def camp(player):
             print(f"MP: {Helper.render_bar(player.cmp, player.mp, 'b')}")
         print(f"XP: {player.xp}/{player.lvlnxt} - Gold: {player.gold}")
 
-        answer = Helper.handle_command(CAMP_COMMANDS)
-    
-        if int(answer[0]) == 1:
+        answer = Helper.handle_commands("camp")
+
+        if answer.name == "Use":
+            for inv_item in player.inv:
+                if answer.vals in inv_item["name"].lower():
+                    item_name = inv_item["name"]                    
+                item = Item.get_item(item_name)
+            if item:
+                if item.can_use(player):
+                    item.func(player)
+            else:
+                input(f"{player.name} cannot use the {answer.vals} because it isn't a consumable.")
+        elif answer.name == "View":
+            for inv_item in player.inv:
+                if answer.vals in inv_item["name"].lower():
+                    item_name = inv_item["name"]
+            if isinstance(Weapon.get_weapon(item_name), Weapon):
+                weapon = Weapon.get_weapon(item_name)
+                Helper.make_banner(f"{weapon.name}")
+                print(f"Description: {weapon.desc}")
+                for item in player.inv:
+                    if isinstance(Weapon.get_weapon(item['name']), Weapon):
+                        print(f"Count: {item['count']}")
+                print(f"Attack: {weapon.atkmin} to {weapon.atkmax}")
+                print(f"Magic Attack: {weapon.matkmin} to {weapon.matkmax}")
+                if weapon.req1a:
+                    print(f"Requirements: {weapon.req1a.upper()}: {weapon.req1m}")
+                    if weapon.req2a:
+                        print(f"              {weapon.req2a.upper()}: {weapon.req2m}")
+                input()
+            elif isinstance(Armor.get_armor(item_name), Armor):
+                armor = Armor.get_armor(item_name)
+                # Display armor details
+                Helper.make_banner(f"{armor.name}")
+                print(f"Description: {armor.desc}")
+                for item in player.inv:
+                    if isinstance(Armor.get_armor(item['name']), Armor):
+                        print(f"Count: {item['count']}")
+                print(f"Defense: {armor.df}")
+                print(f"Magic Defense: {armor.mdf}")
+                if armor.reqa:
+                    print(f"Requires: {armor.reqa.upper()}: {armor.reqm}")
+                input()
+            elif isinstance(Item.get_item(item_name), Item):
+                item = Item.get_item(item_name)
+                # Display item details
+                Helper.make_banner(f"{item.name}")
+                print(f"Description: {item.desc}")
+                input()
+            else: #not a valid item
+                input(f"{player.name} cannot look at the {item_name} because it doesn't exist.") 
+        elif answer.name == "Rest":
             rest(player)
-        elif int(answer[0]) == 2:
+        elif answer.name == "Inventory":
             inventory(player)
-        elif int(answer[0]) == 3:
+        elif answer.name == "Skills":
             view_skills(player)
-        elif int(answer[0]) == 4:
+        elif answer.name == "Spells":
             view_spells(player)
-        elif int(answer[0]) == 5:
+        elif answer.name == "Status":
             player.view_stats()
-        elif int(answer[0]) == 6:
+        elif answer.name == "Conditions":
             view_conditions(player)
-        elif int(answer[0]) == 7:
+        elif answer.name == "Save":
             Helper.save(player)
-        elif int(answer[0]) == 8:
+        elif answer.name == "Leave":
             return
 
 def rest(player):
@@ -102,32 +132,25 @@ def inventory(player):
             print(consumable)
             print()
         
-        answer = Helper.handle_command(INVENTORY_COMMANDS)
+        answer = Helper.handle_commands("inventory")
 
-        if int(answer[0]) == 1: #don
-            player.equip(answer.split(':')[1])
-        elif int(answer[0]) == 2: #doff 
-            player.unequip(answer.split(':')[1])
-        elif int(answer[0]) == 3: #use
-            answer.split(':')
-            if len(answer) > 1:
-                item_name = answer.split(':')[1]
-
-                for inv_item in player.inv:
-                    if item_name in inv_item["name"].lower():
-                        item_name = inv_item["name"]
-                    
-                item = Item.get_item(item_name)  # Get the item instance
-                if item:
-                    if item.can_use(player):
-                        item.func(player)
-                else:
-                    input(f"{player.name} cannot use the {item_name} because it isn't a consumable.")
-            else:
-                input("Invalid Answer: type \'use\' and then the item to use.")
-        elif int(answer[0]) == 4: #look
+        if answer.name == "Don":
+            player.equip(answer.vals)
+        elif answer.name == "Doff": 
+            player.unequip(answer.vals)
+        elif answer.name == "Use":
             for inv_item in player.inv:
-                if answer.split(':')[1] in inv_item["name"].lower():
+                if answer.vals in inv_item["name"].lower():
+                    item_name = inv_item["name"]                    
+                item = Item.get_item(item_name)
+            if item:
+                if item.can_use(player):
+                    item.func(player)
+            else:
+                input(f"{player.name} cannot use the {answer.vals} because it isn't a consumable.")
+        elif answer.name == "View":
+            for inv_item in player.inv:
+                if answer.vals in inv_item["name"].lower():
                     item_name = inv_item["name"]
             if isinstance(Weapon.get_weapon(item_name), Weapon):
                 weapon = Weapon.get_weapon(item_name)

@@ -30,7 +30,7 @@ interactables = [
         locations=["barrens"],
         desc="There is a sack on the ground. It appears to be moist with a weird liquid.",
         func=abandoned_sack,
-        chance=33
+        chance=100
     ),
     Interactable(
         name="Barrels",
